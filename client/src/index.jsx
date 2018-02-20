@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
+import config from '/Users/maniks17/Documents/TrumpChange/config.js'
+import StripeCheckout from 'react-stripe-checkout'
+import dotenv from 'dotenv'
+import axios from 'axios'
+dotenv.config();
 // import AnyComponent from './components/filename.jsx'
 
 class App extends React.Component {
@@ -8,11 +13,48 @@ class App extends React.Component {
   	super(props)
   	this.state = {
 
-  	}
+    }
+    this.onToken = this.onToken.bind(this)
   }
 
+
+  componentDidMount() {
+    console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
+  }
+
+  onToken(token) {
+    axios.post('/customerToken', {
+      token: token.id
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+  
+
+  // onToken(token) {
+  //   console.log('onToken', token)
+  //   fetch('/customerToken', {
+  //     method: 'POST',
+  //     body: JSON.stringify(token),
+  //   }).then(response => {
+  //     response.json().then(data => {
+  //       alert(`We are in business, ${data.email}`);
+  //     });
+  //   });
+  // }
+
   render () {
-  	return (<div>Hello World</div>)
+  	return (
+    <div>
+      <p>
+      <StripeCheckout
+        token={this.onToken}
+        stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
+      />
+      </p>
+    </div>)
   }
 }
 
