@@ -19,12 +19,14 @@
   "dependencies": {
     "axios": "^0.18.0",
     "body-parser": "^1.17.2",
+    "cors": "^2.8.4",
     "dotenv": "^5.0.0",
     "express": "^4.15.0",
     "jquery": "^3.1.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-stripe-checkout": "^2.6.3",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "stripe": "^5.4.0"
   }
 }
