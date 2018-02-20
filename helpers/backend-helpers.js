@@ -1,6 +1,7 @@
 const Twitter = require('twitter');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
+const db = require('../database/index.js');
 
 dotenv.config();
 
@@ -27,7 +28,14 @@ function getTweets(user, callback) {
 }
 
 
-function hashPassword (userObj) {
+function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
+  const newUser = new db.User({ username: username, password: password, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
+  newUser.save(() => {
+    console.log('user saved');
+  })
+}
+
+function hashPassword(userObj) {
   const saltRounds = 10;
   const salt = bcrypt.genSaltSync(saltRounds);
   let hash = bcrypt.hashSync(userObj.password, salt);
@@ -37,5 +45,7 @@ function hashPassword (userObj) {
 
 
 
+
 exports.getTweets = getTweets;
+exports.saveIntoDataBase = saveIntoDataBase;
 exports.hashPassword = hashPassword;

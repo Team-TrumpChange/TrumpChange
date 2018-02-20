@@ -14,14 +14,15 @@ class App extends React.Component {
       tweets: []
     }
     this.onToken = this.onToken.bind(this)
+    this.update = this.update.bind(this)
   }
 
-  getFiveTweetsEveryMinute() {
+  getFiveTweetsEveryHalfMinute() {
     const context = this;
     console.log('Pressed');
     setInterval(function() {
       context.getTweets();
-    },6000)
+    },30000)
   }
 
   checkForNewTweets(data) { // compares last tweet of this.props.tweets to the incoming data to see if new tweet
@@ -52,20 +53,28 @@ class App extends React.Component {
         })    
       })
       .catch((error) => {
-        console.log('Error');
-        console.log(error);
+        console.log('Error:', error);
       })
   }
 
   componentDidMount() {
-    console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
+    // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
   }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     axios.post('/customerToken', {
-      id: token.id,
-      email: token.card.name
+      token: token
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+  update() {
+    axios.post('/update', {
+      quantity: 10
     }).then(res => {
       console.log(res)
     }).catch(err => {
@@ -89,8 +98,9 @@ class App extends React.Component {
   render () {
   	return (
     <div>
-      <p>
-      <button onClick={this.getFiveTweetsEveryMinute.bind(this)}>Fetch Tweets</button>      
+      <p>      
+      <button onClick={this.update}>update</button>
+          <button onClick={this.getFiveTweetsEveryHalfMinute.bind(this)}>Fetch Tweets</button>      
       <StripeCheckout
         token={this.onToken}
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
