@@ -17,9 +17,10 @@ app.use(bodyParser.json());
 
 
 app.get('/fetchtweets', (req, res) => {
+  console.log('recieved')
   const { user } = req.query.user;
   helpers.getTweets(user, (tweets) => {
-    console.log(tweets)
+    //console.log(tweets)
     res.send(tweets);
   });
 });
@@ -38,7 +39,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  console.log('token:', token);
  stripe.customers.create({
      source: token.id, // the id from the token object sent from front end
-   email: ''
+      email: ''
  }, function(err, customer) { // returns a customer object if successful
     if (err) {
         console.log('error in create function')

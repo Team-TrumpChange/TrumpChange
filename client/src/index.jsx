@@ -17,11 +17,10 @@ class App extends React.Component {
   }
 
   getFiveTweetsEveryMinute() {
-    const context = this;
     console.log('Pressed');
-    setInterval(function() {
-      context.getTweets();
-    },6000)
+    setInterval(() => 
+      this.getTweets()
+    ,3000)
   }
 
   getTweets() {
@@ -38,8 +37,7 @@ class App extends React.Component {
         })    
       })
       .catch((error) => {
-        console.log('Error');
-        console.log(error);
+        console.log('Error:', error);
       })
   }
 
