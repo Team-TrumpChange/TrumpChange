@@ -7,6 +7,7 @@ const db = mongoose.connect(process.env.MONGO_DATABASE);
 let userSchema = mongoose.Schema({
   username: String,
   password: String,
+  subscriberID: String,
   email: String,
   maxWeeklyPlans: Number,
   totalMoneyDonated: Number

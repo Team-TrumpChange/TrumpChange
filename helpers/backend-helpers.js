@@ -28,7 +28,7 @@ function getTweets(user, callback) {
 }
 
 function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
-  const newUser = new db.User({ username: username, password: password, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
+  const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
   newUser.save(() => {
     console.log('user saved');
   })
