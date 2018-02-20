@@ -35,6 +35,15 @@ function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyD
   })
 }
 
+function checkPassword(username, password, callback) {
+  db.User.findOne({username: username})
+    .then(function(doc) {
+      console.log('password', password);
+      console.log('callback:', callback);
+      callback(bcrypt.compareSync(password, doc.password));
+    });
+}
+
 function hashPassword(userObj) {
   const saltRounds = 10;
   const salt = bcrypt.genSaltSync(saltRounds);
@@ -49,3 +58,4 @@ function hashPassword(userObj) {
 exports.getTweets = getTweets;
 exports.saveIntoDataBase = saveIntoDataBase;
 exports.hashPassword = hashPassword;
+exports.checkPassword = checkPassword;

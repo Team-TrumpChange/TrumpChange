@@ -23,7 +23,7 @@ app.use(session({
 }));
 
 
-app.get('/fetchtweets', (req, res) => {
+app.get('/fetchtweets', (req, res) => { 
   console.log('recieved')
   const { user } = req.query.user;
   helpers.getTweets(user, (tweets) => {
@@ -33,7 +33,7 @@ app.get('/fetchtweets', (req, res) => {
   });
 });
 
-app.post('/createAccount', function(req, res) {
+app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   const {
     username: username,
@@ -45,12 +45,39 @@ app.post('/createAccount', function(req, res) {
   helpers.saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
     res.end();
   }, function (results) {
-    res.json(results)
+    // need to create session here
+    req.session.regenerate(function(err) {
+      if (!err) {
+        req.session.username = username;
+        res.send(req.session.username);
+        res.json(results);
+      } else {
+        console.log('error creating session');
+      }
+    });
   });
 });
 
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
+   // use mongoose find function with username 
+   // check the password in db against submitted password
+   console.log('db.checkPassword', helpers.checkPassword);
+  helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
+    if (boolean) {
+      req.session.regenerate(function(err) {
+        if (!err) {
+          req.session.username = req.body.username;
+          res.send(req.session.username);
+        } else {
+          console.log('error creating session');
+        }
+      });
+    } else {
+      console.log('invalid credentials');
+      res.send('invalid credentials');
+    }
+  });
 });
 
 
@@ -70,7 +97,7 @@ app.post('/update', function(req, res) {
       }
     }
   );
-})
+});
 
 
 
