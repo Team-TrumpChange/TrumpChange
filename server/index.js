@@ -33,13 +33,49 @@ app.post('/login', function(req, res) { // receives login information from front
  // calls db functions to authenticate credentials
 });
 
+
+// app.post('/customerToken', function(req, res) { // this will receive customer token
+//   // here need to use helper functions(from stripe) to create a new customer and create new subscription
+//   var token = req.body;
+//   console.log('token:', token);
+//   stripe.customers.create({
+//       source: token.token.id, // the id from the token object sent from front end
+//        email: token.token.card.name
+//   }, function(err, customer) { // returns a customer object if successful
+//      if (err) {
+//          console.log('error in create function')
+//          res.send('error');
+//      } else {
+//        res.send('success')
+//      }
+//     })
+//   })
+
+app.post('/update', function(req, res) {
+  var quantity = req.body.quantity
+  stripe.subscriptions.update(
+    'sub_CMPiQx0TXTMCnE',
+    { quantity: quantity },
+    function(err, subscription) {
+      // asynchronously called
+      if (err) {
+        console.log('error', err)
+      } else {
+        console.log('updated')
+      }
+    }
+  );
+})
+
+
+
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
  var token = req.body;
  console.log('token:', token);
  stripe.customers.create({
-     source: token.id, // the id from the token object sent from front end
-      email: ''
+     source: token.token.id, // the id from the token object sent from front end
+      email: token.token.card.name
  }, function(err, customer) { // returns a customer object if successful
     if (err) {
         console.log('error in create function')
@@ -49,13 +85,13 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
          //var email = customer.email;
         console.log('customer.id:', customer.id);
         console.log('customer.email:', customer.email);
-      console.log(customer)
+      // console.log(customer)
          stripe.subscriptions.create({ // creates a new subscription
              customer: customer.id,
              items: [
               {
-                plan: 'Trump Change',
-                quantity: 1
+                plan: 'plan_CM50jYu8LYbvMC',
+                quantity: 0
               }
              ],
          }, function(err, subscription) { // returns a subscription object
