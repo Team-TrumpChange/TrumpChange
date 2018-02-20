@@ -11,7 +11,7 @@ class App extends React.Component {
   constructor(props) {
   	super(props)
   	this.state = {
-
+      tweets: []
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -25,7 +25,15 @@ class App extends React.Component {
     },30000)
   }
 
-  getTweets() {
+  checkForNewTweets(data) { // compares last tweet of this.props.tweets to the incoming data to see if new tweet
+    if (data[data.length - 1].id && data[data.length - 1].id === this.state.tweets[this.state.tweets.length - 1].id) {
+      return true;
+    }
+    return false;
+  }
+
+  getTweets() { // gets new tweets from server (server does api call to twitter)
+    const context = this;
     axios.get('/fetchtweets', {
       params: {
         user: 'realdonaldtrump'
@@ -34,6 +42,12 @@ class App extends React.Component {
       .then((res) => {
         console.log('Success');
         console.log(res.data)
+
+        if (context.checkForNewTweets(data)) { // checks if the last tweet is new and resets the state
+          context.setState({
+            tweets: res.data
+          });
+        }
         res.data.forEach((element) => {
           console.log(element.text);
         })    
@@ -47,10 +61,11 @@ class App extends React.Component {
     // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
   }
 
-  onToken(token) {
+  onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     axios.post('/customerToken', {
-      token: token
+      id: token.id,
+      email: token.card.name
     }).then(res => {
       console.log(res)
     }).catch(err => {
