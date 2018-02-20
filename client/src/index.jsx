@@ -11,7 +11,7 @@ class App extends React.Component {
   constructor(props) {
   	super(props)
   	this.state = {
-
+poop: 'poop'
     }
     this.onToken = this.onToken.bind(this)
   }
