@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import config from '/Users/maniks17/Documents/TrumpChange/config.js'
+import config from '../../config.js'
 import StripeCheckout from 'react-stripe-checkout'
 import dotenv from 'dotenv'
 import axios from 'axios'
@@ -21,7 +21,7 @@ class App extends React.Component {
     console.log('Pressed');
     setInterval(function() {
       context.getTweets();
-    },60000)
+    },6000)
   }
 
   getTweets() {
@@ -32,6 +32,7 @@ class App extends React.Component {
     })
       .then((res) => {
         console.log('Success');
+        console.log(res.data)
         res.data.forEach((element) => {
           console.log(element.text);
         })    
