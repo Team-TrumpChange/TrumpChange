@@ -76,17 +76,18 @@ app.post('/update', function(req, res) {
 
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
-
+ const tokenId = req.body.id;
+ const email = req.body.email;
  // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
 
 
+
  stripe.customers.create({
 // the id from the token object sent from front end
-   
-     source: token.token.id, // the id from the token object sent from front end
-      email: token.token.card.name
+     source: tokenId,
+     email: email
  }, function(err, customer) { // returns a customer object if successful
     if (err) {
         console.log('error in create function')

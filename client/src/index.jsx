@@ -64,7 +64,8 @@ class App extends React.Component {
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     axios.post('/customerToken', {
-      token: token
+      id: token.id,
+      email: token.card.name
     }).then(res => {
       console.log(res)
     }).catch(err => {
