@@ -14,6 +14,7 @@ class App extends React.Component {
 
     }
     this.onToken = this.onToken.bind(this)
+    this.update = this.update.bind(this)
   }
 
   getFiveTweetsEveryHalfMinute() {
@@ -49,7 +50,17 @@ class App extends React.Component {
   onToken(token) {
     console.log('onToken', token)
     axios.post('/customerToken', {
-      token: token.id
+      token: token
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+  update() {
+    axios.post('/update', {
+      quantity: 10
     }).then(res => {
       console.log(res)
     }).catch(err => {
@@ -73,7 +84,8 @@ class App extends React.Component {
   render () {
   	return (
     <div>
-      <p>
+      <p>      
+      <button onClick={this.update}>update</button>
           <button onClick={this.getFiveTweetsEveryHalfMinute.bind(this)}>Fetch Tweets</button>      
       <StripeCheckout
         token={this.onToken}
