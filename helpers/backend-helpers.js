@@ -34,9 +34,7 @@ function hashPassword (userObj) {
   userObj.password = hash;
 };
 
-function authPassword (userPass, dbPass) {
-  
-}
+
 
 
 exports.getTweets = getTweets;
