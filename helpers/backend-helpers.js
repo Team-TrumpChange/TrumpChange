@@ -1,5 +1,6 @@
 const Twitter = require('twitter');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
 dotenv.config();
 
@@ -25,4 +26,18 @@ function getTweets(user, callback) {
   });
 }
 
+
+function hashPassword (userObj) {
+  const saltRounds = 10;
+  const salt = bcrypt.genSaltSync(saltRounds);
+  let hash = bcrypt.hashSync(userObj.password, salt);
+  userObj.password = hash;
+};
+
+function authPassword (userPass, dbPass) {
+  
+}
+
+
 exports.getTweets = getTweets;
+exports.hashPassword = hashPassword;
