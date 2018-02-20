@@ -6,7 +6,6 @@ import StripeCheckout from 'react-stripe-checkout'
 import dotenv from 'dotenv'
 import axios from 'axios'
 dotenv.config();
-// import AnyComponent from './components/filename.jsx'
 
 class App extends React.Component {
   constructor(props) {
@@ -17,6 +16,31 @@ class App extends React.Component {
     this.onToken = this.onToken.bind(this)
   }
 
+  getFiveTweetsEveryMinute() {
+    const context = this;
+    console.log('Pressed');
+    setInterval(function() {
+      context.getTweets();
+    },60000)
+  }
+
+  getTweets() {
+    axios.get('/fetchtweets', {
+      params: {
+        user: 'realdonaldtrump'
+      }
+    })
+      .then((res) => {
+        console.log('Success');
+        res.data.forEach((element) => {
+          console.log(element.text);
+        })    
+      })
+      .catch((error) => {
+        console.log('Error');
+        console.log(error);
+      })
+  }
 
   componentDidMount() {
     console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
@@ -50,6 +74,7 @@ class App extends React.Component {
   	return (
     <div>
       <p>
+      <button onClick={this.getFiveTweetsEveryMinute.bind(this)}>Fetch Tweets</button>      
       <StripeCheckout
         token={this.onToken}
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
