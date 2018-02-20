@@ -27,6 +27,7 @@ function getTweets(user, callback) {
   });
 }
 
+
 function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
   const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
   newUser.save(() => {
@@ -39,7 +40,11 @@ function hashPassword(userObj) {
   const salt = bcrypt.genSaltSync(saltRounds);
   let hash = bcrypt.hashSync(userObj.password, salt);
   userObj.password = hash;
-}
+};
+
+
+
+
 
 exports.getTweets = getTweets;
 exports.saveIntoDataBase = saveIntoDataBase;
