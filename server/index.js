@@ -6,6 +6,7 @@ const config = require('../config.js');
 const cors = require('cors');
 const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
 
+const app = express();
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -13,11 +14,12 @@ app.use(cors());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 
-const app = express();
+
 
 app.get('/fetchtweets', (req, res) => {
   const { user } = req.query.user;
   helpers.getTweets(user, (tweets) => {
+    console.log(tweets)
     res.send(tweets);
   });
 });
