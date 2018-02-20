@@ -50,7 +50,7 @@ class App extends React.Component {
   onToken(token) {
     console.log('onToken', token)
     axios.post('/customerToken', {
-      token: token.id
+      token: token
     }).then(res => {
       console.log(res)
     }).catch(err => {

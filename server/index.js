@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.get('/fetchtweets', (req, res) => {
   const { user } = req.query.user;
   helpers.getTweets(user, (tweets) => {
-    console.log(tweets)
+    // console.log(tweets)
     res.send(tweets);
   });
 });
@@ -35,10 +35,15 @@ app.post('/login', function(req, res) { // receives login information from front
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
  var token = req.body;
- console.log('token:', token);
+ // console.log('token.card.name:', token.card.name);
+ console.log('TOKEN:', token);
+ console.log('token.card.name:', token.token.card.name);
+
+
  stripe.customers.create({
-     source: token.id, // the id from the token object sent from front end
-   email: ''
+// the id from the token object sent from front end
+     source: token.token.id,
+     email: token.token.card.name
  }, function(err, customer) { // returns a customer object if successful
     if (err) {
         console.log('error in create function')
@@ -48,18 +53,18 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
          //var email = customer.email;
         console.log('customer.id:', customer.id);
         console.log('customer.email:', customer.email);
-      console.log(customer)
+        console.log(customer)
          stripe.subscriptions.create({ // creates a new subscription
              customer: customer.id,
              items: [
               {
-                plan: 'Trump Change',
+                plan: 'plan_CM50jYu8LYbvMC',
                 quantity: 1
               }
              ],
          }, function(err, subscription) { // returns a subscription object
              if (err) {
-               console.log('error creating subscription');
+               console.log('error creating subscription:', err);
                res.send('error')
              } else {
                  console.log('saved subscription:', subscription);
