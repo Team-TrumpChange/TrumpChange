@@ -38,8 +38,7 @@ class App extends React.Component {
         })    
       })
       .catch((error) => {
-        console.log('Error');
-        console.log(error);
+        console.log('Error:', error);
       })
   }
 
