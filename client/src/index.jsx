@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-// import AnyComponent from './components/filename.jsx'
+import axios from 'axios';
 
 class App extends React.Component {
   constructor(props) {
@@ -11,8 +11,38 @@ class App extends React.Component {
   	}
   }
 
+  getFiveTweetsEveryMinute() {
+    const context = this;
+    console.log('Pressed');
+    setInterval(function() {
+      context.getTweets();
+    },60000)
+  }
+
+  getTweets() {
+    axios.get('/fetchtweets', {
+      params: {
+        user: 'realdonaldtrump'
+      }
+    })
+      .then((res) => {
+        console.log('Success');
+        res.data.forEach((element) => {
+          console.log(element.text);
+        })    
+      })
+      .catch((error) => {
+        console.log('Error');
+        console.log(error);
+      })
+  }
+
   render () {
-  	return (<div>Hello World</div>)
+  	return (
+      <div>
+        <button onClick={this.getFiveTweetsEveryMinute.bind(this)}>Fetch Tweets</button>
+      </div>
+    )
   }
 }
 
