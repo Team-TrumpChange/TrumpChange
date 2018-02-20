@@ -1,20 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require('request');
+const db = require('../database/index.js');
 const helpers = require('../helpers/backend-helpers');
 const config = require('../config.js');
 const cors = require('cors');
 const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
-
 const app = express();
+
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
-
-
 
 app.get('/fetchtweets', (req, res) => {
   console.log('recieved')
@@ -25,8 +23,20 @@ app.get('/fetchtweets', (req, res) => {
   });
 });
 
-app.post('/createAccount', function(req, res) { // receives user account info - {username, password, email, zip code, max donation count}
- // this will call in db functions to save user to db.
+app.post('/createAccount', function(req, res) {
+  helpers.hashPassword(req.body)
+  const {
+    username: username,
+    password: password,
+    email: email,
+    maxWeeklyPlans: maxWeeklyPlans,
+    totalMoneyDonated: totalMoneyDonated
+  } = req.body;  
+  helpers.saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
+    res.end();
+  }, function (results) {
+    res.json(results)
+  });
 });
 
 app.post('/login', function(req, res) { // receives login information from front end
