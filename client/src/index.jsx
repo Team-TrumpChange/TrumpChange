@@ -17,11 +17,12 @@ class App extends React.Component {
     this.update = this.update.bind(this)
   }
 
-  getFiveTweetsEveryMinute() {
+  getFiveTweetsEveryHalfMinute() {
+    const context = this;
     console.log('Pressed');
-    setInterval(() => 
-      this.getTweets()
-    ,3000)
+    setInterval(function() {
+      context.getTweets();
+    },30000)
   }
 
   getTweets() {
@@ -43,7 +44,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
+    // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
   }
 
   onToken(token) {
@@ -83,9 +84,9 @@ class App extends React.Component {
   render () {
   	return (
     <div>
-      <p>
-      <button onClick={this.getFiveTweetsEveryMinute.bind(this)}>Fetch Tweets</button>      
+      <p>      
       <button onClick={this.update}>update</button>
+          <button onClick={this.getFiveTweetsEveryHalfMinute.bind(this)}>Fetch Tweets</button>      
       <StripeCheckout
         token={this.onToken}
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
