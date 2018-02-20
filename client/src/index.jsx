@@ -23,6 +23,7 @@ class App extends React.Component {
   }
 
   onToken(token) {
+    console.log('onToken', token)
     axios.post('/customerToken', {
       token: token.id
     }).then(res => {

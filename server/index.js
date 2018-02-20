@@ -1,16 +1,75 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var request = require('request')
-var app = express();
+const express = require('express');
+const bodyParser = require('body-parser');
+const request = require('request')
+const app = express();
+const config = require('../config.js');
+const cors = require('cors');
+const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
+// const dotenv = require('dotenv');
+// dotenv.config();
+
 
 app.use(express.static(__dirname + '/../client/dist'));
-// app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
-// Due to express, when you load the page, it doesnt make a get request to '/', it simply serves up the dist folder
-app.post('/', function(req, res) {
-  
-})
+
+app.post('/createAccount', function(req, res) { // receives user account info - {username, password, email, zip code, max donation count}
+ // this will call in db functions to save user to db.
+});
+
+app.post('/login', function(req, res) { // receives login information from front end
+ // calls db functions to authenticate credentials
+});
+
+app.post('/customerToken', function(req, res) { // this will receive customer token
+ // here need to use helper functions(from stripe) to create a new customer and create new subscription
+ var token = req.body;
+ console.log('token:', token);
+ stripe.customers.create({
+     source: token.id, // the id from the token object sent from front end
+   email: ''
+ }, function(err, customer) { // returns a customer object if successful
+    if (err) {
+        console.log('error in create function')
+        res.send('error');
+    } else {
+         //var id = customer.id;
+         //var email = customer.email;
+        console.log('customer.id:', customer.id);
+        console.log('customer.email:', customer.email);
+      console.log(customer)
+         stripe.subscriptions.create({ // creates a new subscription
+             customer: customer.id,
+             items: [
+              {
+                plan: 'Trump Change',
+                quantity: 1
+              }
+             ],
+         }, function(err, subscription) { // returns a subscription object
+             if (err) {
+               console.log('error creating subscription');
+               res.send('error')
+             } else {
+                 console.log('saved subscription:', subscription);
+               // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
+               res.send('success saving subscription');
+             }
+         });
+    }
+ })
+});
+
+app.post('/twitter', function(req, res) { // this receives a request for tweets and sends them to front end
+ // use api call function to get tweets
+});
+
+app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
+ // uses db function to update that user's max count
+});
 
 app.listen(3000, function() {
-  console.log('listening on port 3000!');
+ console.log('listening on port 3000!');
 });
