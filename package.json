@@ -17,16 +17,26 @@
     "webpack": "^2.2.1"
   },
   "dependencies": {
+<<<<<<< HEAD
+    "axios": "^0.17.1",
+    "body-parser": "^1.17.2",
+=======
     "axios": "^0.18.0",
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
+>>>>>>> 11458eb12bdd61f6e7b967268643fa6b339ce1ce
     "dotenv": "^5.0.0",
     "express": "^4.15.0",
     "jquery": "^3.1.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+<<<<<<< HEAD
+    "request": "^2.83.0",
+    "twitter": "^1.7.1"
+=======
     "react-stripe-checkout": "^2.6.3",
     "request": "^2.83.0",
     "stripe": "^5.4.0"
+>>>>>>> 11458eb12bdd61f6e7b967268643fa6b339ce1ce
   }
 }
