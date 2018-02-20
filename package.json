@@ -17,12 +17,14 @@
     "webpack": "^2.2.1"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.17.1",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "dotenv": "^5.0.0",
     "express": "^4.15.0",
     "jquery": "^3.1.1",
+    "mongoose": "^5.0.6",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-stripe-checkout": "^2.6.3",

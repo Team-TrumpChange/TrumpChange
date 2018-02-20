@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const request = require('request');
+const db = require('../database/index.js');
 const helpers = require('../helpers/backend-helpers');
 const config = require('../config.js');
 const cors = require('cors');
@@ -17,12 +17,25 @@ app.use(bodyParser.json());
 app.get('/fetchtweets', (req, res) => {
   const { user } = req.query.user;
   helpers.getTweets(user, (tweets) => {
+    console.log(tweets)
     res.send(tweets);
   });
 });
 
-app.post('/createAccount', function(req, res) { // receives user account info - {username, password, email, zip code, max donation count}
- // this will call in db functions to save user to db.
+app.post('/createAccount', function(req, res) {
+  helpers.hashPassword(req.body)
+  const {
+    username: username,
+    password: password,
+    email: email,
+    maxWeeklyPlans: maxWeeklyPlans,
+    totalMoneyDonated: totalMoneyDonated
+  } = req.body;  
+  helpers.saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
+    res.end();
+  }, function (results) {
+    res.json(results)
+  });
 });
 
 app.post('/login', function(req, res) { // receives login information from front end
