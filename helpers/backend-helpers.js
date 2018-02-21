@@ -28,7 +28,7 @@ function getTweets(callback) {
 }
 
 
-function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
+function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
   newUser.save(() => {
     console.log('user saved');
@@ -62,10 +62,20 @@ function hashPassword(userObj) {
 }
 
 
-function addSubscriberID(id, email) {
+function addSubscriberID(id, email, callback) {
+  console.log('id:', id);
+  console.log('email:', email);
   db.User.findOne({email: email})
     .then(function(doc) {
-      
+      doc.subscriberID = id;
+      console.log('doc.subscriberID:', doc.subscriberID)
+      doc.save(function(err) {
+          if (err) {
+            console.log('error saving subsriptionID');
+          } else {
+            callback();
+          }
+      });
     });
 }
 
@@ -95,11 +105,6 @@ exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
 exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
-<<<<<<< HEAD
-
 exports.checkPassword = checkPassword;
-
-=======
-exports.checkPassword = checkPassword;
->>>>>>> 25be92f6e6708cf38ac5492539cf3cebe3319654
 exports.getTrumpTweets = getTrumpTweets;
+exports.addSubscriberID = addSubscriberID;
