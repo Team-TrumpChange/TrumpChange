@@ -13,6 +13,15 @@ let userSchema = mongoose.Schema({
   totalMoneyDonated: Number
 });
 
+let tweetsSchema = mongoose.Schema({
+  tweetid: String,
+  username: String,
+  tweet: String,
+  dateTweeted: String
+});
+
 let User = mongoose.model('User', userSchema);
+let Tweet = mongoose.model('Tweet', tweetsSchema);
 
 exports.User = User;
+exports.Tweet = Tweet;
