@@ -13,8 +13,8 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import spacing from 'material-ui/styles/spacing';
-import Subheader from 'material-ui/Subheader';
-import { List, ListItem } from 'material-ui/List';
+//import Subheader from 'material-ui/Subheader';
+//import { List, ListItem } from 'material-ui/List';
 import { fade } from 'material-ui/utils/colorManipulator';
 import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 // import Tweet from './Tweet.jsx';
@@ -30,6 +30,10 @@ class App extends React.Component {
       openSignUp: false,
       openStripe: false,
       openDialog: 'none',
+      signupUsername: '',
+      signupPassword: '',
+      signupEmail: '',
+      signupLimit: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -72,6 +76,16 @@ class App extends React.Component {
       openStripe: true,
       
     });
+    axios.post('/createAccount', {
+      username: this.state.signupUsername,
+      password: this.state.signupPassword,
+      email: this.state.signupEmail,
+      maxWeeklyPlans: this.state.signupLimit
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log('error:', err)
+    })
   };
 
   // getTweets() { // gets new tweets from server (server does api call to twitter)
@@ -227,18 +241,28 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
+        onChange={(e) => {this.setState({signupUsername: e.target.value})}}
       />, <br />,
       <TextField
         floatingLabelText='New Password'
         floatingLabelFixed={true}
         type='password'
         fullWidth={true}
+        onChange={(e) => {this.setState({signupPassword: e.target.value})}}
       />,
       <TextField
         floatingLabelText='Email'
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
+        onChange={(e) => {this.setState({signupEmail: e.target.value})}}
+      />,
+      <TextField
+        floatingLabelText='Limit'
+        floatingLabelFixed={true}
+        type='text'
+        fullWidth={true}
+        onChange={(e) => {this.setState({signupLimit: e.target.value})}}
       />,
       <FlatButton
         label='Cancel'
