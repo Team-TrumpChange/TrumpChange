@@ -42,10 +42,18 @@ function hashPassword(userObj) {
   userObj.password = hash;
 };
 
-
+function getTrumpTweets(callback) {
+  db.Tweet.find({}, function(err, results){
+    if (err) console.log(err)
+    else {
+      callback(results)
+    }
+  }) 
+}
 
 
 
 exports.getTweets = getTweets;
 exports.saveIntoDataBase = saveIntoDataBase;
 exports.hashPassword = hashPassword;
+exports.getTrumpTweets = getTrumpTweets
