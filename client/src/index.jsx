@@ -121,6 +121,18 @@ class App extends React.Component {
       console.log(err)
     })
   }
+
+  submitLogin(username, password) {
+    // make a post req to server with username and password
+    axios.post('/login', {
+      username: username,
+      password: password
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
   
 
 

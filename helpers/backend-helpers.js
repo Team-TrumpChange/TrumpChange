@@ -27,10 +27,12 @@ function getTweets(callback) {
   });
 }
 
+
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
   const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
   newUser.save(() => {
     console.log('user saved');
+    callback();
   })
 }
 
@@ -45,12 +47,12 @@ function checkPassword(username, password, callback) {
   }
 
 
+
 function saveTweetIntoDataBase(tweetid, username, tweet, dateTweeted) {
   const newTweet = new db.Tweet({ tweetid: tweetid, username: username, tweet: tweet, dateTweeted: dateTweeted});
   newTweet.save(() => {
     console.log('tweet saved');
   })
-
 }
 
 function hashPassword(userObj) {
@@ -58,6 +60,14 @@ function hashPassword(userObj) {
   const salt = bcrypt.genSaltSync(saltRounds);
   let hash = bcrypt.hashSync(userObj.password, salt);
   userObj.password = hash;
+}
+
+
+function addSubscriberID(id, email) {
+  db.User.findOne({email: email})
+    .then(function(doc) {
+      
+    });
 }
 
 function addUniqueTweet(tweetsArray) {
@@ -87,5 +97,11 @@ exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
 exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
+<<<<<<< HEAD
+
 exports.checkPassword = checkPassword;
+
+=======
+exports.checkPassword = checkPassword;
+>>>>>>> 25be92f6e6708cf38ac5492539cf3cebe3319654
 exports.getTrumpTweets = getTrumpTweets;
