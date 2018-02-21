@@ -84,8 +84,5 @@ exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
 exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
-
 exports.checkPassword = checkPassword;
-
-exports.getTrumpTweets = getTrumpTweets
-
+exports.getTrumpTweets = getTrumpTweets;
