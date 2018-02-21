@@ -53,7 +53,6 @@ class App extends React.Component {
         this.setState({
           tweets: res.data
         })
-        console.log(res.data)
       }).catch(err => {
         console.log(err)
       })
@@ -73,7 +72,6 @@ class App extends React.Component {
       openDialog: name,
       openDialog: 'none',
       openStripe: true,
-      
     });
     axios.post('/createAccount', {
       username: this.state.signupUsername,

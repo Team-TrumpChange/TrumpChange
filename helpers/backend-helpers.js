@@ -36,7 +36,6 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
   })
 }
 
-
 function checkPassword(username, password, callback) {
   db.User.findOne({username: username})
     .then(function(doc) {
@@ -48,8 +47,8 @@ function checkPassword(username, password, callback) {
 
 
 
-function saveTweetIntoDataBase(tweetid, username, tweet, dateTweeted) {
-  const newTweet = new db.Tweet({ tweetid: tweetid, username: username, tweet: tweet, dateTweeted: dateTweeted});
+function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {
+  const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted});
   newTweet.save(() => {
     console.log('tweet saved');
   })
@@ -84,7 +83,7 @@ function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
     db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
       if (!res.length) {
-        saveTweetIntoDataBase(tweet.id, tweet.user.screen_name, tweet.text, tweet.created_at);
+        saveTweetIntoDataBase(tweet.user.profile_image_url, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
       }
     })
   }
@@ -99,7 +98,6 @@ function getTrumpTweets(callback) {
     }
   }) 
 }
-
 
 
 exports.addUniqueTweet = addUniqueTweet;
