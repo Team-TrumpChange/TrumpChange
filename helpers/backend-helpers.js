@@ -34,11 +34,21 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
   })
 }
 
+
+function checkPassword(username, password, callback) {
+  db.User.findOne({username: username})
+    .then(function(doc) {
+      console.log('password', password);
+      console.log('callback:', callback);
+      callback(bcrypt.compareSync(password, doc.password));
+    });
+
 function saveTweetIntoDataBase(tweetid, username, tweet, dateTweeted) {
   const newTweet = new db.Tweet({ tweetid: tweetid, username: username, tweet: tweet, dateTweeted: dateTweeted});
   newTweet.save(() => {
     console.log('tweet saved');
   })
+
 }
 
 function hashPassword(userObj) {
@@ -74,4 +84,8 @@ exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
 exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
+
+exports.checkPassword = checkPassword;
+
 exports.getTrumpTweets = getTrumpTweets
+
