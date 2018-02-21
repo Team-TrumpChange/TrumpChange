@@ -13,11 +13,10 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import spacing from 'material-ui/styles/spacing';
-//import Subheader from 'material-ui/Subheader';
-//import { List, ListItem } from 'material-ui/List';
 import { fade } from 'material-ui/utils/colorManipulator';
 import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
-
+import Tweet from './Tweet.jsx';
+import TweetList from './TweetList.jsx';
 
 dotenv.config();
 
@@ -28,6 +27,7 @@ class App extends React.Component {
       tweets: [],
       openLogin: false,
       openSignUp: false,
+      openStripe: false,
       openDialog: 'none',
       signupUsername: '',
       signupPassword: '',
@@ -43,7 +43,7 @@ class App extends React.Component {
 
 
   componentDidMount() {
-    this.getTrumpTweetsFromDb()
+    this.getTrumpTweetsFromDb() 
   }
 
   //this function asks the server to get trump's tweets from the db and send them here to display
@@ -52,6 +52,9 @@ class App extends React.Component {
       axios.get('/getTrumpTweets/db')
       .then(res => {
         console.log(res.data)
+        this.setState({
+          tweets: res.data
+        })
       }).catch(err => {
         console.log(err)
       })
@@ -65,10 +68,12 @@ class App extends React.Component {
     });
   }
 
+
   handleCloseSignup(name) {
     this.setState({
       [name]: false,
       openDialog: 'none'
+
     });
     axios.post('/createAccount', {
       username: this.state.signupUsername,
@@ -206,6 +211,7 @@ class App extends React.Component {
         backgroundColor: fullWhite,
         height: '70vh',
         alignItems: 'center',
+        overflow: 'scroll',
       },
       image: {
         flex: .2,
@@ -282,6 +288,15 @@ class App extends React.Component {
         onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
       />,
     ];
+    const stripe = [
+      <StripeCheckout
+        token={this.onToken}
+        stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
+        onClick={
+          this.handleClose.bind(this, this.state.openStripe)
+        }
+      />
+    ];
   	return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div style={style.flex}>
@@ -337,13 +352,76 @@ class App extends React.Component {
               style={style.paper}
               zDepth={5}>
             </Paper>
+        <div className ='App'>
+          <div style={style.flex}>
+            <div style={style.flexHeader}>
+              <RaisedButton
+                style={style.buttons}
+                labelColor={white}
+                backgroundColor={red500}
+                label='Sign Up'
+                onClick={this.handleOpen.bind(this, "openSignUp")}
+              />
+              <Dialog
+                title='Enter a new username, password, and email'
+                actions={signUp}
+                modal={false}
+                open={this.state.openSignUp}
+                onRequestClose={this.handleClose.bind(this, 'openSignUp')}
+              />
+              <RaisedButton
+                style={style.buttons}
+                labelColor={white}
+                backgroundColor={red500}
+                label='Log In'
+                onClick={this.handleOpen.bind(this, "openLogin")}
+              />
+              <Dialog title='Enter your username and password'
+                actions={logIn}
+                modal={false}
+                open={this.state.openLogin}
+                onRequestClose={this.handleClose.bind(this, 'openLogin')}
+              />
+              <Dialog title='Enter Payment'
+                actions={stripe}
+                modal={false}
+                open={this.state.openStripe}
+                onRequestClose={this.handleClose.bind(this, 'openStripe')}
+              />
+              <img style={style.image} src='' alt='' />
+              <img style={style.image} src='' alt='' />
+              <img style={style.image} src='' alt='' />
+              <img style={style.image} src='' alt='' />
+              <img
+                style={style.image}
+                src='https://i.imgur.com/Kp92VKH.png'
+                height='80vh'
+                width='80vh'
+              />
+            </div>
+            <div style={style.mainBody}>
+              <Paper  
+                style={style.paper}
+                zDepth={5}>
+                <div className="tweets-app">
+                  <TweetList tweets={this.state.tweets} />
+                </div>
+              </Paper>
+              <Paper
+                style={style.paper}
+                zDepth={5}>
+              </Paper>
+              <Paper
+                style={style.paper}
+                zDepth={5}>
+              </Paper>
+            </div>
           </div>
         </div>
       </MuiThemeProvider>
     // <div>
     //   <p>      
-    //   <button onClick={this.update}>update</button>
-    //       {/* <button onClick={this.getFiveTweetsEveryHalfMinute.bind(this)}>Fetch Tweets</button>       */}
+    // 
     //   <StripeCheckout
     //     token={this.onToken}
     //     stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 

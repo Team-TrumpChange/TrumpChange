@@ -14,9 +14,13 @@ let userSchema = mongoose.Schema({
 });
 
 let tweetsSchema = mongoose.Schema({
+  avatar: String,
   tweetid: String,
   username: String,
+  name: String,
   tweet: String,
+  favorites: Number,
+  retweets: Number,
   dateTweeted: String
 });
 
