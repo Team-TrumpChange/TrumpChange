@@ -42,7 +42,7 @@ function checkPassword(username, password, callback) {
       console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
-
+  }
 function saveTweetIntoDataBase(tweetid, username, tweet, dateTweeted) {
   const newTweet = new db.Tweet({ tweetid: tweetid, username: username, tweet: tweet, dateTweeted: dateTweeted});
   newTweet.save(() => {
@@ -70,7 +70,8 @@ function addUniqueTweet(tweetsArray) {
 
 function getTrumpTweets(callback) {
   db.Tweet.find({}, function(err, results){
-    if (err) console.log(err)
+    if (err) 
+    return console.log(err)
     else {
       callback(results)
     }

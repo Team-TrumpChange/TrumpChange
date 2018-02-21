@@ -97,9 +97,9 @@ app.post('/update', function(req, res) {
 });
 
 
-app.get('/getTrumpTweets/db', res => {
-  helpers.getTrumpTweets(results => {
-    res.send(results)
+app.get('/getTrumpTweets/db', (req, res) => {
+  helpers.getTrumpTweets(function(results) {
+    res.json(results)
   })
 })
 
