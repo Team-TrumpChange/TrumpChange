@@ -23,6 +23,16 @@ app.use(session({
 
 
 
+// app.get('/fetchtweets', (req, res) => { 
+//   console.log('recieved')
+//   const { user } = req.query.user;
+//   helpers.getTweets(user, (tweets) => {
+//     // console.log(tweets)
+//     //console.log(tweets)
+//     res.send(tweets);
+//   });
+// });
+
 setInterval(() => {
   helpers.getTweets(tweets => {   
     helpers.addUniqueTweet(tweets)
@@ -39,20 +49,16 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     maxWeeklyPlans: maxWeeklyPlans,
     totalMoneyDonated: totalMoneyDonated
   } = req.body;  
-  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
-    res.end();
-  }, function (results) {
+  helpers.saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
     // need to create session here
     req.session.regenerate(function(err) {
       if (!err) {
         req.session.username = username;
         res.send(req.session.username);
-        res.json(results);
       } else {
         console.log('error creating session');
       }
     });
-  });
 });
 
 app.post('/login', function(req, res) { // receives login information from front end
