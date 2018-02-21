@@ -15,51 +15,57 @@ class App extends React.Component {
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
+    this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
   }
 
-  getFiveTweetsEveryHalfMinute() {
-    const context = this;
-    console.log('Pressed');
-    setInterval(function() {
-      context.getTweets();
-    },30000)
-  }
-
-  checkForNewTweets(data) { // compares last tweet of this.props.tweets to the incoming data to see if new tweet
-    if (data[data.length - 1].id && data[data.length - 1].id === this.state.tweets[this.state.tweets.length - 1].id) {
-      return true;
-    }
-    return false;
-  }
-
-  getTweets() { // gets new tweets from server (server does api call to twitter)
-    const context = this;
-    axios.get('/fetchtweets', {
-      params: {
-        user: 'realdonaldtrump'
-      }
-    })
-      .then((res) => {
-        console.log('Success');
-        console.log(res.data)
-
-        if (context.checkForNewTweets(data)) { // checks if the last tweet is new and resets the state
-          context.setState({
-            tweets: res.data
-          });
-        }
-        res.data.forEach((element) => {
-          console.log(element.text);
-        })    
-      })
-      .catch((error) => {
-        console.log('Error:', error);
-      })
-  }
 
   componentDidMount() {
-    // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
+    this.getTrumpTweetsFromDb()
   }
+
+  //this function asks the server to get trump's tweets from the db and send them here to display
+  getTrumpTweetsFromDb() {
+    setInterval(() => {
+      axios.get('/getTrumpTweets/db')
+      .then(res => {
+        console.log(res.data)
+      }).catch(err => {
+        console.log(err)
+      })
+    }, 6000)
+  }
+
+
+
+
+  // getTweets() { // gets new tweets from server (server does api call to twitter)
+  //   const context = this;
+  //   axios.get('/fetchtweets', {
+  //     params: {
+  //       user: 'realdonaldtrump'
+  //     }
+  //   })
+  //     .then((res) => {
+  //       console.log('Success');
+  //       console.log(res.data)
+
+  //       if (context.checkForNewTweets(data)) { // checks if the last tweet is new and resets the state
+  //         context.setState({
+  //           tweets: res.data
+  //         });
+  //       }
+  //       res.data.forEach((element) => {
+  //         console.log(element.text);
+  //       })    
+  //     })
+  //     .catch((error) => {
+  //       console.log('Error:', error);
+  //     })
+  // }
+
+  // componentDidMount() {
+  //   // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
+  // }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
@@ -96,24 +102,13 @@ class App extends React.Component {
   }
   
 
-  // onToken(token) {
-  //   console.log('onToken', token)
-  //   fetch('/customerToken', {
-  //     method: 'POST',
-  //     body: JSON.stringify(token),
-  //   }).then(response => {
-  //     response.json().then(data => {
-  //       alert(`We are in business, ${data.email}`);
-  //     });
-  //   });
-  // }
 
   render () {
   	return (
     <div>
       <p>      
       <button onClick={this.update}>update</button>
-          <button onClick={this.getFiveTweetsEveryHalfMinute.bind(this)}>Fetch Tweets</button>      
+          {/* <button onClick={this.getFiveTweetsEveryHalfMinute.bind(this)}>Fetch Tweets</button>       */}
       <StripeCheckout
         token={this.onToken}
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 

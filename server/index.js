@@ -5,7 +5,6 @@ const helpers = require('../helpers/backend-helpers');
 const config = require('../config.js');
 const cors = require('cors');
 const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
-
 const session = require('express-session');
 
 const app = express();
@@ -33,6 +32,13 @@ app.get('/fetchtweets', (req, res) => {
   });
 });
 
+setInterval(() => {
+  helpers.getTweets(tweets => {   
+    helpers.addUniqueTweet(tweets)
+  })
+}, 60000);
+
+
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   const {
@@ -52,7 +58,6 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
         console.log('error creating session');
       }
     });
-  });
 });
 
 app.post('/login', function(req, res) { // receives login information from front end
@@ -95,6 +100,13 @@ app.post('/update', function(req, res) {
     }
   );
 });
+
+
+app.get('/getTrumpTweets/db', res => {
+  helpers.getTrumpTweets(results => {
+    res.send(results)
+  })
+})
 
 
 

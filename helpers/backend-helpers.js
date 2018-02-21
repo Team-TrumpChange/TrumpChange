@@ -12,7 +12,7 @@ const twitterClient = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
 });
 
-function getTweets(user, callback) {
+function getTweets(callback) {
   const params = {
     screen_name: 'realdonaldtrump',
     count: 5,
@@ -28,12 +28,9 @@ function getTweets(user, callback) {
 }
 
 
-function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
-  const newUser = new db.User({ username: username, password: password, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
-  newUser.save((err) => {
-    if (err) {
-      console.log('error');
-    }
+function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
+  const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
+  newUser.save(() => {
     console.log('user saved');
     callback();
   })
@@ -46,6 +43,12 @@ function checkPassword(username, password, callback) {
       console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
+
+function saveTweetIntoDataBase(tweetid, username, tweet, dateTweeted) {
+  const newTweet = new db.Tweet({ tweetid: tweetid, username: username, tweet: tweet, dateTweeted: dateTweeted});
+  newTweet.save(() => {
+    console.log('tweet saved');
+  })
 }
 
 function hashPassword(userObj) {
@@ -55,6 +58,7 @@ function hashPassword(userObj) {
   userObj.password = hash;
 };
 
+
 function addSubscriberID(id, email) {
   db.User.findOne({email: email})
     .then(function(doc) {
@@ -62,11 +66,33 @@ function addSubscriberID(id, email) {
     });
 }
 
+function addUniqueTweet(tweetsArray) {
+  for (let tweet of tweetsArray) {
+    db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
+      if (!res.length) {
+        saveTweetIntoDataBase(tweet.id, tweet.user.screen_name, tweet.text, tweet.created_at);
+      }
+    })
+  }
+}
+
+function getTrumpTweets(callback) {
+  db.Tweet.find({}, function(err, results){
+    if (err) console.log(err)
+    else {
+      callback(results)
+    }
+  }) 
+}
 
 
 
-
+exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
-exports.saveIntoDataBase = saveIntoDataBase;
+exports.saveUserIntoDataBase = saveUserIntoDataBase;
+exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
+
 exports.checkPassword = checkPassword;
+
+exports.getTrumpTweets = getTrumpTweets;

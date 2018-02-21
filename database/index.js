@@ -7,11 +7,21 @@ const db = mongoose.connect(process.env.MONGO_DATABASE);
 let userSchema = mongoose.Schema({
   username: String,
   password: String,
+  subscriberID: String,
   email: String,
   maxWeeklyPlans: Number,
   totalMoneyDonated: Number
 });
 
+let tweetsSchema = mongoose.Schema({
+  tweetid: String,
+  username: String,
+  tweet: String,
+  dateTweeted: String
+});
+
 let User = mongoose.model('User', userSchema);
+let Tweet = mongoose.model('Tweet', tweetsSchema);
 
 exports.User = User;
+exports.Tweet = Tweet;
