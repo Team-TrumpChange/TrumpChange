@@ -6,6 +6,8 @@ const config = require('../config.js');
 const cors = require('cors');
 const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
 const session = require('express-session');
+const moment = require('moment');
+const timezone = require('moment-timezone');
 
 const app = express();
 
@@ -21,7 +23,8 @@ app.use(session({
   saveUninitialized: true
 }));
 
-
+let count = 0;
+let billCycleMoment = 'Mon Feb 26 08:00 +0000 2018';
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
@@ -29,6 +32,18 @@ setInterval(() => {
   })
 }, 60000);
 
+//counts tweets every week
+setInterval(() => {
+  console.log(count);
+  const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
+  if (now === billCycleMoment) {
+    const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
+    db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
+      count = res;
+    })
+    billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY");    
+  }
+}, 60000);
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
@@ -77,9 +92,6 @@ app.post('/login', function(req, res) { // receives login information from front
   });
 });
 
-
-
-
 app.post('/update', function(req, res) {
   var quantity = req.body.quantity
   stripe.subscriptions.update(
@@ -96,14 +108,11 @@ app.post('/update', function(req, res) {
   );
 });
 
-
-app.get('/getTrumpTweets/db', res => {
+app.get('/getTrumpTweets/db', (req, res) => {
   helpers.getTrumpTweets(results => {
     res.send(results)
   })
 })
-
-
 
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription

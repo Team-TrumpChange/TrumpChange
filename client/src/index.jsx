@@ -46,6 +46,10 @@ class App extends React.Component {
       axios.get('/getTrumpTweets/db')
       .then(res => {
         console.log(res.data)
+        if (JSON.stringify(res.data) === JSON.stringify(this.state.tweets))
+        this.setState({
+          tweets: res.data
+        })
       }).catch(err => {
         console.log(err)
       })
@@ -62,7 +66,6 @@ class App extends React.Component {
   handleClose(name) {
     this.setState({
       [name]: false,
-      openDialog: name,
       openDialog: 'none'
     });
   };
