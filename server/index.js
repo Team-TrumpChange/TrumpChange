@@ -22,15 +22,16 @@ app.use(session({
 }));
 
 
-app.get('/fetchtweets', (req, res) => { 
-  console.log('recieved')
-  const { user } = req.query.user;
-  helpers.getTweets(user, (tweets) => {
-    // console.log(tweets)
-    //console.log(tweets)
-    res.send(tweets);
-  });
-});
+
+// app.get('/fetchtweets', (req, res) => { 
+//   console.log('recieved')
+//   const { user } = req.query.user;
+//   helpers.getTweets(user, (tweets) => {
+//     // console.log(tweets)
+//     //console.log(tweets)
+//     res.send(tweets);
+//   });
+// });
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
