@@ -28,6 +28,44 @@ setInterval(() => {
   })
 }, 60000);
 
+var tweetCount = 5;
+
+var update = function() {
+  helpers.updateSubscriptions(function (subscriptions) {
+    console.log('in updateSubscriptions');
+
+    var subroutine = function(subscription, index) {
+      var updateNum;
+      console.log('subscription:', subscription);
+      if (subscription.maxWeeklyPlans <= tweetCount) {
+        updateNum = subscription.maxWeeklyPlans;
+      } else {
+        updateNum = tweetCount;
+      }
+      if (subscription.subscriberID) {
+        console.log('updateNum:', updateNum);
+        console.log('subscription.subscriberID:', subscription.subscriberID);
+
+        stripe.subscriptions.update(
+          subscription.subscriberID,
+          {quantity: updateNum} , function(err, subscription) {
+            if (err) {
+              console.log('error updating subscription', err);
+            } else {
+              console.log('subscription updated, subscription.quantity:', subscription.quantity);
+              if (index === subscriptions.length) {
+                return;
+              }
+              subroutine(subscriptions[index], index + 1);
+            }
+        });
+      }
+    } 
+
+    subroutine(subscriptions[0], 1);
+  });
+}
+
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
@@ -58,12 +96,13 @@ app.post('/login', function(req, res) { // receives login information from front
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
    // check the password in db against submitted password
-   console.log('db.checkPassword', helpers.checkPassword);
+  console.log('db.checkPassword', helpers.checkPassword);
   helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
     if (boolean) {
       req.session.regenerate(function(err) {
         if (!err) {
           req.session.username = req.body.username;
+          console.log('login succesful, session created');
           res.send(req.session.username);
         } else {
           console.log('error creating session');
@@ -76,25 +115,7 @@ app.post('/login', function(req, res) { // receives login information from front
   });
 });
 
-
-
-
-
-app.post('/update', function(req, res) {
-  var quantity = req.body.quantity
-  stripe.subscriptions.update(
-    'sub_CMPiQx0TXTMCnE',
-    { quantity: quantity },
-    function(err, subscription) {
-      // asynchronously called
-      if (err) {
-        console.log('error', err)
-      } else {
-        console.log('updated')
-      }
-    }
-  );
-});
+ 
 
 
 app.get('/getTrumpTweets/db', (req, res) => {
@@ -112,6 +133,8 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
+
+ // *check if token email matches db email 
 
 
 
