@@ -42,6 +42,7 @@ function checkPassword(username, password, callback) {
       console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
+}
 
 function saveTweetIntoDataBase(tweetid, username, tweet, dateTweeted) {
   const newTweet = new db.Tweet({ tweetid: tweetid, username: username, tweet: tweet, dateTweeted: dateTweeted});
@@ -56,7 +57,7 @@ function hashPassword(userObj) {
   const salt = bcrypt.genSaltSync(saltRounds);
   let hash = bcrypt.hashSync(userObj.password, salt);
   userObj.password = hash;
-};
+}
 
 function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
@@ -84,8 +85,5 @@ exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
 exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
-
 exports.checkPassword = checkPassword;
-
-exports.getTrumpTweets = getTrumpTweets
-
+exports.getTrumpTweets = getTrumpTweets;
