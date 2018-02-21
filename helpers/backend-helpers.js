@@ -27,10 +27,12 @@ function getTweets(callback) {
   });
 }
 
-function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
+
+function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
   newUser.save(() => {
     console.log('user saved');
+    callback();
   })
 }
 
@@ -41,7 +43,9 @@ function checkPassword(username, password, callback) {
       console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
-}
+  }
+
+
 
 function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {
   const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted});
@@ -57,6 +61,24 @@ function hashPassword(userObj) {
   userObj.password = hash;
 }
 
+
+function addSubscriberID(id, email, callback) {
+  console.log('id:', id);
+  console.log('email:', email);
+  db.User.findOne({email: email})
+    .then(function(doc) {
+      doc.subscriberID = id;
+      console.log('doc.subscriberID:', doc.subscriberID)
+      doc.save(function(err) {
+          if (err) {
+            console.log('error saving subsriptionID');
+          } else {
+            callback();
+          }
+      });
+    });
+}
+
 function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
     db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
@@ -69,7 +91,8 @@ function addUniqueTweet(tweetsArray) {
 
 function getTrumpTweets(callback) {
   db.Tweet.find({}, function(err, results){
-    if (err) console.log(err)
+    if (err) 
+    return console.log(err)
     else {
       callback(results)
     }
@@ -84,3 +107,4 @@ exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
 exports.checkPassword = checkPassword;
 exports.getTrumpTweets = getTrumpTweets;
+exports.addSubscriberID = addSubscriberID;
