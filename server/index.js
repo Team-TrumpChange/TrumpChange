@@ -5,7 +5,6 @@ const helpers = require('../helpers/backend-helpers');
 const config = require('../config.js');
 const cors = require('cors');
 const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
-
 const session = require('express-session');
 
 const app = express();
@@ -22,16 +21,11 @@ app.use(session({
   saveUninitialized: true
 }));
 
-
-app.get('/fetchtweets', (req, res) => {
-  console.log('recieved')
-  const { user } = req.query.user;
-  helpers.getTweets(user, (tweets) => {
-    // console.log(tweets)
-    //console.log(tweets)
-    res.send(tweets);
-  });
-});
+setInterval(() => {
+  helpers.getTweets(tweets => {   
+    helpers.addUniqueTweet(tweets)
+  })
+}, 60000);
 
 app.post('/createAccount', function(req, res) {
   helpers.hashPassword(req.body)
@@ -42,7 +36,7 @@ app.post('/createAccount', function(req, res) {
     maxWeeklyPlans: maxWeeklyPlans,
     totalMoneyDonated: totalMoneyDonated
   } = req.body;  
-  helpers.saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
+  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
     res.end();
   }, function (results) {
     res.json(results)
