@@ -28,10 +28,14 @@ function getTweets(user, callback) {
 }
 
 
-function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated) {
+function saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   const newUser = new db.User({ username: username, password: password, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
-  newUser.save(() => {
+  newUser.save((err) => {
+    if (err) {
+      console.log('error');
+    }
     console.log('user saved');
+    callback();
   })
 }
 
@@ -50,6 +54,13 @@ function hashPassword(userObj) {
   let hash = bcrypt.hashSync(userObj.password, salt);
   userObj.password = hash;
 };
+
+function addSubscriberID(id, email) {
+  db.User.findOne({email: email})
+    .then(function(doc) {
+      
+    });
+}
 
 
 
