@@ -53,6 +53,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
   });
 });
 
+
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
@@ -78,6 +79,7 @@ app.post('/login', function(req, res) { // receives login information from front
 
 
 
+
 app.post('/update', function(req, res) {
   var quantity = req.body.quantity
   stripe.subscriptions.update(
@@ -96,8 +98,8 @@ app.post('/update', function(req, res) {
 
 
 app.get('/getTrumpTweets/db', (req, res) => {
-  helpers.getTrumpTweets(results => {
-    res.send(results)
+  helpers.getTrumpTweets(function(results) {
+    res.json(results)
   })
 })
 
