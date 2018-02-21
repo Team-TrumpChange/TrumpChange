@@ -13,11 +13,10 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import spacing from 'material-ui/styles/spacing';
-//import Subheader from 'material-ui/Subheader';
-//import { List, ListItem } from 'material-ui/List';
 import { fade } from 'material-ui/utils/colorManipulator';
 import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
-// import Tweet from './Tweet.jsx';
+import Tweet from './Tweet.jsx';
+import TweetList from './TweetList.jsx';
 
 dotenv.config();
 
@@ -42,7 +41,7 @@ class App extends React.Component {
 
 
   componentDidMount() {
-    this.getTrumpTweetsFromDb()
+    this.getTrumpTweetsFromDb() 
   }
 
   //this function asks the server to get trump's tweets from the db and send them here to display
@@ -69,7 +68,7 @@ class App extends React.Component {
   };
 
   handleClose(name) {
-    this.setState({
+    this.setState({ 
       [name]: false,
       openDialog: name,
       openDialog: 'none',
@@ -340,9 +339,9 @@ class App extends React.Component {
               <Paper  
                 style={style.paper}
                 zDepth={5}>
-                {this.state.tweets.map(tweet =>
-                <div>{tweet.username}</div>
-                )}
+                <div className="tweets-app">
+                  <TweetList tweets={this.state.tweets} />
+                </div>
               </Paper>
               <Paper
                 style={style.paper}
