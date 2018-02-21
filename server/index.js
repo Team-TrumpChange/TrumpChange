@@ -23,15 +23,6 @@ app.use(session({
 
 
 
-// app.get('/fetchtweets', (req, res) => { 
-//   console.log('recieved')
-//   const { user } = req.query.user;
-//   helpers.getTweets(user, (tweets) => {
-//     // console.log(tweets)
-//     //console.log(tweets)
-//     res.send(tweets);
-//   });
-// });
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
@@ -59,7 +50,8 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
         console.log('error creating session');
       }
     });
-});
+})
+})
 
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
@@ -86,6 +78,7 @@ app.post('/login', function(req, res) { // receives login information from front
 
 
 
+
 app.post('/update', function(req, res) {
   var quantity = req.body.quantity
   stripe.subscriptions.update(
@@ -103,9 +96,9 @@ app.post('/update', function(req, res) {
 });
 
 
-app.get('/getTrumpTweets/db', res => {
-  helpers.getTrumpTweets(results => {
-    res.send(results)
+app.get('/getTrumpTweets/db', (req, res) => {
+  helpers.getTrumpTweets(function(results) {
+    res.json(results)
   })
 })
 
