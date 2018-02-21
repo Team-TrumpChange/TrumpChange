@@ -22,8 +22,6 @@ app.use(session({
 }));
 
 
-
-
 setInterval(() => {
   helpers.getTweets(tweets => {   
     helpers.addUniqueTweet(tweets)
@@ -33,6 +31,7 @@ setInterval(() => {
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
+  req.body.totalMoneyDonated = null;
   const {
     username: username,
     password: password,
@@ -40,7 +39,8 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     maxWeeklyPlans: maxWeeklyPlans,
     totalMoneyDonated: totalMoneyDonated
   } = req.body;  
-  helpers.saveIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
+  
+  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
     // need to create session here
     req.session.regenerate(function(err) {
       if (!err) {
@@ -50,8 +50,9 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
         console.log('error creating session');
       }
     });
-})
-})
+  });
+});
+
 
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
@@ -140,9 +141,12 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                console.log('error creating subscription:', err);
                res.send('error')
              } else {
-                 console.log('saved subscription:', subscription);
+               console.log('saved subscription:', subscription);
                // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-               res.send('success saving subscription');
+               helpers.addSubscriberID(subscription.id, email, function() {
+                 console.log('subsciprtionIDSaved');
+                 res.send('success saving subscription');
+               });
              }
          });
     }
