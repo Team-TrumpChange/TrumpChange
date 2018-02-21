@@ -58,8 +58,20 @@ function addUniqueTweet(tweetsArray) {
   }
 }
 
+function getTrumpTweets(callback) {
+  db.Tweet.find({}, function(err, results){
+    if (err) console.log(err)
+    else {
+      callback(results)
+    }
+  }) 
+}
+
+
+
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
 exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
+exports.getTrumpTweets = getTrumpTweets

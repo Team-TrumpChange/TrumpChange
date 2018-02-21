@@ -67,6 +67,13 @@ app.post('/update', function(req, res) {
 })
 
 
+app.get('/getTrumpTweets/db', res => {
+  helpers.getTrumpTweets(results => {
+    res.send(results)
+  })
+})
+
+
 
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
