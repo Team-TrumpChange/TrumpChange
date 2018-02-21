@@ -31,7 +31,8 @@ class App extends React.Component {
       openDialog: 'none',
       signupUsername: '',
       signupPassword: '',
-      signupEmail: ''
+      signupEmail: '',
+      signupLimit: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -68,7 +69,16 @@ class App extends React.Component {
       openDialog: name,
       openDialog: 'none'
     });
-    console.log(this.state.signupUsername, this.state.signupPassword, this.state.signupEmail)
+    axios.post('/createAccount', {
+      username: this.state.signupUsername,
+      password: this.state.signupPassword,
+      email: this.state.signupEmail,
+      maxWeeklyPlans: this.state.signupLimit
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log('error:', err)
+    })
   };
 
   // getTweets() { // gets new tweets from server (server does api call to twitter)
@@ -238,6 +248,13 @@ class App extends React.Component {
         type='text'
         fullWidth={true}
         onChange={(e) => {this.setState({signupEmail: e.target.value})}}
+      />,
+      <TextField
+        floatingLabelText='Limit'
+        floatingLabelFixed={true}
+        type='text'
+        fullWidth={true}
+        onChange={(e) => {this.setState({signupLimit: e.target.value})}}
       />,
       <FlatButton
         label='Cancel'
