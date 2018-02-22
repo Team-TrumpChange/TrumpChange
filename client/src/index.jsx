@@ -178,16 +178,6 @@ class App extends React.Component {
         flexDirection: 'column',
         height: '100vh',
       },
-      flexHeader: {
-        height: '10vh',
-        display: 'flex',
-        flexDirection: 'row-reverse',
-
-        backgroundColor: fullWhite,
-        alignItems: 'center',
-        boxShadow: '0 19px 20px  rgba(0, 0, 0, .1)',
-        zIndex: 1,
-      },
       mainBody: {
         flexGrow: 1,
         display: 'flex',
@@ -202,11 +192,27 @@ class App extends React.Component {
         overflow: 'scroll',
       },
       image: {
-        flex: .2,
+        height: 100,
       },
-      buttons: {
-        margin: 15,
+      paperHeader: {
+        flex: .75, 
+        zIndex: 1,
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
       },
+      flexButton: {
+        flex: 1,
+        flexDirection: 'row-reverse',
+        display:'flex',
+        justifyContent: 'flex-start',
+        paddingRight: 15.85,
+      },
+      flexImage: {
+        flex: 1,
+        display: 'flex'
+      }
     }
     const logIn = [
       <TextField
@@ -289,66 +295,64 @@ class App extends React.Component {
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className ='App'>
           <div style={style.flex}>
-            <div style={style.flexHeader}>
-              <RaisedButton
-                style={style.buttons}
-                labelColor={white}
-                backgroundColor={red500}
-                label='Sign Up'
-                onClick={this.handleOpen.bind(this, "openSignUp")}
-              />
-              <Dialog
-                title='Enter a new username, password, and email'
-                actions={signUp}
-                modal={false}
-                open={this.state.openSignUp}
-                onRequestClose={this.handleClose.bind(this, 'openSignUp')}
-              />
-              <RaisedButton
-                style={style.buttons}
-                labelColor={white}
-                backgroundColor={red500}
-                label='Log In'
-                onClick={this.handleOpen.bind(this, "openLogin")}
-              />
-              <Dialog title='Enter your username and password'
-                actions={logIn}
-                modal={false}
-                open={this.state.openLogin}
-                onRequestClose={this.handleClose.bind(this, 'openLogin')}
-              />
-              <Dialog title='Enter Payment'
-                actions={stripe}
-                modal={false}
-                open={this.state.openStripe}
-                onRequestClose={this.handleClose.bind(this, 'openStripe')}
-              />
-              <img style={style.image} src='' alt='' />
-              <img style={style.image} src='' alt='' />
-              <img style={style.image} src='' alt='' />
-              <img style={style.image} src='' alt='' />
-              <img
-                style={style.image}
-                src='https://i.imgur.com/Kp92VKH.png'
-                height='80vh'
-                width='80vh'
-              />
-            </div>
+            <Paper zDepth={3} style={style.paperHeader}>
+              <div style={style.flexButton}>
+                <RaisedButton
+                  style={{ margin: 7.925 }}
+                  labelColor={white}
+                  backgroundColor={red500}
+                  label='Sign Up'
+                  onClick={this.handleOpen.bind(this, "openSignUp")}
+                />
+                <Dialog
+                  title='Enter a new username, password, and email'
+                  actions={signUp}
+                  modal={false}
+                  open={this.state.openSignUp}
+                  onRequestClose={this.handleClose.bind(this, 'openSignUp')}
+                />
+                <RaisedButton
+                  style={{margin: 7.925}}
+                  labelColor={white}
+                  backgroundColor={red500}
+                  label='Log In'
+                  onClick={this.handleOpen.bind(this, "openLogin")}
+                />
+                <Dialog title='Enter your username and password'
+                  actions={logIn}
+                  modal={false}
+                  open={this.state.openLogin}
+                  onRequestClose={this.handleClose.bind(this, 'openLogin')}
+                />
+                <Dialog title='Enter Payment'
+                  actions={stripe}
+                  modal={false}
+                  open={this.state.openStripe}
+                  onRequestClose={this.handleClose.bind(this, 'openStripe')}
+                />
+              </div>
+              <div style={style.flexImage}>
+                <img
+                  style={style.image}
+                  src='https://i.imgur.com/Kp92VKH.png'
+                />
+              </div>
+            </Paper>
             <div style={style.mainBody}>
               <Paper 
                 style={style.paper}
-                zDepth={5}>
+                zDepth={3}>
                 <div className="tweets-app">
                   <TweetList tweets={this.state.tweets} />
                 </div>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={5}>
+                zDepth={3}>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={5}>
+                zDepth={3}>
               </Paper>
             </div>
           </div>

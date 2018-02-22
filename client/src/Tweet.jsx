@@ -17,26 +17,30 @@ class Tweet extends React.Component {
         color: blue400,
         fontSize: 12,
       },
-      avatar: {
-        boxShadow: 'rgba(0, 0, 0, 0.16) 2px 2px 8px',
+      paper: {
+        borderRadius: '50%',
+        height: '40px',
+        width: '40px'
       },
       list: {
-        paddingTop: 15,
-        paddingBottom: 0,
-        paddingRight: 15,
-        paddingLeft: 15,
-      }
+        paddingTop: 7,
+        paddingBottom: 7,
+        paddingRight: 14,
+        paddingLeft: 14,
+      },
     }
     const tweet = this.props.tweet;
     return (
       <List style={style.list}>
-        <Paper style={{ padding: 0}} zDepth={2}>
+        <Paper zDepth={3} >
         <ListItem
           disabled={true}
           leftAvatar={
-            <Avatar style={style.avatar} src={tweet.avatar} 
-            className='avatar'
-            />}
+            <Paper zDepth={3} style={style.paper}> 
+              <Avatar style={style.avatar} src={tweet.avatar} 
+              className='avatar'/>
+            </Paper>
+            }
           >
           <a style={style.url} href={"http://www.twitter.com/" + tweet.username}>{tweet.name}</a>
           <div>
