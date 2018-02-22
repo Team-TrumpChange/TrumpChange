@@ -55,7 +55,6 @@ class App extends React.Component {
   getTrumpTweetsFromDb() {
     axios.get('/getTrumpTweets/db')
     .then(res => {
-      console.log(res.data)
       this.setState({
         tweets: res.data
       })
