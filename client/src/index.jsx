@@ -53,10 +53,8 @@ class App extends React.Component {
 
   //this function asks the server to get trump's tweets from the db and send them here to display
   getTrumpTweetsFromDb() {
-    console.log('getting')
     axios.get('/getTrumpTweets/db')
     .then(res => {
-      console.log(res.data)
       this.setState({
         tweets: res.data
       })
