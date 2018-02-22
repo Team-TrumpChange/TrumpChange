@@ -196,13 +196,15 @@ class App extends React.Component {
         display: 'flex',
         backgroundColor: fullWhite,
         justifyContent: 'space-around',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#ecf3f8'
       },
       paper: {
         flex: .3,
         backgroundColor: fullWhite,
         height: '75vh',
         overflow: 'scroll',
+        backgroundColor: fullWhite
       },
       image: {
         height: 90,
@@ -227,7 +229,6 @@ class App extends React.Component {
       flexImage: {
         flex: 1,
         display: 'flex',
-
       },
     }
     const logIn = [
@@ -306,9 +307,9 @@ class App extends React.Component {
     ];
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <div className='App'>
+        <div className='App'style={style.app}>
           <div style={style.flex}>
-            <Paper zDepth={3} style={style.paperHeader}>
+            <Paper zDepth={2} style={style.paperHeader}>
               <div style={style.flexButton}>
                 <RaisedButton
                   style={{ margin: 7.925 }}
@@ -340,7 +341,7 @@ class App extends React.Component {
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
-                  open={this.state.openStripe}                />
+                  open={this.state.openStripe}/>
               </div>
               <div style={style.flexImage}>
                 <img
@@ -352,18 +353,18 @@ class App extends React.Component {
             <div style={style.mainBody}>
               <Paper 
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
                 <div className="tweets-app">
                   <TweetList tweets={this.state.tweets} />
                 </div>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
               </Paper>
             </div>
           </div>
