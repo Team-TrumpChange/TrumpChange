@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 let count = 0;
-let billCycleMoment = 'Mon Feb 26 08:00 +0000 2018';
+let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
@@ -83,12 +83,15 @@ var updateSubs = function(count) {
 setInterval(() => {
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
   if (now === billCycleMoment) {
+    console.log('BILLING!!');
     const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
+    console.log('seven days ago from this very moment', sevenDaysAgo);
     db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
       count = res;
       updateSubs(count);
     })
-    billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY");    
+    billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY"); 
+    console.log('7 days from this very moment', billCycleMoment);
   }
 }, 60000);
 
