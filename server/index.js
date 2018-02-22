@@ -39,45 +39,44 @@ setInterval(() => {
 
 
 var updateSubs = function(count) {
-  helpers.updateSubscriptions(function (subscriptions) {
+  helpers.updateSubscriptions(function (users) {
     console.log('in updateSubscriptions');
 
-    var subroutine = function(subscription, index) {
+    var subroutine = function(user, index) {
       var updateNum;
-      console.log('subscription:', subscription);
-      if (subscription.maxWeeklyPlans <= count) {
-        updateNum = subscription.maxWeeklyPlans;
+      console.log('user:', user);
+      if (user.maxWeeklyPlans <= count) {
+        updateNum = user.maxWeeklyPlans;
       } else {
         updateNum = count;
       }
-      if (subscription.subscriberID) {
+      if (user.subscriberID) {
         console.log('updateNum:', updateNum);
-        console.log('subscription.subscriberID:', subscription.subscriberID);
+        console.log('user.subscriberID:', user.subscriberID);
 
         stripe.subscriptions.update(
-          subscription.subscriberID,
-          {quantity: updateNum} , function(err, subscription) {
+          user.subscriberID,
+          {quantity: updateNum} , function(err, user) {
             if (err) {
-              console.log('error updating subscription', err);
+              console.log('error updating user', err);
             } else {
-              console.log('subscription updated, subscription.quantity:', subscription.quantity);
+              console.log('user updated, user.quantity:', user.quantity);
               if (index === subscriptions.length) {
                 return;
               }
-              subroutine(subscriptions[index], index + 1);
+              subroutine(users[index], index + 1);
             }
         });
       }
     } 
 
-    subroutine(subscriptions[0], 1);
+    subroutine(users[0], 1);
   });
 }
 
 
 //counts tweets every week
 setInterval(() => {
-  console.log(count);
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
   if (now === billCycleMoment) {
     const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");

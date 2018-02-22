@@ -43,7 +43,7 @@ function checkPassword(username, password, callback) {
       console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
-  }
+}
 
 
 
