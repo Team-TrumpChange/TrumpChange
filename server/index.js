@@ -61,19 +61,23 @@ var updateSubs = function(count) {
               console.log('error updating user', err);
             } else {
               console.log('user updated, user.quantity:', user.quantity);
-              if (index === subscriptions.length) {
+              if (index === users.length) {
                 return;
               }
               subroutine(users[index], index + 1);
             }
         });
+      } else {
+        if (index === users.length) {
+          return;
+        }
+        subroutine(users[index], index + 1);
       }
     } 
 
     subroutine(users[0], 1);
   });
 }
-
 
 //counts tweets every week
 setInterval(() => {
