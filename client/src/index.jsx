@@ -310,6 +310,7 @@ class App extends React.Component {
         </button>
       </StripeCheckout>
     ];
+
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className='App'style={style.app}>
