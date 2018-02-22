@@ -311,7 +311,7 @@ class App extends React.Component {
                 actions={signUp}
                 modal={false}
                 open={this.state.openSignUp}
-                // onRequestClose={this.handleClose.bind(this, 'openSignUp')}
+                onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
               />
               <RaisedButton
                 style={style.buttons}
@@ -324,13 +324,12 @@ class App extends React.Component {
                 actions={logIn}
                 modal={false}
                 open={this.state.openLogin}
-                onRequestClose={this.handleClose.bind(this, 'openLogin')}
+                onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
               />
               <Dialog title='Enter Payment'
                 actions={stripe}
                 modal={false}
                 open={this.state.openStripe}
-                onRequestClose={this.handleClose.bind(this, 'openStripe')}
               />
               <img style={style.image} src='' alt='' />
               <img style={style.image} src='' alt='' />
