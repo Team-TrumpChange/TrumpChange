@@ -72,8 +72,8 @@ class App extends React.Component {
   handleCloseSignup(name) {
     this.setState({
       [name]: false,
-      openDialog: 'none'
-
+      openDialog: 'none',
+      openStripe: true,
     });
     axios.post('/createAccount', {
       username: this.state.signupUsername,
@@ -362,16 +362,6 @@ class App extends React.Component {
           </div>
         </div>
       </MuiThemeProvider>
-      // <div>
-      //   <p>      
-      //
-      //   <StripeCheckout
-      //     token={this.onToken}
-      //     stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY}
-      //   />
-      //   </p>
-      // </div>
-
     )
   }
 }
