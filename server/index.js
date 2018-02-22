@@ -105,16 +105,21 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
   } = req.body;  
   
   helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function (message) {
-    // need to create session here
-    req.session.regenerate(function(err) {
-      if (!err) {
-        req.session.username = username;
-        res.send(req.session.username);
-      } else {
-        console.log('error creating session');
-        res.send(message);
-      }
-    });
+    if (!password || !username || !maxWeeklyPlans) {
+      res.send('Must enter valid username, password, and maxWeeklyPlans!');
+    } else if (message) {
+      res.send(message);
+    } else {
+      req.session.regenerate(function(err) {
+        if (!err) {
+          req.session.username = username;
+          res.send(req.session.username);
+        } else {
+          console.log('error creating session');
+          res.send('error loggin user in after saving to DB');
+        }
+      });
+    }
   });
 });
 
@@ -161,43 +166,46 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // *check if token email matches db email 
 
 
-
- stripe.customers.create({
-// the id from the token object sent from front end
-     source: tokenId,
-     email: email
- }, function(err, customer) { // returns a customer object if successful
-    if (err) {
-        console.log('error in create function')
-        res.send('error');
-    } else {
-        console.log('customer.id:', customer.id);
-        console.log('customer.email:', customer.email);
-        console.log(customer)
-      // console.log(customer)
-         stripe.subscriptions.create({ // creates a new subscription
-             customer: customer.id,
-             items: [
-              {
-                plan: 'plan_CM50jYu8LYbvMC',
-                quantity: 0
-              }
-             ],
-         }, function(err, subscription) { // returns a subscription object
-             if (err) {
-               console.log('error creating subscription:', err);
-               res.send('error')
-             } else {
-               console.log('saved subscription:', subscription);
-               // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-               helpers.addSubscriberID(subscription.id, req.session.username, function() {
-                 console.log('subsciprtionIDSaved');
-                 res.send('success saving subscription');
-               });
-             }
-         });
-    }
- })
+ if (req.session.user) {
+   stripe.customers.create({
+  // the id from the token object sent from front end
+       source: tokenId,
+       email: email
+   }, function(err, customer) { // returns a customer object if successful
+      if (err) {
+          console.log('error in create function')
+          res.send('error');
+      } else {
+          console.log('customer.id:', customer.id);
+          console.log('customer.email:', customer.email);
+          console.log(customer)
+        // console.log(customer)
+           stripe.subscriptions.create({ // creates a new subscription
+               customer: customer.id,
+               items: [
+                {
+                  plan: 'plan_CM50jYu8LYbvMC',
+                  quantity: 0
+                }
+               ],
+           }, function(err, subscription) { // returns a subscription object
+               if (err) {
+                 console.log('error creating subscription:', err);
+                 res.send('error')
+               } else {
+                 console.log('saved subscription:', subscription);
+                 // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
+                 helpers.addSubscriberID(subscription.id, req.session.username, function() {
+                   console.log('subsciprtionIDSaved');
+                   res.send('success saving subscription');
+                 });
+               }
+           });
+      }
+   })
+  } else {
+    res.send('error creating new account, subscription not created');
+  }
 });
 
 app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
