@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 let count = 0;
-let billCycleMoment = 'Mon Feb 26 08:00 +0000 2018';
+let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
@@ -39,52 +39,59 @@ setInterval(() => {
 
 
 var updateSubs = function(count) {
-  helpers.updateSubscriptions(function (subscriptions) {
+  helpers.updateSubscriptions(function (users) {
     console.log('in updateSubscriptions');
 
-    var subroutine = function(subscription, index) {
+    var subroutine = function(user, index) {
       var updateNum;
-      console.log('subscription:', subscription);
-      if (subscription.maxWeeklyPlans <= count) {
-        updateNum = subscription.maxWeeklyPlans;
+      console.log('user:', user);
+      if (user.maxWeeklyPlans <= count) {
+        updateNum = user.maxWeeklyPlans;
       } else {
         updateNum = count;
       }
-      if (subscription.subscriberID) {
+      if (user.subscriberID) {
         console.log('updateNum:', updateNum);
-        console.log('subscription.subscriberID:', subscription.subscriberID);
+        console.log('user.subscriberID:', user.subscriberID);
 
         stripe.subscriptions.update(
-          subscription.subscriberID,
-          {quantity: updateNum} , function(err, subscription) {
+          user.subscriberID,
+          {quantity: updateNum} , function(err, user) {
             if (err) {
-              console.log('error updating subscription', err);
+              console.log('error updating user', err);
             } else {
-              console.log('subscription updated, subscription.quantity:', subscription.quantity);
-              if (index === subscriptions.length) {
+              console.log('user updated, user.quantity:', user.quantity);
+              if (index === users.length) {
                 return;
               }
-              subroutine(subscriptions[index], index + 1);
+              subroutine(users[index], index + 1);
             }
         });
+      } else {
+        if (index === users.length) {
+          return;
+        }
+        subroutine(users[index], index + 1);
       }
     } 
 
-    subroutine(subscriptions[0], 1);
+    subroutine(users[0], 1);
   });
 }
-
 
 //counts tweets every week
 setInterval(() => {
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
   if (now === billCycleMoment) {
+    console.log('BILLING!!');
     const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
+    console.log('seven days ago from this very moment', sevenDaysAgo);
     db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
       count = res;
       updateSubs(count);
     })
-    billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY");    
+    billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY"); 
+    console.log('7 days from this very moment', billCycleMoment);
   }
 }, 60000);
 
@@ -100,16 +107,22 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     totalMoneyDonated: totalMoneyDonated
   } = req.body;  
   
-  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
-    // need to create session here
-    req.session.regenerate(function(err) {
-      if (!err) {
-        req.session.username = username;
-        res.send(req.session.username);
-      } else {
-        console.log('error creating session');
-      }
-    });
+  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function (message) {
+    if (!password || !username || !maxWeeklyPlans) {
+      res.send('Must enter valid username, password, and maxWeeklyPlans!');
+    } else if (message) {
+      res.send(message);
+    } else {
+      req.session.regenerate(function(err) {
+        if (!err) {
+          req.session.username = username;
+          res.send(req.session.username);
+        } else {
+          console.log('error creating session');
+          res.send('error loggin user in after saving to DB');
+        }
+      });
+    }
   });
 });
 
@@ -151,47 +164,51 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
+ console.log('req.session.username:', req.session.username);
 
  // *check if token email matches db email 
 
 
-
- stripe.customers.create({
-// the id from the token object sent from front end
-     source: tokenId,
-     email: email
- }, function(err, customer) { // returns a customer object if successful
-    if (err) {
-        console.log('error in create function')
-        res.send('error');
-    } else {
-        console.log('customer.id:', customer.id);
-        console.log('customer.email:', customer.email);
-        console.log(customer)
-      // console.log(customer)
-         stripe.subscriptions.create({ // creates a new subscription
-             customer: customer.id,
-             items: [
-              {
-                plan: 'plan_CM50jYu8LYbvMC',
-                quantity: 0
-              }
-             ],
-         }, function(err, subscription) { // returns a subscription object
-             if (err) {
-               console.log('error creating subscription:', err);
-               res.send('error')
-             } else {
-               console.log('saved subscription:', subscription);
-               // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-               helpers.addSubscriberID(subscription.id, email, function() {
-                 console.log('subsciprtionIDSaved');
-                 res.send('success saving subscription');
-               });
-             }
-         });
-    }
- })
+ if (req.session.user) {
+   stripe.customers.create({
+  // the id from the token object sent from front end
+       source: tokenId,
+       email: email
+   }, function(err, customer) { // returns a customer object if successful
+      if (err) {
+          console.log('error in create function')
+          res.send('error');
+      } else {
+          console.log('customer.id:', customer.id);
+          console.log('customer.email:', customer.email);
+          console.log(customer)
+        // console.log(customer)
+           stripe.subscriptions.create({ // creates a new subscription
+               customer: customer.id,
+               items: [
+                {
+                  plan: 'plan_CM50jYu8LYbvMC',
+                  quantity: 0
+                }
+               ],
+           }, function(err, subscription) { // returns a subscription object
+               if (err) {
+                 console.log('error creating subscription:', err);
+                 res.send('error')
+               } else {
+                 console.log('saved subscription:', subscription);
+                 // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
+                 helpers.addSubscriberID(subscription.id, req.session.username, function() {
+                   console.log('subsciprtionIDSaved');
+                   res.send('success saving subscription');
+                 });
+               }
+           });
+      }
+   })
+  } else {
+    res.send('error creating new account, subscription not created');
+  }
 });
 
 app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
