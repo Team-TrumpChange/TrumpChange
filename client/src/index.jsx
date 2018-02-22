@@ -17,6 +17,8 @@ import { fade } from 'material-ui/utils/colorManipulator';
 import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
+import Subheader from 'material-ui/Subheader';
+import List from 'material-ui/List/List';
 
 dotenv.config();
 
@@ -196,8 +198,7 @@ class App extends React.Component {
       paper: {
         flex: .3,
         backgroundColor: fullWhite,
-        height: '70vh',
-        alignItems: 'center',
+        height: '75vh',
         overflow: 'scroll',
       },
       image: {
@@ -334,7 +335,7 @@ class App extends React.Component {
               />
             </div>
             <div style={style.mainBody}>
-              <Paper  
+              <Paper 
                 style={style.paper}
                 zDepth={5}>
                 <div className="tweets-app">
