@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import config from '../../config.js'
 import StripeCheckout from 'react-stripe-checkout'
 import dotenv from 'dotenv'
 import axios from 'axios'
