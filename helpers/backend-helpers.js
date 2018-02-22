@@ -99,6 +99,15 @@ function getTrumpTweets(callback) {
   }) 
 }
 
+function updateSubscriptions(callback) {
+  db.User.find({})
+    .then(function(results) {
+      console.log('results:', results);
+      console.log('callback:', callback);
+      callback(results);
+   });
+}
+
 
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -108,3 +117,4 @@ exports.hashPassword = hashPassword;
 exports.checkPassword = checkPassword;
 exports.getTrumpTweets = getTrumpTweets;
 exports.addSubscriberID = addSubscriberID;
+exports.updateSubscriptions = updateSubscriptions;
