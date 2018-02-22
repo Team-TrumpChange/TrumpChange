@@ -2,6 +2,7 @@ const Twitter = require('twitter');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const db = require('../database/index.js');
+const moment = require('moment');
 
 dotenv.config();
 
@@ -27,7 +28,6 @@ function getTweets(callback) {
   });
 }
 
-
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
   newUser.save(() => {
@@ -48,7 +48,7 @@ function checkPassword(username, password, callback) {
 
 
 function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {
-  const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted});
+  const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted, dateObject: moment(dateTweeted).toDate()});
   newTweet.save(() => {
     console.log('tweet saved');
   })
@@ -89,14 +89,15 @@ function addUniqueTweet(tweetsArray) {
   }
 }
 
+// db.Tweet.find().sort({ dateTweeted: -1 })
+
 function getTrumpTweets(callback) {
-  db.Tweet.find({}, function(err, results){
-    if (err) 
-    return console.log(err)
-    else {
-      callback(results)
+  db.Tweet.find({}).sort({ dateObject: -1 }).exec((err, res) => {
+    if (err) {
+      return console.log(err)
     }
-  }) 
+    callback(res);
+  });
 }
 
 function updateSubscriptions(callback) {

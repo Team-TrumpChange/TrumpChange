@@ -41,8 +41,10 @@ class App extends React.Component {
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
+    setInterval(() => {
+      this.getTrumpTweetsFromDb()
+    }, 60000);
   }
-
 
   componentDidMount() {
     this.getTrumpTweetsFromDb() 
@@ -50,17 +52,16 @@ class App extends React.Component {
 
   //this function asks the server to get trump's tweets from the db and send them here to display
   getTrumpTweetsFromDb() {
-    setInterval(() => {
-      axios.get('/getTrumpTweets/db')
-      .then(res => {
-        console.log(res.data)
-        this.setState({
-          tweets: res.data
-        })
-      }).catch(err => {
-        console.log(err)
+    axios.get('/getTrumpTweets/db')
+    .then(res => {
+      console.log(res.data)
+      this.setState({
+        tweets: res.data
       })
-    }, 6000)
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   handleOpen(name) {
@@ -111,36 +112,6 @@ class App extends React.Component {
       console.log(err)
     })
   }
-
-
-  // getTweets() { // gets new tweets from server (server does api call to twitter)
-  //   const context = this;
-  //   axios.get('/fetchtweets', {
-  //     params: {
-  //       user: 'realdonaldtrump'
-  //     }
-  //   })
-  //     .then((res) => {
-  //       console.log('Success');
-  //       console.log(res.data)
-
-  //       if (context.checkForNewTweets(data)) { // checks if the last tweet is new and resets the state
-  //         context.setState({
-  //           tweets: res.data
-  //         });
-  //       }
-  //       res.data.forEach((element) => {
-  //         console.log(element.text);
-  //       })    
-  //     })
-  //     .catch((error) => {
-  //       console.log('Error:', error);
-  //     })
-  // }
-
-  // componentDidMount() {
-  //   // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
-  // }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
