@@ -155,8 +155,8 @@ class App extends React.Component {
   render () {
     const muiTheme = getMuiTheme({
       palette: {
-        primary1Color: red500,
-        primary2Color: blue400,
+        primary1Color: blue400,
+        primary2Color: red500,
         primary3Color: grey600,
         accent1Color: blue400,
         accent2Color: blue400,
