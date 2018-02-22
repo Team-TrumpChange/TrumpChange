@@ -72,14 +72,21 @@ class App extends React.Component {
     });
   }
 
+  handleCloseSignupCancel(name) {
+    this.setState({
+      [name]: false,
+      openDialog: 'none'
+    });
+  }
 
-  handleCloseSignup(name) {
+
+  handleCloseSignupSubmit(name) {
     if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
-      return console.log('INFO MISSING YOU BITCH')
+       return console.log('INFO MISSING YOU BITCH')
     } if (this.state.signupPassword !== this.state.signupConfirmPassword) {
       return console.log('PASSWORDS DONT MATCH DUMBASS')
-    } if (typeof Number(this.state.signupLimit) !== 'number') {
-      return console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
+    } if (isNaN(Number(this.state.signupLimit))) {
+       return console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
     }
     else {
       this.setState({
@@ -279,13 +286,13 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseSignupCancel.bind(this, this.state.openDialog)}
       />,
       <FlatButton
         label='Submit'
         primary={true}
         keyboardFocused={true}
-        onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseSignupSubmit.bind(this, this.state.openDialog)}
       />,
     ];
     const stripe = [
@@ -327,7 +334,7 @@ class App extends React.Component {
                   actions={signUp}
                   modal={false}
                   open={this.state.openSignUp}
-                  onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
+                  onRequestClose={this.handleCloseSignupCancel.bind(this, 'openSignUp')}
                 />
                 <RaisedButton
                   style={{margin: 7.925}}
