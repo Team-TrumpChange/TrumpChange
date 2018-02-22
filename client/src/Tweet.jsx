@@ -42,7 +42,7 @@ class Tweet extends React.Component {
         margin: 2,
       },
       iconCite: {
-        fontSize: 11,
+        fontSize: 12,
         margin: 2
       }
     }
