@@ -36,7 +36,8 @@ class App extends React.Component {
       signupEmail: '',
       signupLimit: '',
       singupUsername: '',
-      signupPassword: ''
+      signupPassword: '',
+      signupConfirmPassword: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -73,22 +74,32 @@ class App extends React.Component {
 
 
   handleCloseSignup(name) {
-    this.setState({
-      [name]: false,
-      openDialog: 'none',
-      openStripe: true,
-    });
-    axios.post('/createAccount', {
-      username: this.state.signupUsername,
-      password: this.state.signupPassword,
-      email: this.state.signupEmail,
-      maxWeeklyPlans: this.state.signupLimit
-    }).then(res => {
-      console.log(res)
-
-    }).catch(err => {
-      console.log('error:', err)
-    })
+    if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
+      console.log('INFO MISSING YOU BITCH')
+    } if (this.state.signupPassword !== this.state.signupConfirmPassword) {
+      console.log('PASSWORDS DONT MATCH DUMBASS')
+    } if (typeof Number(this.state.signupLimit) !== 'number') {
+      console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
+    }
+    else {
+      this.setState({
+        [name]: false,
+        openDialog: 'none',
+        openStripe: true,
+      });
+      axios.post('/createAccount', {
+        username: this.state.signupUsername,
+        password: this.state.signupPassword,
+        email: this.state.signupEmail,
+        maxWeeklyPlans: this.state.signupLimit
+      }).then(res => {
+        console.log(res)
+  
+      }).catch(err => {
+        console.log('error:', err)
+      })
+    }
+    
   }
 
   handleCloseLogin(name) {
@@ -167,13 +178,15 @@ class App extends React.Component {
         display: 'flex',
         backgroundColor: fullWhite,
         justifyContent: 'space-around',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#ecf3f8'
       },
       paper: {
         flex: .3,
         backgroundColor: fullWhite,
         height: '75vh',
         overflow: 'scroll',
+        backgroundColor: fullWhite
       },
       image: {
         height: 90,
@@ -198,7 +211,6 @@ class App extends React.Component {
       flexImage: {
         flex: 1,
         display: 'flex',
-
       },
     }
     const logIn = [
@@ -244,6 +256,13 @@ class App extends React.Component {
         onChange={(e) => {this.setState({signupPassword: e.target.value})}}
       />,
       <TextField
+      floatingLabelText='Confirm Password'
+      floatingLabelFixed={true}
+      type='password'
+      fullWidth={true}
+      onChange={(e) => {this.setState({signupConfirmPassword: e.target.value})}}
+    />,
+      <TextField
         floatingLabelText='Email'
         floatingLabelFixed={true}
         type='text'
@@ -271,15 +290,30 @@ class App extends React.Component {
     ];
     const stripe = [
       <StripeCheckout
+        name="TrumpChange"
+        description="Enter Your Card Info Below"
+        panelLabel="Submit"
+        allowRememberMe={false}
+        //amount=''
         token={this.onToken}
+        email={this.state.signupEmail}
+        currency="USD"
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-      />
+      >
+        <button
+          className="submitbtn"
+          //onClick={this.handleFormSubmit()}
+          type="submit"
+          value="Submit">EnterCreditCardInfo
+        </button>
+      </StripeCheckout>
     ];
+
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <div className='App'>
+        <div className='App'style={style.app}>
           <div style={style.flex}>
-            <Paper zDepth={3} style={style.paperHeader}>
+            <Paper zDepth={2} style={style.paperHeader}>
               <div style={style.flexButton}>
                 <RaisedButton
                   style={{ margin: 7.925 }}
@@ -311,7 +345,7 @@ class App extends React.Component {
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
-                  open={this.state.openStripe}                />
+                  open={this.state.openStripe}/>
               </div>
               <div style={style.flexImage}>
                 <img
@@ -323,18 +357,18 @@ class App extends React.Component {
             <div style={style.mainBody}>
               <Paper 
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
                 <div className="tweets-app">
                   <TweetList tweets={this.state.tweets} />
                 </div>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
               </Paper>
             </div>
           </div>
