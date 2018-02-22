@@ -111,34 +111,7 @@ class App extends React.Component {
   }
 
 
-  // getTweets() { // gets new tweets from server (server does api call to twitter)
-  //   const context = this;
-  //   axios.get('/fetchtweets', {
-  //     params: {
-  //       user: 'realdonaldtrump'
-  //     }
-  //   })
-  //     .then((res) => {
-  //       console.log('Success');
-  //       console.log(res.data)
 
-  //       if (context.checkForNewTweets(data)) { // checks if the last tweet is new and resets the state
-  //         context.setState({
-  //           tweets: res.data
-  //         });
-  //       }
-  //       res.data.forEach((element) => {
-  //         console.log(element.text);
-  //       })    
-  //     })
-  //     .catch((error) => {
-  //       console.log('Error:', error);
-  //     })
-  // }
-
-  // componentDidMount() {
-  //   // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
-  // }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
