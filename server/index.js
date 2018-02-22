@@ -38,17 +38,17 @@ setInterval(() => {
 }, 60000);
 
 
-var update = function() {
+var updateSubs = function(count) {
   helpers.updateSubscriptions(function (subscriptions) {
     console.log('in updateSubscriptions');
 
     var subroutine = function(subscription, index) {
       var updateNum;
       console.log('subscription:', subscription);
-      if (subscription.maxWeeklyPlans <= tweetCount) {
+      if (subscription.maxWeeklyPlans <= count) {
         updateNum = subscription.maxWeeklyPlans;
       } else {
-        updateNum = tweetCount;
+        updateNum = count;
       }
       if (subscription.subscriberID) {
         console.log('updateNum:', updateNum);
@@ -83,6 +83,7 @@ setInterval(() => {
     const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
     db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
       count = res;
+      updateSubs(count);
     })
     billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY");    
   }
