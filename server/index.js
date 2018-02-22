@@ -77,7 +77,6 @@ var updateSubs = function(count) {
 
 //counts tweets every week
 setInterval(() => {
-  console.log(count);
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
   if (now === billCycleMoment) {
     const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");

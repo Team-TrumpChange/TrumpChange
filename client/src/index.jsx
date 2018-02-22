@@ -72,8 +72,8 @@ class App extends React.Component {
   handleCloseSignup(name) {
     this.setState({
       [name]: false,
-      openDialog: 'none'
-
+      openDialog: 'none',
+      openStripe: true,
     });
     axios.post('/createAccount', {
       username: this.state.signupUsername,
@@ -292,67 +292,11 @@ class App extends React.Component {
       <StripeCheckout
         token={this.onToken}
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-        onClick={
-          this.handleClose.bind(this, this.state.openStripe)
-        }
       />
     ];
-  	return (
+    return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <div style={style.flex}>
-          <div style={style.flexHeader}>
-            <RaisedButton
-              style={style.buttons}
-              labelColor={white}
-              backgroundColor={red500}
-              label='Sign Up'
-              onClick={this.handleOpen.bind(this, "openSignUp")}
-            />
-            <Dialog
-              title='Enter a new username, password, and email'
-              actions={signUp}
-              modal={false}
-              open={this.state.openSignUp}
-              onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
-            />
-            <RaisedButton
-              style={style.buttons}
-              labelColor={white}
-              backgroundColor={red500}
-              label='Log In'
-              onClick={this.handleOpen.bind(this, "openLogin")}
-            />
-            <Dialog title='Enter your username and password'
-              actions={logIn}
-              modal={false}
-              open={this.state.openLogin}
-              onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
-            />
-            <img style={style.image} src='' alt='' />
-            <img style={style.image} src='' alt='' />
-            <img style={style.image} src='' alt='' />
-            <img style={style.image} src='' alt='' />
-            <img
-              style={style.image}
-              src='https://i.imgur.com/Kp92VKH.png'
-              height='80vh'
-              width='80vh'
-            />
-          </div>
-          <div style={style.mainBody}>
-            <Paper
-              style={style.paper}
-              zDepth={5}>
-            </Paper>
-            <Paper
-              style={style.paper}
-              zDepth={5}>
-            </Paper>
-            <Paper
-              style={style.paper}
-              zDepth={5}>
-            </Paper>
-        <div className ='App'>
+        <div className='App'>
           <div style={style.flex}>
             <div style={style.flexHeader}>
               <RaisedButton
@@ -367,7 +311,7 @@ class App extends React.Component {
                 actions={signUp}
                 modal={false}
                 open={this.state.openSignUp}
-                onRequestClose={this.handleClose.bind(this, 'openSignUp')}
+                onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
               />
               <RaisedButton
                 style={style.buttons}
@@ -380,13 +324,12 @@ class App extends React.Component {
                 actions={logIn}
                 modal={false}
                 open={this.state.openLogin}
-                onRequestClose={this.handleClose.bind(this, 'openLogin')}
+                onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
               />
               <Dialog title='Enter Payment'
                 actions={stripe}
                 modal={false}
                 open={this.state.openStripe}
-                onRequestClose={this.handleClose.bind(this, 'openStripe')}
               />
               <img style={style.image} src='' alt='' />
               <img style={style.image} src='' alt='' />
@@ -400,7 +343,7 @@ class App extends React.Component {
               />
             </div>
             <div style={style.mainBody}>
-              <Paper  
+              <Paper
                 style={style.paper}
                 zDepth={5}>
                 <div className="tweets-app">
@@ -419,16 +362,6 @@ class App extends React.Component {
           </div>
         </div>
       </MuiThemeProvider>
-    // <div>
-    //   <p>      
-    // 
-    //   <StripeCheckout
-    //     token={this.onToken}
-    //     stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-    //   />
-    //   </p>
-    // </div>
-  
     )
   }
 }
