@@ -17,6 +17,8 @@ import { fade } from 'material-ui/utils/colorManipulator';
 import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
+import Subheader from 'material-ui/Subheader';
+import List from 'material-ui/List/List';
 
 dotenv.config();
 
@@ -139,8 +141,8 @@ class App extends React.Component {
   render () {
     const muiTheme = getMuiTheme({
       palette: {
-        primary1Color: red500,
-        primary2Color: blue400,
+        primary1Color: blue400,
+        primary2Color: red500,
         primary3Color: grey600,
         accent1Color: blue400,
         accent2Color: blue400,
@@ -162,16 +164,6 @@ class App extends React.Component {
         flexDirection: 'column',
         height: '100vh',
       },
-      flexHeader: {
-        height: '10vh',
-        display: 'flex',
-        flexDirection: 'row-reverse',
-
-        backgroundColor: fullWhite,
-        alignItems: 'center',
-        boxShadow: '0 19px 20px  rgba(0, 0, 0, .1)',
-        zIndex: 1,
-      },
       mainBody: {
         flexGrow: 1,
         display: 'flex',
@@ -182,15 +174,33 @@ class App extends React.Component {
       paper: {
         flex: .3,
         backgroundColor: fullWhite,
-        height: '70vh',
-        alignItems: 'center',
+        height: '75vh',
         overflow: 'scroll',
       },
       image: {
-        flex: .2,
+        height: 90,
+
       },
-      buttons: {
-        margin: 15,
+      paperHeader: {
+        flex: .75, 
+        zIndex: 1,
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        alignItems: 'center',
+        padding: 1,
+      },
+      flexButton: {
+        flex: 1,
+        flexDirection: 'row-reverse',
+        display:'flex',
+        justifyContent: 'flex-start',
+        paddingRight: 15.85,
+      },
+      flexImage: {
+        flex: 1,
+        display: 'flex',
+
       },
     }
     const logIn = [
@@ -271,65 +281,62 @@ class App extends React.Component {
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className='App'>
           <div style={style.flex}>
-            <div style={style.flexHeader}>
-              <RaisedButton
-                style={style.buttons}
-                labelColor={white}
-                backgroundColor={red500}
-                label='Sign Up'
-                onClick={this.handleOpen.bind(this, "openSignUp")}
-              />
-              <Dialog
-                title='Enter a new username, password, and email'
-                actions={signUp}
-                modal={false}
-                open={this.state.openSignUp}
-                onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
-              />
-              <RaisedButton
-                style={style.buttons}
-                labelColor={white}
-                backgroundColor={red500}
-                label='Log In'
-                onClick={this.handleOpen.bind(this, "openLogin")}
-              />
-              <Dialog title='Enter your username and password'
-                actions={logIn}
-                modal={false}
-                open={this.state.openLogin}
-                onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
-              />
-              <Dialog title='Enter Payment'
-                actions={stripe}
-                modal={false}
-                open={this.state.openStripe}
-              />
-              <img style={style.image} src='' alt='' />
-              <img style={style.image} src='' alt='' />
-              <img style={style.image} src='' alt='' />
-              <img style={style.image} src='' alt='' />
-              <img
-                style={style.image}
-                src='https://i.imgur.com/Kp92VKH.png'
-                height='80vh'
-                width='80vh'
-              />
-            </div>
+            <Paper zDepth={3} style={style.paperHeader}>
+              <div style={style.flexButton}>
+                <RaisedButton
+                  style={{ margin: 7.925 }}
+                  labelColor={white}
+                  backgroundColor={red500}
+                  label='Sign Up'
+                  onClick={this.handleOpen.bind(this, "openSignUp")}
+                />
+                <Dialog
+                  title='Enter a new username, password, and email'
+                  actions={signUp}
+                  modal={false}
+                  open={this.state.openSignUp}
+                  onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
+                />
+                <RaisedButton
+                  style={{margin: 7.925}}
+                  labelColor={white}
+                  backgroundColor={red500}
+                  label='Log In'
+                  onClick={this.handleOpen.bind(this, "openLogin")}
+                />
+                <Dialog title='Enter your username and password'
+                  actions={logIn}
+                  modal={false}
+                  open={this.state.openLogin}
+                  onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
+                />
+                <Dialog title='Enter Payment'
+                  actions={stripe}
+                  modal={false}
+                  open={this.state.openStripe}                />
+              </div>
+              <div style={style.flexImage}>
+                <img
+                  style={style.image}
+                  src='https://i.imgur.com/Kp92VKH.png'
+                />
+              </div>
+            </Paper>
             <div style={style.mainBody}>
-              <Paper
+              <Paper 
                 style={style.paper}
-                zDepth={5}>
+                zDepth={3}>
                 <div className="tweets-app">
                   <TweetList tweets={this.state.tweets} />
                 </div>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={5}>
+                zDepth={3}>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={5}>
+                zDepth={3}>
               </Paper>
             </div>
           </div>
