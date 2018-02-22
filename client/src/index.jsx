@@ -34,7 +34,9 @@ class App extends React.Component {
       signupUsername: '',
       signupPassword: '',
       signupEmail: '',
-      signupLimit: ''
+      signupLimit: '',
+      singupUsername: '',
+      signupPassword: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -66,12 +68,12 @@ class App extends React.Component {
       [name]: true,
       openDialog: name
     });
-  };
+  }
 
-  handleClose(name) {
-    this.setState({ 
+
+  handleCloseSignup(name) {
+    this.setState({
       [name]: false,
-      openDialog: name,
       openDialog: 'none',
       openStripe: true,
     });
@@ -82,10 +84,34 @@ class App extends React.Component {
       maxWeeklyPlans: this.state.signupLimit
     }).then(res => {
       console.log(res)
+
     }).catch(err => {
       console.log('error:', err)
     })
-  };
+  }
+
+  handleCloseLogin(name) {
+    // how to get username and password info to call submitLogin Func?
+    this.setState({
+      [name]: false,
+      openDialog: 'none'
+    });
+
+    this.submitLogin(this.state.signupUsername, this.state.signupPassword);
+  }
+
+  submitLogin(username, password) {
+    // make a post req to server with username and password
+    axios.post('/login', {
+      username: username,
+      password: password
+    }).then(res => {
+      console.log(res)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
 
   // getTweets() { // gets new tweets from server (server does api call to twitter)
   //   const context = this;
@@ -132,25 +158,12 @@ class App extends React.Component {
     axios.post('/update', {
       quantity: 10
     }).then(res => {
+      // call render stripe token
       console.log(res)
     }).catch(err => {
       console.log(err)
     })
   }
-
-  submitLogin(username, password) {
-    // make a post req to server with username and password
-    axios.post('/login', {
-      username: username,
-      password: password
-    }).then(res => {
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
-  }
-  
-
 
   render () {
     const muiTheme = getMuiTheme({
@@ -223,23 +236,25 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
+        onChnage={(e) => {this.setState({loginPassword: e.target.value})}}
       />, <br />,
       <TextField
         floatingLabelText='Password'
         floatingLabelFixed={true}
         type='password'
         fullWidth={true}
+        onChange={(e) => {this.setState({loginUsername: e.target.value})}}
       />,
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleClose.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseLogin.bind(this, this.state.openDialog)}
       />,
       <FlatButton
         label='Submit'
         primary={true}
         keyboardFocused={true}
-        onClick={this.handleClose.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseLogin.bind(this, this.state.openDialog)}
       />,
     ];
     const signUp = [
@@ -274,29 +289,24 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleClose.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
       />,
       <FlatButton
         label='Submit'
         primary={true}
         keyboardFocused={true}
-        onClick={
-          this.handleClose.bind(this, this.state.openDialog)
-        }
+        onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
       />,
     ];
     const stripe = [
       <StripeCheckout
         token={this.onToken}
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-        onClick={
-          this.handleClose.bind(this, this.state.openStripe)
-        }
       />
     ];
-  	return (
+    return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <div className ='App'>
+        <div className='App'>
           <div style={style.flex}>
             <Paper zDepth={3} style={style.paperHeader}>
               <div style={style.flexButton}>
@@ -361,16 +371,6 @@ class App extends React.Component {
           </div>
         </div>
       </MuiThemeProvider>
-    // <div>
-    //   <p>      
-    // 
-    //   <StripeCheckout
-    //     token={this.onToken}
-    //     stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-    //   />
-    //   </p>
-    // </div>
-  
     )
   }
 }
