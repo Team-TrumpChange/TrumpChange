@@ -305,6 +305,7 @@ class App extends React.Component {
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
       />
     ];
+
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className='App'style={style.app}>
