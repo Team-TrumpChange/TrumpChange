@@ -192,8 +192,8 @@ class App extends React.Component {
         overflow: 'scroll',
       },
       image: {
-        position: 'relative',
         height: 90,
+
       },
       paperHeader: {
         flex: .75, 
@@ -213,7 +213,8 @@ class App extends React.Component {
       },
       flexImage: {
         flex: 1,
-        display: 'flex'
+        display: 'flex',
+
       },
     }
     const logIn = [
