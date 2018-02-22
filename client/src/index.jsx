@@ -76,11 +76,11 @@ class App extends React.Component {
 
   handleCloseSignup(name) {
     if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
-      console.log('INFO MISSING YOU BITCH')
+      return console.log('INFO MISSING YOU BITCH')
     } if (this.state.signupPassword !== this.state.signupConfirmPassword) {
-      console.log('PASSWORDS DONT MATCH DUMBASS')
+      return console.log('PASSWORDS DONT MATCH DUMBASS')
     } if (typeof Number(this.state.signupLimit) !== 'number') {
-      console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
+      return console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
     }
     else {
       this.setState({
