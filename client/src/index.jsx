@@ -36,7 +36,8 @@ class App extends React.Component {
       signupEmail: '',
       signupLimit: '',
       singupUsername: '',
-      signupPassword: ''
+      signupPassword: '',
+      signupConfirmPassword: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -72,22 +73,32 @@ class App extends React.Component {
 
 
   handleCloseSignup(name) {
-    this.setState({
-      [name]: false,
-      openDialog: 'none',
-      openStripe: true,
-    });
-    axios.post('/createAccount', {
-      username: this.state.signupUsername,
-      password: this.state.signupPassword,
-      email: this.state.signupEmail,
-      maxWeeklyPlans: this.state.signupLimit
-    }).then(res => {
-      console.log(res)
-
-    }).catch(err => {
-      console.log('error:', err)
-    })
+    if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
+      console.log('INFO MISSING YOU BITCH')
+    } if (this.state.signupPassword !== this.state.signupConfirmPassword) {
+      console.log('PASSWORDS DONT MATCH DUMBASS')
+    } if (typeof Number(this.state.signupLimit) !== 'number') {
+      console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
+    }
+    else {
+      this.setState({
+        [name]: false,
+        openDialog: 'none',
+        openStripe: true,
+      });
+      axios.post('/createAccount', {
+        username: this.state.signupUsername,
+        password: this.state.signupPassword,
+        email: this.state.signupEmail,
+        maxWeeklyPlans: this.state.signupLimit
+      }).then(res => {
+        console.log(res)
+  
+      }).catch(err => {
+        console.log('error:', err)
+      })
+    }
+    
   }
 
   handleCloseLogin(name) {
@@ -246,6 +257,13 @@ class App extends React.Component {
         onChange={(e) => {this.setState({signupPassword: e.target.value})}}
       />,
       <TextField
+      floatingLabelText='Confirm Password'
+      floatingLabelFixed={true}
+      type='password'
+      fullWidth={true}
+      onChange={(e) => {this.setState({signupConfirmPassword: e.target.value})}}
+    />,
+      <TextField
         floatingLabelText='Email'
         floatingLabelFixed={true}
         type='text'
@@ -273,9 +291,23 @@ class App extends React.Component {
     ];
     const stripe = [
       <StripeCheckout
+        name="TrumpChange"
+        description="Enter Your Card Info Below"
+        panelLabel="Submit"
+        allowRememberMe={false}
+        //amount=''
         token={this.onToken}
+        email={this.state.signupEmail}
+        currency="USD"
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-      />
+      >
+        <button
+          className="submitbtn"
+          //onClick={this.handleFormSubmit()}
+          type="submit"
+          value="Submit">EnterCreditCardInfo
+        </button>
+      </StripeCheckout>
     ];
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
