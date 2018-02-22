@@ -62,10 +62,10 @@ function hashPassword(userObj) {
 }
 
 
-function addSubscriberID(id, email, callback) {
+function addSubscriberID(id, username, callback) {
   console.log('id:', id);
-  console.log('email:', email);
-  db.User.findOne({email: email})
+  console.log('username:', username);
+  db.User.findOne({username: username})
     .then(function(doc) {
       doc.subscriberID = id;
       console.log('doc.subscriberID:', doc.subscriberID)

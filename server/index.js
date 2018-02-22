@@ -155,6 +155,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
+ console.log('req.session.username:', req.session.username);
 
  // *check if token email matches db email 
 
@@ -188,7 +189,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
              } else {
                console.log('saved subscription:', subscription);
                // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-               helpers.addSubscriberID(subscription.id, email, function() {
+               helpers.addSubscriberID(subscription.id, req.session.username, function() {
                  console.log('subsciprtionIDSaved');
                  res.send('success saving subscription');
                });
