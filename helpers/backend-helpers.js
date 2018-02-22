@@ -29,10 +29,17 @@ function getTweets(callback) {
 
 
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
-  const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
-  newUser.save(() => {
-    console.log('user saved');
-    callback();
+  db.User.findOne({username: username}, function(err, result) {
+    if (result === null) {
+      const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
+      newUser.save(() => {
+        console.log('user saved');
+        callback();
+      });
+    } else {
+      callback('Username already exists!');
+    }
+    
   })
 }
 

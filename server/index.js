@@ -104,7 +104,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     totalMoneyDonated: totalMoneyDonated
   } = req.body;  
   
-  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function () {
+  helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function (message) {
     // need to create session here
     req.session.regenerate(function(err) {
       if (!err) {
@@ -112,6 +112,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
         res.send(req.session.username);
       } else {
         console.log('error creating session');
+        res.send(message);
       }
     });
   });
