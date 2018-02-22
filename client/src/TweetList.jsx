@@ -6,8 +6,7 @@ class TweetList extends React.Component {
   render() {
     const style = {
       div: {
-        paddingTop: 7,
-        paddingBottom: 7
+       
       }
     }
     const content = this.props.tweets.map(tweet => {
