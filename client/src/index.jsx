@@ -297,8 +297,9 @@ class App extends React.Component {
         }
       />
     ];
-  	return (
+    return (
       <MuiThemeProvider muiTheme={muiTheme}>
+        <div className ='App'>
         <div style={style.flex}>
           <div style={style.flexHeader}>
             <RaisedButton
@@ -328,6 +329,11 @@ class App extends React.Component {
               open={this.state.openLogin}
               onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
             />
+            <Dialog title='Enter Payment'
+              actions={stripe}
+              modal={false}
+              open={this.state.openStripe}
+            />
             <img style={style.image} src='' alt='' />
             <img style={style.image} src='' alt='' />
             <img style={style.image} src='' alt='' />
@@ -352,7 +358,6 @@ class App extends React.Component {
               style={style.paper}
               zDepth={5}>
             </Paper>
-        <div className ='App'>
           <div style={style.flex}>
             <div style={style.flexHeader}>
               <RaisedButton
@@ -419,16 +424,6 @@ class App extends React.Component {
           </div>
         </div>
       </MuiThemeProvider>
-    // <div>
-    //   <p>      
-    // 
-    //   <StripeCheckout
-    //     token={this.onToken}
-    //     stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-    //   />
-    //   </p>
-    // </div>
-  
     )
   }
 }
