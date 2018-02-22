@@ -20,7 +20,8 @@ class Tweet extends React.Component {
       paper: {
         borderRadius: '50%',
         height: '40px',
-        width: '40px'
+        width: '40px',
+        display: 'flex,'
       },
       list: {
         paddingTop: 7,

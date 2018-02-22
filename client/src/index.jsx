@@ -192,7 +192,8 @@ class App extends React.Component {
         overflow: 'scroll',
       },
       image: {
-        height: 100,
+        position: 'relative',
+        height: 90,
       },
       paperHeader: {
         flex: .75, 
@@ -201,6 +202,7 @@ class App extends React.Component {
         display: 'flex',
         flexDirection: 'row-reverse',
         alignItems: 'center',
+        padding: 1,
       },
       flexButton: {
         flex: 1,
