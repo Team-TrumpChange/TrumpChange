@@ -212,7 +212,7 @@ class App extends React.Component {
       flexImage: {
         flex: 1,
         display: 'flex'
-      }
+      },
     }
     const logIn = [
       <TextField
