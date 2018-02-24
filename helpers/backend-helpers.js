@@ -36,6 +36,8 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
         console.log('user saved');
         callback();
       });
+    } else if (err) {
+      callback('error saving into DB');
     } else {
       callback('Username already exists!');
     }
