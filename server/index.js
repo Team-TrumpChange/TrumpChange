@@ -128,15 +128,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     } else if (message) {
       res.send(message);
     } else {
-      req.session.regenerate(function(err) {
-        if (!err) {
-          req.session.username = username;
-          res.send(req.session.username);
-        } else {
-          console.log('error creating session');
-          res.send('error loggin user in after saving to DB');
-        }
-      });
+      res.send(username);
     }
   });
 });
@@ -146,18 +138,11 @@ app.post('/login', function(req, res) { // receives login information from front
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
    // check the password in db against submitted password
-  console.log('db.checkPassword', helpers.checkPassword);
+  console.log('req.body.username:', req.body.username);
+  console.log('req.body.password:', req.body.password);
   helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
     if (boolean) {
-      req.session.regenerate(function(err) {
-        if (!err) {
-          req.session.username = req.body.username;
-          console.log('login succesful, session created');
-          res.send(req.session.username);
-        } else {
-          console.log('error creating session');
-        }
-      });
+      res.send(req.body.username);
     } else {
       console.log('invalid credentials');
       res.send('invalid credentials');
@@ -179,12 +164,12 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
- console.log('req.session.username:', req.session.username);
+ console.log('req.username:', req.body.username);
 
  // *check if token email matches db email 
 
 
- if (req.session.username) {
+ if (req.body.username) {
    stripe.customers.create({
   // the id from the token object sent from front end
        source: tokenId,
@@ -205,7 +190,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                   plan: 'plan_CM50jYu8LYbvMC',
                   quantity: 0
                 }
-               ],
+               ]
            }, function(err, subscription) { // returns a subscription object
                if (err) {
                  console.log('error creating subscription:', err);
@@ -213,7 +198,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                } else {
                  console.log('saved subscription:', subscription);
                  // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-                 helpers.addSubscriberID(subscription.id, req.session.username, function() {
+                 helpers.addSubscriberID(subscription.id, req.body.username, function() {
                    console.log('subsciprtionIDSaved');
                    res.send('success saving subscription');
                  });
@@ -226,20 +211,6 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
   }
 });
 
-app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
- // uses db function to update that user's max count
-});
-
-app.post('/logout', function(req, res) {
-  req.session.destroy(function(err) {
-    if (err) {
-      console.log('error logging out');
-    }
-    else {
-      console.log('session destroyed!');
-    }
-  });
-})
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('listening on port 3000!');

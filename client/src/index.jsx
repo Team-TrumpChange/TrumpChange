@@ -36,7 +36,10 @@ class App extends React.Component {
       signupLimit: '',
       singupUsername: '',
       signupPassword: '',
-      signupConfirmPassword: ''
+      signupConfirmPassword: '',
+      loggedInUsername: '',
+      loginUsername: '',
+      loginPassword: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
@@ -92,6 +95,8 @@ class App extends React.Component {
         openDialog: 'none',
         openStripe: true,
       });
+
+      var context = this;
       axios.post('/createAccount', {
         username: this.state.signupUsername,
         password: this.state.signupPassword,
@@ -99,7 +104,13 @@ class App extends React.Component {
         maxWeeklyPlans: this.state.signupLimit
       }).then(res => {
         console.log(res)
-  
+        if (res.data !== 'Username already exists!' || res.data !== 'error') {
+          context.setState({
+            loggedInUsername: res.data
+          }, () => {
+            console.log('context.state.loggedInUsername:', context.state.loggedInUsername);
+          })
+        }
       }).catch(err => {
         console.log('error:', err)
       })
@@ -109,29 +120,41 @@ class App extends React.Component {
 
   handleCloseLogin(name) {
     // how to get username and password info to call submitLogin Func?
+    console.log('inlogin handler')
     this.setState({
       [name]: false,
       openDialog: 'none'
+    }, () => {
+      console.log('this.state.loginUsername:', this.state.loginUsername);
+      console.log('this.state.loginPassword:', this.state.loginPassword);
+      this.submitLogin(this.state.loginUsername, this.state.loginPassword);
     });
 
-    this.submitLogin(this.state.signupUsername, this.state.signupPassword);
   }
 
   submitLogin(username, password) {
     // make a post req to server with username and password
+    var context = this;
     axios.post('/login', {
       username: username,
       password: password
     }).then(res => {
-      console.log(res)
+      console.log(res);
+      if (res !== 'invalid credentials') {
+        context.setState({
+          username: res.data
+        });     
+      } 
     }).catch(err => {
-      console.log(err)
+      console.log(err);
     })
   }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
+    var context = this;
     console.log('onToken', token)
     axios.post('/customerToken', {
+      username: context.state.loggedInUsername,
       id: token.id,
       email: token.card.name
     }).then(res => {
@@ -224,14 +247,14 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
-        onChnage={(e) => {this.setState({loginPassword: e.target.value})}}
+        onChange={(e) => {this.setState({loginUsername: e.target.value})}}
       />, <br />,
       <TextField
         floatingLabelText='Password'
         floatingLabelFixed={true}
         type='password'
         fullWidth={true}
-        onChange={(e) => {this.setState({loginUsername: e.target.value})}}
+        onChange={(e) => {this.setState({loginPassword: e.target.value})}}
       />,
       <FlatButton
         label='Cancel'

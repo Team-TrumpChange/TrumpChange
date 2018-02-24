@@ -37,7 +37,7 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
         callback();
       });
     } else if (err) {
-      callback('error saving into DB');
+      callback('error');
     } else {
       callback('Username already exists!');
     }
@@ -46,10 +46,10 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
 }
 
 function checkPassword(username, password, callback) {
+  console.log('username in checkPassword:', username);
+  console.log('password in checkPassword:', password);
   db.User.findOne({username: username})
     .then(function(doc) {
-      console.log('password', password);
-      console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
 }
