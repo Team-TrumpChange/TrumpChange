@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const session = require('express-session');
+//const session = require('express-session');
 
 //import Subheader from 'material-ui/Subheader';
 //import { List, ListItem } from 'material-ui/List';
@@ -17,17 +17,24 @@ const timezone = require('moment-timezone');
 
 const app = express();
 
+app.use(require('cookie-session')({
+  // Cookie config, take a look at the docs...
+  name: 'session',
+  keys: ['nerfgundrone'],
+  maxAge: 1000 * 60 * 60
+}));
+
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
-}));
+// app.use(session({
+//   secret: 'keyboard cat',
+//   resave: false,
+//   saveUninitialized: true
+// }));
 
 let count = 0;
 let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
@@ -38,6 +45,14 @@ setInterval(() => {
   })
 }, 60000);
 
+
+function sessionCleanup() {
+  sessionStore.all(function (err, sessions) {
+    for (var i = 0; i < sessions.length; i++) {
+      sessionStore.get(sessions[i], function () { });
+    }
+  });
+}
 
 var updateSubs = function(count) {
   helpers.updateSubscriptions(function (users) {
@@ -114,15 +129,18 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     } else if (message) {
       res.send(message);
     } else {
-      req.session.regenerate(function(err) {
-        if (!err) {
-          req.session.username = username;
-          res.send(req.session.username);
-        } else {
-          console.log('error creating session');
-          res.send('error loggin user in after saving to DB');
-        }
-      });
+      // req.session.regenerate(function(err) {
+      //   if (!err) {
+      //     req.session.username = username;
+      //     res.send(req.session.username);
+      //   } else {
+      //     console.log('error creating session');
+      //     res.send('error loggin user in after saving to DB');
+      //   }
+      // });
+      //req.session = null;
+      req.session.username = username
+      res.send(req.session.username)
     }
   });
 });
@@ -132,18 +150,22 @@ app.post('/login', function(req, res) { // receives login information from front
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
    // check the password in db against submitted password
-  console.log('db.checkPassword', helpers.checkPassword);
+  //console.log('db.checkPassword', helpers.checkPassword);
   helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
+  console.log('yoooooooo',req.body.password)
     if (boolean) {
-      req.session.regenerate(function(err) {
-        if (!err) {
-          req.session.username = req.body.username;
-          console.log('login succesful, session created');
-          res.send(req.session.username);
-        } else {
-          console.log('error creating session');
-        }
-      });
+      // req.session.regenerate(function(err) {
+      //   if (!err) {
+      //     req.session.username = req.body.username;
+      //     console.log('login succesful, session created');
+      //     res.send(req.session.username);
+      //   } else {
+      //     console.log('error creating session');
+      //   }
+      // });
+      //req.session = null;
+      req.session.username = req.body.username
+      res.send(req.session.username)
     } else {
       console.log('invalid credentials');
       res.send('invalid credentials');

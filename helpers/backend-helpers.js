@@ -44,10 +44,10 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
 }
 
 function checkPassword(username, password, callback) {
-  db.User.findOne({username: username})
+   db.User.findOne({username: username})
     .then(function(doc) {
-      console.log('password', password);
-      console.log('callback:', callback);
+      console.log('yoooo password', password);
+      //console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     });
 }

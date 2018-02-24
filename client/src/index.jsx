@@ -33,11 +33,14 @@ class App extends React.Component {
       signupLimit: '',
       singupUsername: '',
       signupPassword: '',
-      signupConfirmPassword: ''
+      signupConfirmPassword: '',
+      loginUsername: '',
+      loginPassword: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
+    this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
     }, 6000);
@@ -111,11 +114,12 @@ class App extends React.Component {
       openDialog: 'none'
     });
 
-    this.submitLogin(this.state.signupUsername, this.state.signupPassword);
+    this.submitLogin(this.state.loginUsername, this.state.loginPassword);
   }
 
   submitLogin(username, password) {
     // make a post req to server with username and password
+    console.log(username, password)
     axios.post('/login', {
       username: username,
       password: password
@@ -221,7 +225,7 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
-        onChnage={(e) => {this.setState({loginPassword: e.target.value})}}
+        onChange={(e) => {this.setState({loginPassword: e.target.value})}}
       />, <br />,
       <TextField
         floatingLabelText='Password'
