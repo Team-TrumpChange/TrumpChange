@@ -49,7 +49,10 @@ function checkPassword(username, password, callback) {
       console.log('yoooo password', password);
       //console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
-    });
+    })
+    .catch(error => {
+      console.log(error);
+    })
 }
 
 
@@ -83,7 +86,11 @@ function addSubscriberID(id, username, callback) {
             callback();
           }
       });
-    });
+    })
+    .catch(error => {
+      console.log(error);
+      
+    })
 }
 
 function addUniqueTweet(tweetsArray) {
@@ -111,7 +118,11 @@ function updateSubscriptions(callback) {
       console.log('results:', results);
       console.log('callback:', callback);
       callback(results);
-   });
+   })
+   .catch(error => {
+     console.log(error);
+     
+   })
 }
 
 
