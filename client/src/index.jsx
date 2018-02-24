@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import StripeCheckout from 'react-stripe-checkout'
-import dotenv from 'dotenv'
-import axios from 'axios'
+import StripeCheckout from 'react-stripe-checkout';
+import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import FlatButton from 'material-ui/FlatButton';
@@ -18,8 +17,6 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
-
-dotenv.config();
 
 class App extends React.Component {
   constructor(props) {
@@ -43,7 +40,7 @@ class App extends React.Component {
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
-    }, 60000);
+    }, 6000);
   }
 
   componentDidMount() {
@@ -303,7 +300,7 @@ class App extends React.Component {
         token={this.onToken}
         email={this.state.signupEmail}
         currency="USD"
-        stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
+        stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p"
       >
         <button
           className="submitbtn"
