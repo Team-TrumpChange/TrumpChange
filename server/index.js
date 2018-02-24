@@ -7,9 +7,12 @@ dotenv.config();
 const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const session = require('express-session');
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
+const MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGO_DATABASE);
 
-const MemoryStore = require('session-memory-store')(session);
+//const MemoryStore = require('session-memory-store')(session);
 //import Subheader from 'material-ui/Subheader';
 //import { List, ListItem } from 'material-ui/List';
 
@@ -25,18 +28,23 @@ const app = express();
 //   keys: ['nerfgundrone'],
 //   maxAge: 1000 * 60 * 60
 // }));
-app.use(cookieParser());
+//app.use(cookieParser());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
+// app.use(session({
+//   secret: 'keyboard cat',
+//   resave: false,
+//   saveUninitialized: false,
+//   //store: new MemoryStore()
+// }));
+
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: false,
-  store: new MemoryStore()
+  secret: 'nerfgun',
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
 let count = 0;
@@ -161,6 +169,7 @@ app.post('/login', function(req, res) { // receives login information from front
         if (!err) {
           req.session.username = req.body.username;
           console.log('login succesful, session created');
+          console.log(req.session);
           res.send(req.session.username);
         } else {
           console.log('error creating session');
