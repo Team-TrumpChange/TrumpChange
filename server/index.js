@@ -33,8 +33,6 @@ app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(express.static(__dirname + '/../client/dist'));
-app.use(bodyParser.json());
 // app.use(session({
 //   secret: 'keyboard cat',
 //   resave: false,
@@ -44,6 +42,8 @@ app.use(bodyParser.json());
 
 app.use(session({
   secret: 'nerfgun',
+  resave: true,
+  saveUninitialized: true,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
