@@ -7,9 +7,9 @@ dotenv.config();
 const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const session = require('express-session');
-//const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
-//const MemoryStore = require('session-memory-store')(session);
+const MemoryStore = require('session-memory-store')(session);
 //import Subheader from 'material-ui/Subheader';
 //import { List, ListItem } from 'material-ui/List';
 
@@ -25,7 +25,7 @@ const app = express();
 //   keys: ['nerfgundrone'],
 //   maxAge: 1000 * 60 * 60
 // }));
-//app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,7 +36,7 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
-  // store: new MemoryStore()
+  store: new MemoryStore()
 }));
 
 let count = 0;
