@@ -33,7 +33,7 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
     if (result === null) {
       const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
       newUser.save(() => {
-        console.log('user saved');
+        console.log('user saved in saveUserIntoDataBase');
         callback();
       });
     } else if (err) {
@@ -118,6 +118,27 @@ function updateSubscriptions(callback) {
    });
 }
 
+function updateUserAmountDonated(numDonations, user, callback) { // takes in the amount donated that week and adds it to the total in their table row
+  console.log('user in updateUser:', user);
+  db.User.findOne({username: user.username})
+    .then(function(user) {
+      user.totalMoneyDonated = user.totalMoneyDonated + numDonations;
+      user.save(function(err) {
+        if (err) {
+          console.log('error updating totalMondayDonated for user:', user, error);
+          callback(err);
+        } else {
+          console.log('success updating totalMoneyDonated for user:', user);
+          callback();
+        }
+      });
+    })  
+    .catch(function(err) {
+      console.log('error finding the user in updateUserAmountDonated', err);
+      callback(err);
+    });
+}
+
 
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -128,3 +149,4 @@ exports.checkPassword = checkPassword;
 exports.getTrumpTweets = getTrumpTweets;
 exports.addSubscriberID = addSubscriberID;
 exports.updateSubscriptions = updateSubscriptions;
+exports.updateUserAmountDonated = updateUserAmountDonated;

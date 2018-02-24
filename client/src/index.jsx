@@ -303,7 +303,7 @@ class App extends React.Component {
         token={this.onToken}
         email={this.state.signupEmail}
         currency="USD"
-        stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
+        stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
       >
         <button
           className="submitbtn"

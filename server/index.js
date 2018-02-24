@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const db = require('../database/index.js');
 const helpers = require('../helpers/backend-helpers');
 const cors = require('cors');
-const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
+const env = require('dotenv');
+env.config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const session = require('express-session');
 
 //import Subheader from 'material-ui/Subheader';
@@ -28,11 +30,12 @@ app.use(session({
 }));
 
 let count = 0;
-let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
+let billCycleMoment = 'Sat Feb 24 21:44 +0000 2018';
+let totalDonated = 0;
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
-    helpers.addUniqueTweet(tweets)
+    helpers.addUniqueTweet(tweets);
   })
 }, 60000);
 
@@ -41,29 +44,42 @@ var updateSubs = function(count) {
   helpers.updateSubscriptions(function (users) {
     console.log('in updateSubscriptions');
 
-    var subroutine = function(user, index) {
+    var subroutine = function(userProfile, index) {
+      var udpated = false;
       var updateNum;
-      console.log('user:', user);
-      if (user.maxWeeklyPlans <= count) {
-        updateNum = user.maxWeeklyPlans;
+      console.log('userProfile:', userProfile);
+      if (userProfile.maxWeeklyPlans <= count) {
+        updateNum = userProfile.maxWeeklyPlans;
       } else {
         updateNum = count;
       }
-      if (user.subscriberID) {
-        console.log('updateNum:', updateNum);
-        console.log('user.subscriberID:', user.subscriberID);
 
-        stripe.subscriptions.update(
-          user.subscriberID,
+      if (userProfile.subscriberID) {
+        console.log('updateNum:', updateNum);
+        console.log('userProfile.subscriberID:', userProfile.subscriberID);
+
+        stripe.subscriptions.update( // then updated the number of subscriptions in stripe DB
+          userProfile.subscriberID,
           {quantity: updateNum} , function(err, user) {
             if (err) {
               console.log('error updating user', err);
             } else {
               console.log('user updated, user.quantity:', user.quantity);
-              if (index === users.length) {
-                return;
-              }
-              subroutine(users[index], index + 1);
+              
+              totalDonated = totalDonated + updateNum;
+              console.log('totalDonated:', totalDonated);
+
+              helpers.updateUserAmountDonated(updateNum, userProfile, function(err) {
+                if (!err) {
+                  if (index === users.length) { // base case
+                    return;
+                  }
+                  subroutine(users[index], index + 1);      
+                } else {
+                  console.log('error in updatingUserAmountDonated (inside updateSubs):', err);
+                }
+              }); // while we have access to that user, update the total amount donated as long as updating subscription was successful
+             
             }
         });
       } else {
@@ -168,7 +184,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // *check if token email matches db email 
 
 
- if (req.session.user) {
+ if (req.session.username) {
    stripe.customers.create({
   // the id from the token object sent from front end
        source: tokenId,
