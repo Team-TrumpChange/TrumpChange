@@ -226,7 +226,7 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
-        onChnage={(e) => {this.setState({loginPassword: e.target.value})}}
+        onChange={(e) => {this.setState({loginPassword: e.target.value})}}
       />, <br />,
       <TextField
         floatingLabelText='Password'
