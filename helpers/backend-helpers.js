@@ -96,8 +96,6 @@ function addUniqueTweet(tweetsArray) {
   }
 }
 
-// db.Tweet.find().sort({ dateTweeted: -1 })
-
 function getTrumpTweets(callback) {
   db.Tweet.find({}).sort({ dateObject: -1 }).exec((err, res) => {
     if (err) {

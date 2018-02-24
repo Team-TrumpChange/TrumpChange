@@ -2,9 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('../database/index.js');
 const helpers = require('../helpers/backend-helpers');
-const config = require('../config.js');
+// const config = require('../config.js');
+const dotenv = require('dotenv');
+dotenv.config();
 const cors = require('cors');
-const stripe = require('stripe')(config.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const session = require('express-session');
 
 //import Subheader from 'material-ui/Subheader';
