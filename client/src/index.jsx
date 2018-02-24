@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import config from '../../config.js'
 import StripeCheckout from 'react-stripe-checkout'
 import dotenv from 'dotenv'
 import axios from 'axios'
@@ -36,13 +35,16 @@ class App extends React.Component {
       signupEmail: '',
       signupLimit: '',
       singupUsername: '',
-      signupPassword: ''
+      signupPassword: '',
+      signupConfirmPassword: ''
     }
     this.onToken = this.onToken.bind(this)
     this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
+    setInterval(() => {
+      this.getTrumpTweetsFromDb()
+    }, 60000);
   }
-
 
   componentDidMount() {
     this.getTrumpTweetsFromDb() 
@@ -50,17 +52,15 @@ class App extends React.Component {
 
   //this function asks the server to get trump's tweets from the db and send them here to display
   getTrumpTweetsFromDb() {
-    setInterval(() => {
-      axios.get('/getTrumpTweets/db')
-      .then(res => {
-        console.log(res.data)
-        this.setState({
-          tweets: res.data
-        })
-      }).catch(err => {
-        console.log(err)
+    axios.get('/getTrumpTweets/db')
+    .then(res => {
+      this.setState({
+        tweets: res.data
       })
-    }, 6000)
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   handleOpen(name) {
@@ -70,24 +70,41 @@ class App extends React.Component {
     });
   }
 
-
-  handleCloseSignup(name) {
+  handleCloseSignupCancel(name) {
     this.setState({
       [name]: false,
-      openDialog: 'none',
-      openStripe: true,
+      openDialog: 'none'
     });
-    axios.post('/createAccount', {
-      username: this.state.signupUsername,
-      password: this.state.signupPassword,
-      email: this.state.signupEmail,
-      maxWeeklyPlans: this.state.signupLimit
-    }).then(res => {
-      console.log(res)
+  }
 
-    }).catch(err => {
-      console.log('error:', err)
-    })
+
+  handleCloseSignupSubmit(name) {
+    if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
+       return console.log('INFO MISSING YOU BITCH')
+    } if (this.state.signupPassword !== this.state.signupConfirmPassword) {
+      return console.log('PASSWORDS DONT MATCH DUMBASS')
+    } if (isNaN(Number(this.state.signupLimit))) {
+       return console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
+    }
+    else {
+      this.setState({
+        [name]: false,
+        openDialog: 'none',
+        openStripe: true,
+      });
+      axios.post('/createAccount', {
+        username: this.state.signupUsername,
+        password: this.state.signupPassword,
+        email: this.state.signupEmail,
+        maxWeeklyPlans: this.state.signupLimit
+      }).then(res => {
+        console.log(res)
+  
+      }).catch(err => {
+        console.log('error:', err)
+      })
+    }
+    
   }
 
   handleCloseLogin(name) {
@@ -111,36 +128,6 @@ class App extends React.Component {
       console.log(err)
     })
   }
-
-
-  // getTweets() { // gets new tweets from server (server does api call to twitter)
-  //   const context = this;
-  //   axios.get('/fetchtweets', {
-  //     params: {
-  //       user: 'realdonaldtrump'
-  //     }
-  //   })
-  //     .then((res) => {
-  //       console.log('Success');
-  //       console.log(res.data)
-
-  //       if (context.checkForNewTweets(data)) { // checks if the last tweet is new and resets the state
-  //         context.setState({
-  //           tweets: res.data
-  //         });
-  //       }
-  //       res.data.forEach((element) => {
-  //         console.log(element.text);
-  //       })    
-  //     })
-  //     .catch((error) => {
-  //       console.log('Error:', error);
-  //     })
-  // }
-
-  // componentDidMount() {
-  //   // console.log('processenv:',process.env, 'config:', config.STRIPE_PUBLISHABLE_KEY )
-  // }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
@@ -196,13 +183,15 @@ class App extends React.Component {
         display: 'flex',
         backgroundColor: fullWhite,
         justifyContent: 'space-around',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: '#ecf3f8'
       },
       paper: {
         flex: .3,
         backgroundColor: fullWhite,
         height: '75vh',
         overflow: 'scroll',
+        backgroundColor: fullWhite
       },
       image: {
         height: 90,
@@ -227,7 +216,6 @@ class App extends React.Component {
       flexImage: {
         flex: 1,
         display: 'flex',
-
       },
     }
     const logIn = [
@@ -273,6 +261,13 @@ class App extends React.Component {
         onChange={(e) => {this.setState({signupPassword: e.target.value})}}
       />,
       <TextField
+      floatingLabelText='Confirm Password'
+      floatingLabelFixed={true}
+      type='password'
+      fullWidth={true}
+      onChange={(e) => {this.setState({signupConfirmPassword: e.target.value})}}
+    />,
+      <TextField
         floatingLabelText='Email'
         floatingLabelFixed={true}
         type='text'
@@ -289,27 +284,41 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseSignupCancel.bind(this, this.state.openDialog)}
       />,
       <FlatButton
         label='Submit'
         primary={true}
         keyboardFocused={true}
-        onClick={this.handleCloseSignup.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseSignupSubmit.bind(this, this.state.openDialog)}
       />,
     ];
     const stripe = [
       <StripeCheckout
+        name="TrumpChange"
+        description="Enter Your Card Info Below"
+        panelLabel="Submit"
+        allowRememberMe={false}
+        //amount=''
         token={this.onToken}
+        email={this.state.signupEmail}
+        currency="USD"
         stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
-      />
+      >
+        <button
+          className="submitbtn"
+          //onClick={this.handleFormSubmit()}
+          type="submit"
+          value="Submit">EnterCreditCardInfo
+        </button>
+      </StripeCheckout>
     ];
 
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-        <div className='App'>
+        <div className='App'style={style.app}>
           <div style={style.flex}>
-            <Paper zDepth={3} style={style.paperHeader}>
+            <Paper zDepth={2} style={style.paperHeader}>
               <div style={style.flexButton}>
                 <RaisedButton
                   style={{ margin: 7.925 }}
@@ -323,7 +332,7 @@ class App extends React.Component {
                   actions={signUp}
                   modal={false}
                   open={this.state.openSignUp}
-                  onRequestClose={this.handleCloseSignup.bind(this, 'openSignUp')}
+                  onRequestClose={this.handleCloseSignupCancel.bind(this, 'openSignUp')}
                 />
                 <RaisedButton
                   style={{margin: 7.925}}
@@ -341,7 +350,7 @@ class App extends React.Component {
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
-                  open={this.state.openStripe}                />
+                  open={this.state.openStripe}/>
               </div>
               <div style={style.flexImage}>
                 <img
@@ -353,18 +362,18 @@ class App extends React.Component {
             <div style={style.mainBody}>
               <Paper 
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
                 <div className="tweets-app">
                   <TweetList tweets={this.state.tweets} />
                 </div>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
               </Paper>
               <Paper
                 style={style.paper}
-                zDepth={3}>
+                zDepth={2}>
               </Paper>
             </div>
           </div>

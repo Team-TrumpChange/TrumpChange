@@ -21,7 +21,8 @@ let tweetsSchema = mongoose.Schema({
   tweet: String,
   favorites: Number,
   retweets: Number,
-  dateTweeted: String
+  dateTweeted: String,
+  dateObject: Date
 });
 
 let User = mongoose.model('User', userSchema);
