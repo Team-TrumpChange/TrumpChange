@@ -43,7 +43,7 @@ class App extends React.Component {
     this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
-    }, 6000);
+    }, 60000);
   }
 
   componentDidMount() {

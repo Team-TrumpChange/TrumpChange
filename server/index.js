@@ -29,6 +29,10 @@ let count = 0;
 let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
 
 setInterval(() => {
+  helpers.updateRetweetAndFavoriteCount();
+}, 10000);
+
+setInterval(() => {
   helpers.getTweets(tweets => {   
     helpers.addUniqueTweet(tweets)
   })

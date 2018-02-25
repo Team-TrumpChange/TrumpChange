@@ -13,12 +13,11 @@ const twitterClient = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
 });
 
-function getTweets(callback) {
+function getTweets(callback, count) {
   const params = {
     screen_name: 'realdonaldtrump',
-    count: 5,
+    count: count || 5,
   };
-
   twitterClient.get('statuses/user_timeline', params, (error, tweets) => {
     if (!error) {
       callback(tweets);
@@ -26,6 +25,18 @@ function getTweets(callback) {
       callback(error);
     }
   });
+}
+
+function updateRetweetAndFavoriteCount() {
+  db.Tweet.count({}, (err, count) => {
+    getTweets(tweets => {
+      for (let tweet of tweets) {
+        db.Tweet.update({ tweetid: tweet.id }, { $set: { favorites: tweet.favorite_count, retweets: tweet.retweet_count}}, (err, res) => {
+          !err ? console.log('Successful update of retweets and favorites') : console.log('Error updating retweets and favorites');
+        })
+      }
+    }, count);
+  })
 }
 
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
@@ -120,6 +131,7 @@ function updateSubscriptions(callback) {
    })
 }
 
+exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
