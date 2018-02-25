@@ -38,7 +38,7 @@ class App extends React.Component {
       loginPassword: ''
     }
     this.onToken = this.onToken.bind(this)
-    this.update = this.update.bind(this)
+    //this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
     this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
