@@ -22,7 +22,7 @@ app.use(session({
   secret: 'nerfgun',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({ mongooseConnection: mongoose.connection })
+  store: new MongoStore({ url: 'mongodb://trumpchange:trumpchange2018@ds143778.mlab.com:43778/users' })
 }));
 
 let count = 0;
