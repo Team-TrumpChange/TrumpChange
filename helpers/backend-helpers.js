@@ -46,16 +46,12 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
 function checkPassword(username, password, callback) {
    db.User.findOne({username: username})
     .then(function(doc) {
-      console.log('yoooo password', password);
-      //console.log('callback:', callback);
       callback(bcrypt.compareSync(password, doc.password));
     })
     .catch(error => {
       console.log(error);
     })
 }
-
-
 
 function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {
   const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted, dateObject: moment(dateTweeted).toDate()});
@@ -70,7 +66,6 @@ function hashPassword(userObj) {
   let hash = bcrypt.hashSync(userObj.password, salt);
   userObj.password = hash;
 }
-
 
 function addSubscriberID(id, username, callback) {
   console.log('id:', id);
@@ -97,7 +92,7 @@ function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
     db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
       if (!res.length) {
-        saveTweetIntoDataBase(tweet.user.profile_image_url, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
+        saveTweetIntoDataBase(tweet.user.profile_image_url_https, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
       }
     })
   }
@@ -124,7 +119,6 @@ function updateSubscriptions(callback) {
      
    })
 }
-
 
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;

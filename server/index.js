@@ -24,7 +24,7 @@ app.use(session({
   saveUninitialized: true,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
-
+s
 let count = 0;
 let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
 
@@ -99,8 +99,6 @@ setInterval(() => {
   }
 }, 60000);
 
-
-
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   req.body.totalMoneyDonated = null;
@@ -134,7 +132,6 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
   });
 });
 
-
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
@@ -162,7 +159,6 @@ app.post('/login', function(req, res) { // receives login information from front
     }
   });
 });
-
 
 app.get('/getTrumpTweets/db', (req, res) => {
   helpers.getTrumpTweets(function(results) {
