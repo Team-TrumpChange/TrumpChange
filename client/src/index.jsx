@@ -19,6 +19,7 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
+import Chart from './Chart.jsx'
 
 dotenv.config();
 
@@ -193,7 +194,7 @@ class App extends React.Component {
         backgroundColor: fullWhite,
         height: '75vh',
         overflow: 'scroll',
-        backgroundColor: fullWhite
+        backgroundColor: fullWhite,
       },
       image: {
         height: 90,
@@ -372,6 +373,7 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
+                <Chart/>
               </Paper>
               <Paper
                 style={style.paper}
