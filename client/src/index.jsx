@@ -141,16 +141,16 @@ class App extends React.Component {
     })
   }
 
-  update() {
-    axios.post('/update', {
-      quantity: 10
-    }).then(res => {
-      // call render stripe token
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
-  }
+  // update() {
+  //   axios.post('/update', {
+  //     quantity: 10
+  //   }).then(res => {
+  //     // call render stripe token
+  //     console.log(res)
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // }
 
   render () {
     const muiTheme = getMuiTheme({

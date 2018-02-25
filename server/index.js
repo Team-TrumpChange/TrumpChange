@@ -99,7 +99,7 @@ setInterval(() => {
   }
 }, 60000);
 
-app.get('/')
+
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
@@ -224,9 +224,9 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
   }
 });
 
-app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
- // uses db function to update that user's max count
-});
+// app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
+//  // uses db function to update that user's max count
+// });
 
 app.post('/logout', function(req, res) {
   req.session.destroy(function(err) {
