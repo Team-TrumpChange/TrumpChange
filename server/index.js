@@ -22,7 +22,7 @@ app.use(session({
   secret: 'nerfgun',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({ url: 'mongodb://trumpchange:trumpchange2018@ds143778.mlab.com:43778/users' })
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
 let count = 0;
@@ -239,6 +239,6 @@ app.post('/logout', function(req, res) {
   });
 })
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
 });
