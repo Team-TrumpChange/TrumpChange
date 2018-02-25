@@ -24,7 +24,7 @@ app.use(session({
   saveUninitialized: true,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
-s
+
 let count = 0;
 let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
 
