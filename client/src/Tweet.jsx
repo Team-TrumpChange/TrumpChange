@@ -7,7 +7,12 @@ import { blue400, red500, redA100, blueA100 } from 'material-ui/styles/colors';
 import Paper from 'material-ui/Paper';
 
 class Tweet extends React.Component {
-
+  constructor(props) {
+    super(props)
+    this.state = {
+      hideFavorites: true
+    }
+  }
   render() {
     const style = {
       tweet: {
@@ -69,12 +74,13 @@ class Tweet extends React.Component {
             </i>
             {tweet.retweets}
             </cite>
-            <cite style={style.iconCite}>
-            <i style={style.iconFavorites} className="material-icons">
-            favorite
+            {tweet.favorites > 0 && this.state.hideFavorites ? <cite style={style.iconCite}>
+              <i style={style.iconFavorites} className="material-icons">
+                favorite
             </i>
-            {tweet.favorites}
-            </cite>
+              {tweet.favorites}
+            </cite> :
+              <div></div>}
         </ListItem>
         </Paper>
       </List>
