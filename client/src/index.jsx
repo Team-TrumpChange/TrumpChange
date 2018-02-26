@@ -340,13 +340,22 @@ class App extends React.Component {
           <div style={style.flex}>
             <Paper zDepth={2} style={style.paperHeader}>
               <div style={style.flexButton}>
-                <RaisedButton
-                  style={{ margin: 7.925 }}
-                  labelColor={white}
-                  backgroundColor={red500}
-                  label='Sign Up'
-                  onClick={this.handleOpen.bind(this, "openSignUp")}
-                />
+                {this.state.username === null ? 
+                  <RaisedButton
+                    style={{ margin: 7.925 }}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='Sign Up'
+                    onClick={this.handleOpen.bind(this, "openSignUp")}
+                  /> :
+                  <RaisedButton
+                    style={{ margin: 7.925 }}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='My Profile'
+                    onClick={this.handleOpen.bind(this, "openSignUp")}
+                  /> 
+                }
                 <Dialog
                   title='Enter a new username, password, and email'
                   actions={signUp}
@@ -354,13 +363,21 @@ class App extends React.Component {
                   open={this.state.openSignUp}
                   onRequestClose={this.handleCloseSignupCancel.bind(this, 'openSignUp')}
                 />
-                <RaisedButton
-                  style={{margin: 7.925}}
-                  labelColor={white}
-                  backgroundColor={red500}
-                  label='Log In'
-                  onClick={this.handleOpen.bind(this, "openLogin")}
-                />
+                {this.state.username === null ? 
+                  <RaisedButton
+                    style={{margin: 7.925}}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='Log In'
+                    onClick={this.handleOpen.bind(this, "openLogin")}
+                  /> :
+                  <RaisedButton
+                    style={{ margin: 7.925 }}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='Log Out'
+                    onClick={this.handleOpen.bind(this, "openLogin")}
+                  />}
                 <Dialog title='Enter your username and password'
                   actions={logIn}
                   modal={false}

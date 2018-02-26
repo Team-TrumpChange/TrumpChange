@@ -57,9 +57,8 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
 }
 
 function checkPassword(username, password, callback) {
-  console.log('username in checkPassword:', username);
-  console.log('password in checkPassword:', password);
-  db.User.findOne({username: username})
+  console.log(password)
+   db.User.findOne({username: username})
     .then(function(doc) {
       if (doc === null) {
         callback(false);
