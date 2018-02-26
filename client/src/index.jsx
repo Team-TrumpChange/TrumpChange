@@ -116,17 +116,22 @@ class App extends React.Component {
     }
   }
 
-  handleCloseLogin(name) {
+  handleCloseCancel(){
+    this.setState({
+      openLogin: false,
+      openDialog: 'none'
+    });
+  }
+
+  handleCloseLogin() {
     // how to get username and password info to call submitLogin Func?
     this.setState({
       openLogin: false,
       openDialog: 'none'
     });
-    if (name === 'submit') {
-        console.log('this.state.loginUsername:', this.state.loginUsername);
-        console.log('this.state.loginPassword:', this.state.loginPassword);
-        this.submitLogin(this.state.loginUsername, this.state.loginPassword);
-    }
+    console.log('this.state.loginUsername:', this.state.loginUsername);
+    console.log('this.state.loginPassword:', this.state.loginPassword);
+    this.submitLogin(this.state.loginUsername, this.state.loginPassword);
   }
 
   submitLogin(username, password) {
@@ -280,13 +285,15 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleCloseLogin.bind(this, 'cancel')}
+        onClick = {
+          this.handleCloseCancel.bind(this)
+        }
       />,
       <FlatButton
         label='Submit'
         primary={true}
-        keyboardFocused={true}
-        onClick={this.handleCloseLogin.bind(this, 'submit')}
+        keyboardFocused={false}
+        onClick={(e) => {e.preventDefault(); this.handleCloseLogin()}}
       />,
     ];
     const signUp = [
@@ -372,13 +379,7 @@ class App extends React.Component {
                     label='Sign Up'
                     onClick={this.handleOpen.bind(this, "openSignUp")}
                   /> :
-                  <RaisedButton
-                    style={{ margin: 7.925 }}
-                    labelColor={white}
-                    backgroundColor={red500}
-                    label='My Profile'
-                    onClick={this.handleOpen.bind(this, "openSignUp")}
-                  /> 
+                  null
                 }
                 <Dialog
                   title='Enter a new username, password, and email'
@@ -406,7 +407,9 @@ class App extends React.Component {
                   actions={logIn}
                   modal={false}
                   open={this.state.openLogin}
-                  //onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
+                  onRequestClose = {
+                    this.handleCloseCancel.bind(this)
+                  }
                 />
                 <Dialog title='Enter Payment'
                   actions={stripe}
