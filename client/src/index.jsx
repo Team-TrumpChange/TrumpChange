@@ -1,10 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import config from '../../config.js'
-import StripeCheckout from 'react-stripe-checkout'
-import dotenv from 'dotenv'
-import axios from 'axios'
+import StripeCheckout from 'react-stripe-checkout';
+import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import FlatButton from 'material-ui/FlatButton';
@@ -21,8 +19,6 @@ import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
 import Chart from './Chart.jsx'
 
-dotenv.config();
-
 class App extends React.Component {
   constructor(props) {
   	super(props)
@@ -38,14 +34,18 @@ class App extends React.Component {
       signupLimit: '',
       singupUsername: '',
       signupPassword: '',
-      signupConfirmPassword: ''
+      signupConfirmPassword: '',
+      loginUsername: '',
+      loginPassword: '',
+      username: ''
     }
     this.onToken = this.onToken.bind(this)
-    this.update = this.update.bind(this)
+    //this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
+    this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
-    }, 60000);
+    }, 30000);
   }
 
   componentDidMount() {
@@ -56,7 +56,6 @@ class App extends React.Component {
   getTrumpTweetsFromDb() {
     axios.get('/getTrumpTweets/db')
     .then(res => {
-      console.log(res.data)
       this.setState({
         tweets: res.data
       })
@@ -95,6 +94,8 @@ class App extends React.Component {
         openDialog: 'none',
         openStripe: true,
       });
+
+      var context = this;
       axios.post('/createAccount', {
         username: this.state.signupUsername,
         password: this.state.signupPassword,
@@ -102,39 +103,56 @@ class App extends React.Component {
         maxWeeklyPlans: this.state.signupLimit
       }).then(res => {
         console.log(res)
-  
+        if (res.data !== 'Username already exists!' || res.data !== 'error') {
+          context.setState({
+            loggedInUsername: res.data
+          }, () => {
+            console.log('context.state.loggedInUsername:', context.state.loggedInUsername);
+          })
+        }
       }).catch(err => {
         console.log('error:', err)
       })
     }
-    
   }
 
   handleCloseLogin(name) {
     // how to get username and password info to call submitLogin Func?
+    console.log('inlogin handler')
     this.setState({
       [name]: false,
       openDialog: 'none'
+    }, () => {
+      console.log('this.state.loginUsername:', this.state.loginUsername);
+      console.log('this.state.loginPassword:', this.state.loginPassword);
+      this.submitLogin(this.state.loginUsername, this.state.loginPassword);
     });
-
-    this.submitLogin(this.state.signupUsername, this.state.signupPassword);
   }
 
   submitLogin(username, password) {
     // make a post req to server with username and password
+    var context = this;
+    console.log(username, password)
     axios.post('/login', {
       username: username,
       password: password
     }).then(res => {
-      console.log(res)
+      console.log(res);
+      if (res !== 'invalid credentials') {
+        context.setState({
+          username: res.data
+        });     
+      } 
     }).catch(err => {
-      console.log(err)
+      console.log('ERRORfbehjkfbehjl', err);
     })
   }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
+    var context = this;
     console.log('onToken', token)
     axios.post('/customerToken', {
+      username: context.state.loggedInUsername,
       id: token.id,
       email: token.card.name
     }).then(res => {
@@ -144,16 +162,16 @@ class App extends React.Component {
     })
   }
 
-  update() {
-    axios.post('/update', {
-      quantity: 10
-    }).then(res => {
-      // call render stripe token
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
-  }
+  // update() {
+  //   axios.post('/update', {
+  //     quantity: 10
+  //   }).then(res => {
+  //     // call render stripe token
+  //     console.log(res)
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // }
 
   render () {
     const muiTheme = getMuiTheme({
@@ -227,14 +245,18 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
+<<<<<<< HEAD
         onChange={(e) => {this.setState({loginPassword: e.target.value})}}
+=======
+        onChange={(e) => {this.setState({loginUsername: e.target.value})}}
+>>>>>>> 5dbd2202892572aadf5b62d714e0764db36964c2
       />, <br />,
       <TextField
         floatingLabelText='Password'
         floatingLabelFixed={true}
         type='password'
         fullWidth={true}
-        onChange={(e) => {this.setState({loginUsername: e.target.value})}}
+        onChange={(e) => {this.setState({loginPassword: e.target.value})}}
       />,
       <FlatButton
         label='Cancel'
@@ -306,7 +328,7 @@ class App extends React.Component {
         token={this.onToken}
         email={this.state.signupEmail}
         currency="USD"
-        stripeKey={process.env.STRIPE_PUBLISHABLE_KEY || config.STRIPE_PUBLISHABLE_KEY} 
+        stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
       >
         <button
           className="submitbtn"
@@ -323,13 +345,22 @@ class App extends React.Component {
           <div style={style.flex}>
             <Paper zDepth={2} style={style.paperHeader}>
               <div style={style.flexButton}>
-                <RaisedButton
-                  style={{ margin: 7.925 }}
-                  labelColor={white}
-                  backgroundColor={red500}
-                  label='Sign Up'
-                  onClick={this.handleOpen.bind(this, "openSignUp")}
-                />
+                {this.state.username === null ? 
+                  <RaisedButton
+                    style={{ margin: 7.925 }}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='Sign Up'
+                    onClick={this.handleOpen.bind(this, "openSignUp")}
+                  /> :
+                  <RaisedButton
+                    style={{ margin: 7.925 }}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='My Profile'
+                    onClick={this.handleOpen.bind(this, "openSignUp")}
+                  /> 
+                }
                 <Dialog
                   title='Enter a new username, password, and email'
                   actions={signUp}
@@ -337,13 +368,21 @@ class App extends React.Component {
                   open={this.state.openSignUp}
                   onRequestClose={this.handleCloseSignupCancel.bind(this, 'openSignUp')}
                 />
-                <RaisedButton
-                  style={{margin: 7.925}}
-                  labelColor={white}
-                  backgroundColor={red500}
-                  label='Log In'
-                  onClick={this.handleOpen.bind(this, "openLogin")}
-                />
+                {this.state.username === null ? 
+                  <RaisedButton
+                    style={{margin: 7.925}}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='Log In'
+                    onClick={this.handleOpen.bind(this, "openLogin")}
+                  /> :
+                  <RaisedButton
+                    style={{ margin: 7.925 }}
+                    labelColor={white}
+                    backgroundColor={red500}
+                    label='Log Out'
+                    onClick={this.handleOpen.bind(this, "openLogin")}
+                  />}
                 <Dialog title='Enter your username and password'
                   actions={logIn}
                   modal={false}
