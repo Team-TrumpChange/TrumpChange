@@ -26,7 +26,8 @@ app.use(session({
 }));
 
 let count = 0;
-let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
+let billCycleMoment = 'Sat Feb 24 21:44 +0000 2018';
+let totalDonated = 0;
 
 setInterval(() => {
   helpers.updateRetweetAndFavoriteCount();
@@ -34,7 +35,7 @@ setInterval(() => {
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
-    helpers.addUniqueTweet(tweets)
+    helpers.addUniqueTweet(tweets);
   })
 }, 60000);
 
@@ -51,29 +52,42 @@ var updateSubs = function(count) {
   helpers.updateSubscriptions(function (users) {
     console.log('in updateSubscriptions');
 
-    var subroutine = function(user, index) {
+    var subroutine = function(userProfile, index) {
+      var udpated = false;
       var updateNum;
-      console.log('user:', user);
-      if (user.maxWeeklyPlans <= count) {
-        updateNum = user.maxWeeklyPlans;
+      console.log('userProfile:', userProfile);
+      if (userProfile.maxWeeklyPlans <= count) {
+        updateNum = userProfile.maxWeeklyPlans;
       } else {
         updateNum = count;
       }
-      if (user.subscriberID) {
-        console.log('updateNum:', updateNum);
-        console.log('user.subscriberID:', user.subscriberID);
 
-        stripe.subscriptions.update(
-          user.subscriberID,
+      if (userProfile.subscriberID) {
+        console.log('updateNum:', updateNum);
+        console.log('userProfile.subscriberID:', userProfile.subscriberID);
+
+        stripe.subscriptions.update( // then updated the number of subscriptions in stripe DB
+          userProfile.subscriberID,
           {quantity: updateNum} , function(err, user) {
             if (err) {
               console.log('error updating user', err);
             } else {
               console.log('user updated, user.quantity:', user.quantity);
-              if (index === users.length) {
-                return;
-              }
-              subroutine(users[index], index + 1);
+              
+              totalDonated = totalDonated + updateNum;
+              console.log('totalDonated:', totalDonated);
+
+              helpers.updateUserAmountDonated(updateNum, userProfile, function(err) {
+                if (!err) {
+                  if (index === users.length) { // base case
+                    return;
+                  }
+                  subroutine(users[index], index + 1);      
+                } else {
+                  console.log('error in updatingUserAmountDonated (inside updateSubs):', err);
+                }
+              }); // while we have access to that user, update the total amount donated as long as updating subscription was successful
+             
             }
         });
       } else {
@@ -141,6 +155,8 @@ app.post('/login', function(req, res) { // receives login information from front
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
    // check the password in db against submitted password
+  console.log('req.body.username:', req.body.username);
+  console.log('req.body.password:', req.body.password);
   //console.log('db.checkPassword', helpers.checkPassword);
   helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
   console.log('yoooooooo',req.body.password)
@@ -178,12 +194,12 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
- console.log('req.session.username:', req.session.username);
+ console.log('req.username:', req.body.username);
 
  // *check if token email matches db email 
 
 
- if (req.session.user) {
+ if (req.body.username) {
    stripe.customers.create({
   // the id from the token object sent from front end
        source: tokenId,
@@ -204,7 +220,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                   plan: 'plan_CM50jYu8LYbvMC',
                   quantity: 0
                 }
-               ],
+               ]
            }, function(err, subscription) { // returns a subscription object
                if (err) {
                  console.log('error creating subscription:', err);
@@ -212,7 +228,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                } else {
                  console.log('saved subscription:', subscription);
                  // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-                 helpers.addSubscriberID(subscription.id, req.session.username, function() {
+                 helpers.addSubscriberID(subscription.id, req.body.username, function() {
                    console.log('subsciprtionIDSaved');
                    res.send('success saving subscription');
                  });
@@ -238,7 +254,7 @@ app.post('/logout', function(req, res) {
       console.log('session destroyed!');
     }
   });
-})
+}); 
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
