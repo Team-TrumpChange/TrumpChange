@@ -22,7 +22,7 @@ app.use(session({
   secret: 'nerfgun',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({ mongooseConnection: mongoose.connection })
+  store: new MongoStore({ mongooseConnection: mongoose.connection, ttl: 60 })
 }));
 
 let billCycleMoment = 'Mon Feb 26 18:59 +0000 2018';
