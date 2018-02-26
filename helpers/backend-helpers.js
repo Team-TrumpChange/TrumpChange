@@ -36,7 +36,7 @@ function updateRetweetAndFavoriteCount() {
         })
       }
     }, count);
-  })
+  });
 }
 
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
@@ -52,8 +52,7 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
     } else {
       callback('Username already exists!');
     }
-    
-  })
+  });
 }
 
 function checkPassword(username, password, callback) {
@@ -73,7 +72,7 @@ function checkPassword(username, password, callback) {
 
 function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {
   const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted, dateObject: moment(dateTweeted).toDate()});
-  newTweet.save(() => {
+  newTweet.save((err) => {
     console.log('tweet saved');
   })
 }
@@ -101,7 +100,7 @@ function addSubscriberID(id, username, callback) {
       });
     })
     .catch(error => {
-      console.log(error);
+      console.log('error finding user in helpers.addSubscriberID:', error);
       
     })
 }
@@ -133,7 +132,7 @@ function updateSubscriptions(callback) {
       callback(results);
    })
    .catch(error => {
-     console.log(error);
+     console.log('error finding all users in helpers.updateSubscriptions:', error);
      
    })
 }
@@ -143,7 +142,7 @@ function updateUserAmountDonated(numDonations, user, callback) { // takes in the
   db.User.findOne({username: user.username})
     .then(function(user) {
       user.totalMoneyDonated = user.totalMoneyDonated + numDonations;
-      user.save(function(err) {
+      user.save(err => {
         if (err) {
           console.log('error updating totalMondayDonated for user:', user, error);
           callback(err);
@@ -159,6 +158,63 @@ function updateUserAmountDonated(numDonations, user, callback) { // takes in the
     });
 }
 
+function updateTotalDonated(weeklyCount, callback) {
+  db.GlobalVariable.findOne({name: 'totalDonated'})
+    .then(result => {
+      console.log('result.value before adding weeklyCount (inside updateTotalDonated):', result.value);
+      result.value = (Number(result.value) + Number(weeklyCount)).toString();
+      console.log('result.value after adding weeklyCount (inside updateTotalDonated):', result.value);
+      result.save(err => {
+        if (err) {
+          console.log('error saving updateTotalDonated after adding weeklyCount', err);
+          callback(err);
+        } else {
+          console.log('success saving updateTotalDonated');
+          callback();
+        }
+      })
+    })
+    .catch(err => {
+      console.log('error finding totalDonated globalVariable in updateTotalDonated');
+      callback(err);
+    });
+}
+
+function getTotalDonated(callback) {
+  db.GlobalVariable.findOne({name: 'totalDonated'})
+    .then(result => {
+      console.log('result.value from findONe in getTotalDonated:', result.value);
+      callback(null, result.value);
+    })
+    .catch(err => {
+      callback(err);
+    });
+}
+
+function getTotalUsers(callback) {
+  db.User.count({})
+    .then(result => {
+      console.log('User count from getTotalUsers:', result);
+      callback(null, result.toString());
+    })
+    .catch(err => {
+      console.log('error getting user count in getTotalUsers', err);
+      callback(err);
+    })
+}
+
+function getTotalNumTweets(callback) {
+  db.Tweet.count({})
+    .then(result => {
+      console.log('Num of Tweets from getTotalNumTweets:', result);
+      callback(null, result.toString());
+    })
+    .catch(err => {
+      console.log('error getting totalNumTweets in getTotalNumTweets:', err);
+      callback(err);
+    });
+}
+
 exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -170,3 +226,7 @@ exports.getTrumpTweets = getTrumpTweets;
 exports.addSubscriberID = addSubscriberID;
 exports.updateSubscriptions = updateSubscriptions;
 exports.updateUserAmountDonated = updateUserAmountDonated;
+exports.updateTotalDonated = updateTotalDonated;
+exports.getTotalDonated = getTotalDonated;
+exports.getTotalUsers = getTotalUsers;
+exports.getTotalNumTweets = getTotalNumTweets;
