@@ -17,6 +17,7 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
+import Chart from './Chart.jsx'
 
 class App extends React.Component {
   constructor(props) {
@@ -211,7 +212,7 @@ class App extends React.Component {
         backgroundColor: fullWhite,
         height: '75vh',
         overflow: 'scroll',
-        backgroundColor: fullWhite
+        backgroundColor: fullWhite,
       },
       image: {
         height: 90,
@@ -244,7 +245,11 @@ class App extends React.Component {
         floatingLabelFixed={true}
         type='text'
         fullWidth={true}
+<<<<<<< HEAD
+        onChange={(e) => {this.setState({loginPassword: e.target.value})}}
+=======
         onChange={(e) => {this.setState({loginUsername: e.target.value})}}
+>>>>>>> 5dbd2202892572aadf5b62d714e0764db36964c2
       />, <br />,
       <TextField
         floatingLabelText='Password'
@@ -407,6 +412,7 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
+                <Chart/>
               </Paper>
               <Paper
                 style={style.paper}
