@@ -61,6 +61,10 @@ function checkPassword(username, password, callback) {
   console.log('password in checkPassword:', password);
   db.User.findOne({username: username})
     .then(function(doc) {
+      if (doc === null) {
+        callback(false);
+      }
+      console.log('password in checkPassword:', password);
       callback(bcrypt.compareSync(password, doc.password));
     })
     .catch(error => {
@@ -156,7 +160,7 @@ function updateUserAmountDonated(numDonations, user, callback) { // takes in the
     });
 }
 
-exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;
+exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;

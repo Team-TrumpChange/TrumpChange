@@ -34,9 +34,9 @@ class App extends React.Component {
       singupUsername: '',
       signupPassword: '',
       signupConfirmPassword: '',
-      loggedInUsername: '',
       loginUsername: '',
-      loginPassword: ''
+      loginPassword: '',
+      username: ''
     }
     this.onToken = this.onToken.bind(this)
     //this.update = this.update.bind(this)
