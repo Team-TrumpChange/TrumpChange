@@ -56,19 +56,19 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
   })
 }
 
-function checkPassword(username, password, callback) {
+function checkPassword(username, password) {
   console.log(password)
-   db.User.findOne({username: username})
-    .then(function(doc) {
-      if (doc === null) {
-        callback(false);
-      }
-      console.log('password in checkPassword:', password);
-      callback(bcrypt.compareSync(password, doc.password));
-    })
-    .catch(error => {
-      console.log(error);
-    })
+  return db.User.findOne({username: username})
+  .then(doc => {
+    console.log('THE DOC:', doc);
+    console.log('password in checkPassword:', password);
+    return bcrypt.compareSync(password, doc.password, (err, res) => {
+      return res;
+    });
+  })
+  .catch(error => {
+    console.log(error);
+  })
 }
 
 function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {

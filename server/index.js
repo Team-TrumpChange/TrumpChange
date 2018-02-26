@@ -13,7 +13,8 @@ const moment = require('moment');
 const timezone = require('moment-timezone');
 const app = express();
 
-app.use(express.static(__dirname + '/../client/dist'));
+app.use(express.static(__dirname + '/../client/dist/'));
+//app.use(cookieParser('nerfgun'))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
@@ -157,26 +158,28 @@ app.post('/login', function(req, res) { // receives login information from front
    // check the password in db against submitted password
   console.log('req.body.username:', req.body.username);
   console.log('req.body.password:', req.body.password);
-  //console.log('db.checkPassword', helpers.checkPassword);
-  helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
-  console.log('yoooooooo',req.body.password)
-    if (boolean) {
-      req.session.regenerate(function(err) {
-        if (!err) {
-          req.session.username = req.body.username;
-          console.log('login succesful, session created');
-          console.log(req.session);
-          res.send(req.session.username);
-        } else {
-          console.log('error creating session');
-        }
-      });
-      //req.session = null;
-      // req.session.username = req.body.username
-      // res.send(req.session.username)
+  db.User.findOne({username: req.body.username}).exec((err, response) => {
+    if (response) {
+      helpers.checkPassword(req.body.username, req.body.password)
+        .then((boolean) => {
+          if (boolean) {
+            req.session.regenerate(err => {
+              if (!err) {
+                req.session.username = req.body.username;
+                console.log('login succesful, session created');
+                console.log(req.session);
+                res.status(202).send(req.session.username);
+              } else {
+                console.log('error creating session');
+              }
+            })
+          } else {
+            console.log('invalid credentials');
+            res.send('invalid credentials');
+          }
+        })
     } else {
-      console.log('invalid credentials');
-      res.send('invalid credentials');
+      res.status(400).send('error');
     }
   });
 });
@@ -249,9 +252,11 @@ app.post('/logout', function(req, res) {
   req.session.destroy(function(err) {
     if (err) {
       console.log('error logging out');
+      res.send();
     }
     else {
       console.log('session destroyed!');
+      res.send();
     }
   });
 }); 

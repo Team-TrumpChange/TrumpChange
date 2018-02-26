@@ -39,16 +39,13 @@ class App extends React.Component {
       username: ''
     }
     this.onToken = this.onToken.bind(this)
-    //this.update = this.update.bind(this)
-    this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
-    this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
     }, 30000);
   }
 
   componentDidMount() {
-    this.getTrumpTweetsFromDb() 
+    this.getTrumpTweetsFromDb();
   }
 
   //this function asks the server to get trump's tweets from the db and send them here to display
@@ -78,7 +75,6 @@ class App extends React.Component {
     });
   }
 
-
   handleCloseSignupSubmit(name) {
     if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
        return console.log('INFO MISSING YOU BITCH')
@@ -94,7 +90,6 @@ class App extends React.Component {
         openStripe: true,
       });
 
-      var context = this;
       axios.post('/createAccount', {
         username: this.state.signupUsername,
         password: this.state.signupPassword,
@@ -103,10 +98,10 @@ class App extends React.Component {
       }).then(res => {
         console.log(res)
         if (res.data !== 'Username already exists!' || res.data !== 'error') {
-          context.setState({
+          this.setState({
             loggedInUsername: res.data
           }, () => {
-            console.log('context.state.loggedInUsername:', context.state.loggedInUsername);
+            console.log('this.state.loggedInUsername:', this.state.loggedInUsername);
           })
         }
       }).catch(err => {
@@ -117,41 +112,45 @@ class App extends React.Component {
 
   handleCloseLogin(name) {
     // how to get username and password info to call submitLogin Func?
-    console.log('inlogin handler')
     this.setState({
-      [name]: false,
+      openLogin: false,
       openDialog: 'none'
-    }, () => {
-      console.log('this.state.loginUsername:', this.state.loginUsername);
-      console.log('this.state.loginPassword:', this.state.loginPassword);
-      this.submitLogin(this.state.loginUsername, this.state.loginPassword);
     });
+    if (name === 'submit') {
+        console.log('this.state.loginUsername:', this.state.loginUsername);
+        console.log('this.state.loginPassword:', this.state.loginPassword);
+        this.submitLogin(this.state.loginUsername, this.state.loginPassword);
+    }
   }
 
   submitLogin(username, password) {
     // make a post req to server with username and password
-    var context = this;
     console.log(username, password)
+    this.setState({
+      loginUsername: '',
+      loginPassword: ''
+    })
     axios.post('/login', {
       username: username,
       password: password
-    }).then(res => {
-      console.log(res);
-      if (res !== 'invalid credentials') {
-        context.setState({
-          username: res.data
-        });     
-      } 
-    }).catch(err => {
-      console.log('ERRORfbehjkfbehjl', err);
     })
+      .then(res => {
+        console.log('loggin',res);
+        if (res.status === 202) {
+          this.setState({
+            username: res.data
+          });     
+        }
+      })
+      .catch(err => {
+        console.log('error on submit login function', err);
+      })
   }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
-    var context = this;
     console.log('onToken', token)
     axios.post('/customerToken', {
-      username: context.state.loggedInUsername,
+      username: this.state.loggedInUsername,
       id: token.id,
       email: token.card.name
     }).then(res => {
@@ -161,16 +160,15 @@ class App extends React.Component {
     })
   }
 
-  // update() {
-  //   axios.post('/update', {
-  //     quantity: 10
-  //   }).then(res => {
-  //     // call render stripe token
-  //     console.log(res)
-  //   }).catch(err => {
-  //     console.log(err)
-  //   })
-  // }
+  logout() {console.log('running')
+    axios.post('/logout')
+    .then(() => {
+      this.setState({
+        username: ''
+      })
+    })
+    .catch(err => console.log('error on logout function:', err));
+  }
 
   render () {
     const muiTheme = getMuiTheme({
@@ -256,13 +254,13 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleCloseLogin.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseLogin.bind(this, 'cancel')}
       />,
       <FlatButton
         label='Submit'
         primary={true}
         keyboardFocused={true}
-        onClick={this.handleCloseLogin.bind(this, this.state.openDialog)}
+        onClick={this.handleCloseLogin.bind(this, 'submit')}
       />,
     ];
     const signUp = [
@@ -340,7 +338,7 @@ class App extends React.Component {
           <div style={style.flex}>
             <Paper zDepth={2} style={style.paperHeader}>
               <div style={style.flexButton}>
-                {this.state.username === null ? 
+                {this.state.username === '' ? 
                   <RaisedButton
                     style={{ margin: 7.925 }}
                     labelColor={white}
@@ -363,7 +361,7 @@ class App extends React.Component {
                   open={this.state.openSignUp}
                   onRequestClose={this.handleCloseSignupCancel.bind(this, 'openSignUp')}
                 />
-                {this.state.username === null ? 
+                {this.state.username === '' ? 
                   <RaisedButton
                     style={{margin: 7.925}}
                     labelColor={white}
@@ -376,13 +374,13 @@ class App extends React.Component {
                     labelColor={white}
                     backgroundColor={red500}
                     label='Log Out'
-                    onClick={this.handleOpen.bind(this, "openLogin")}
+                    onClick={this.logout.bind(this)}
                   />}
                 <Dialog title='Enter your username and password'
                   actions={logIn}
                   modal={false}
                   open={this.state.openLogin}
-                  onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
+                  //onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
                 />
                 <Dialog title='Enter Payment'
                   actions={stripe}
