@@ -215,6 +215,18 @@ function getTotalNumTweets(callback) {
     });
 }
 
+function getUserProfile(username, callback) {
+  db.User.findOne({username: username})
+    .then(result => {
+      console.log('result from find in getUserProfile:', result);
+      callback(null, result);
+    })
+    .catch(err => {
+      console.log('error in getUserProfile:', err);
+      callback(err);
+    })
+}
+
 exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -230,3 +242,4 @@ exports.updateTotalDonated = updateTotalDonated;
 exports.getTotalDonated = getTotalDonated;
 exports.getTotalUsers = getTotalUsers;
 exports.getTotalNumTweets = getTotalNumTweets;
+exports.getUserProfile = getUserProfile;

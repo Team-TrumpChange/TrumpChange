@@ -38,6 +38,7 @@ class App extends React.Component {
       loginUsername: '',
       loginPassword: '',
       username: '',
+      userProfile: null,
       userDonated: null,
       totalDonated: null,
       totalUsers: null,
@@ -145,11 +146,32 @@ class App extends React.Component {
         if (res.status === 202) {
           this.setState({
             username: res.data
-          });     
+          }, () => {
+            this.getUserProfile(this.state.username);
+          })
+
         }
       })
       .catch(err => {
         console.log('error on submit login function', err);
+      })
+  }
+
+  getUserProfile(username) {
+    var context = this;
+    axios.post('/userProfile', {
+      username: username  
+    })
+      .then(res => {
+        console.log('res.data from getting User Profile:', res.data);
+        context.setState({
+          userProfile: res.data
+        }, () => {
+          console.log('this.state.userProfile:', this.state.userProfile);
+        })
+      })
+      .catch(err => {
+        console.log('error getting user Profile:', err);
       })
   }
 
@@ -174,6 +196,7 @@ class App extends React.Component {
   }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
+    const context = this;
     console.log('onToken', token)
     axios.post('/customerToken', {
       username: this.state.loggedInUsername,
@@ -181,6 +204,9 @@ class App extends React.Component {
       email: token.card.name
     }).then(res => {
       console.log(res)
+      context.setState({
+        openStripe: false
+      })
     }).catch(err => {
       console.log(err)
     })

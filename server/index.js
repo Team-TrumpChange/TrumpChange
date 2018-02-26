@@ -145,7 +145,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
           res.send(req.session.username);
         } else {
           console.log('error creating session');
-          res.send('error loggin user in after saving to DB');
+          res.status(400).send('error loggin user in after saving to DB');
         }
       });
       // req.session = null;
@@ -219,6 +219,16 @@ app.get('/stats', (req, res) => { // handles get request from front end for the 
         }
       })
       // res.send(result);
+    }
+  })
+});
+
+app.post('/userProfile', (req, res) => {
+  helpers.getUserProfile(req.body.username, function(err, result) {
+    if (err) {
+      res.status(400).send('error getting user stats');
+    } else {
+      res.send(result);
     }
   })
 });
