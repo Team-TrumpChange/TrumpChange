@@ -38,12 +38,12 @@ class App extends React.Component {
       loginPassword: ''
     }
     this.onToken = this.onToken.bind(this)
-    this.update = this.update.bind(this)
+    //this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
     this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
-    }, 6000);
+    }, 30000);
   }
 
   componentDidMount() {
@@ -141,16 +141,16 @@ class App extends React.Component {
     })
   }
 
-  update() {
-    axios.post('/update', {
-      quantity: 10
-    }).then(res => {
-      // call render stripe token
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
-  }
+  // update() {
+  //   axios.post('/update', {
+  //     quantity: 10
+  //   }).then(res => {
+  //     // call render stripe token
+  //     console.log(res)
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // }
 
   render () {
     const muiTheme = getMuiTheme({

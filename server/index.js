@@ -22,11 +22,15 @@ app.use(session({
   secret: 'nerfgun',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({ url: 'mongodb://trumpchange:trumpchange2018@ds143778.mlab.com:43778/users' })
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
 let count = 0;
 let billCycleMoment = 'Thu Feb 22 15:30 +0000 2018';
+
+setInterval(() => {
+  helpers.updateRetweetAndFavoriteCount();
+}, 30000);
 
 setInterval(() => {
   helpers.getTweets(tweets => {   
@@ -34,6 +38,7 @@ setInterval(() => {
   })
 }, 60000);
 
+//do we need this?
 function sessionCleanup() {
   sessionStore.all(function (err, sessions) {
     for (var i = 0; i < sessions.length; i++) {
@@ -99,8 +104,6 @@ setInterval(() => {
   }
 }, 60000);
 
-app.get('/')
-
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   req.body.totalMoneyDonated = null;
@@ -134,7 +137,6 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
   });
 });
 
-
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
    // use mongoose find function with username 
@@ -162,7 +164,6 @@ app.post('/login', function(req, res) { // receives login information from front
     }
   });
 });
-
 
 app.get('/getTrumpTweets/db', (req, res) => {
   helpers.getTrumpTweets(function(results) {
@@ -224,9 +225,9 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
   }
 });
 
-app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
- // uses db function to update that user's max count
-});
+// app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
+//  // uses db function to update that user's max count
+// });
 
 app.post('/logout', function(req, res) {
   req.session.destroy(function(err) {
@@ -239,6 +240,6 @@ app.post('/logout', function(req, res) {
   });
 })
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
 });
