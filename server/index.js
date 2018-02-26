@@ -38,6 +38,7 @@ setInterval(() => {
   })
 }, 60000);
 
+//do we need this?
 function sessionCleanup() {
   sessionStore.all(function (err, sessions) {
     for (var i = 0; i < sessions.length; i++) {
