@@ -2,31 +2,27 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('../database/index.js');
 const helpers = require('../helpers/backend-helpers');
+const dotenv = require('dotenv');
+dotenv.config();
 const cors = require('cors');
-const env = require('dotenv');
-env.config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const session = require('express-session');
-
-//import Subheader from 'material-ui/Subheader';
-//import { List, ListItem } from 'material-ui/List';
-
+const MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
 const moment = require('moment');
 const timezone = require('moment-timezone');
-
-
 const app = express();
 
 app.use(express.static(__dirname + '/../client/dist'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(express.static(__dirname + '/../client/dist'));
-app.use(bodyParser.json());
+mongoose.connect(process.env.MONGO_DATABASE);
 app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
+  secret: 'nerfgun',
+  resave: true,
+  saveUninitialized: true,
+  store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
 let count = 0;
@@ -34,11 +30,23 @@ let billCycleMoment = 'Sat Feb 24 21:44 +0000 2018';
 let totalDonated = 0;
 
 setInterval(() => {
+  helpers.updateRetweetAndFavoriteCount();
+}, 30000);
+
+setInterval(() => {
   helpers.getTweets(tweets => {   
     helpers.addUniqueTweet(tweets);
   })
 }, 60000);
 
+//do we need this?
+function sessionCleanup() {
+  sessionStore.all(function (err, sessions) {
+    for (var i = 0; i < sessions.length; i++) {
+      sessionStore.get(sessions[i], function () { });
+    }
+  });
+}
 
 var updateSubs = function(count) {
   helpers.updateSubscriptions(function (users) {
@@ -110,7 +118,6 @@ setInterval(() => {
   }
 }, 60000);
 
-
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   req.body.totalMoneyDonated = null;
@@ -128,11 +135,21 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
     } else if (message) {
       res.send(message);
     } else {
-      res.send(username);
+      req.session.regenerate(function(err) {
+        if (!err) {
+          req.session.username = username;
+          res.send(req.session.username);
+        } else {
+          console.log('error creating session');
+          res.send('error loggin user in after saving to DB');
+        }
+      });
+      // req.session = null;
+      // req.session.username = username
+      // res.send(req.session.username)
     }
   });
 });
-
 
 app.post('/login', function(req, res) { // receives login information from front end
  // calls db functions to authenticate credentials
@@ -140,16 +157,29 @@ app.post('/login', function(req, res) { // receives login information from front
    // check the password in db against submitted password
   console.log('req.body.username:', req.body.username);
   console.log('req.body.password:', req.body.password);
+  //console.log('db.checkPassword', helpers.checkPassword);
   helpers.checkPassword(req.body.username, req.body.password, function(boolean) {
+  console.log('yoooooooo',req.body.password)
     if (boolean) {
-      res.send(req.body.username);
+      req.session.regenerate(function(err) {
+        if (!err) {
+          req.session.username = req.body.username;
+          console.log('login succesful, session created');
+          console.log(req.session);
+          res.send(req.session.username);
+        } else {
+          console.log('error creating session');
+        }
+      });
+      //req.session = null;
+      // req.session.username = req.body.username
+      // res.send(req.session.username)
     } else {
       console.log('invalid credentials');
       res.send('invalid credentials');
     }
   });
 });
-
 
 app.get('/getTrumpTweets/db', (req, res) => {
   helpers.getTrumpTweets(function(results) {
@@ -211,7 +241,21 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
   }
 });
 
+// app.post('/updateCounter', function(req, res) { // receives a post from front end to update the user's max count
+//  // uses db function to update that user's max count
+// });
 
-app.listen(process.env.PORT || 3000, () => {
+app.post('/logout', function(req, res) {
+  req.session.destroy(function(err) {
+    if (err) {
+      console.log('error logging out');
+    }
+    else {
+      console.log('session destroyed!');
+    }
+  });
+}); 
+
+app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
 });

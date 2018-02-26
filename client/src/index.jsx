@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import $ from 'jquery';
-import StripeCheckout from 'react-stripe-checkout'
-import dotenv from 'dotenv'
-import axios from 'axios'
+import StripeCheckout from 'react-stripe-checkout';
+import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import FlatButton from 'material-ui/FlatButton';
@@ -18,8 +17,6 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
-
-dotenv.config();
 
 class App extends React.Component {
   constructor(props) {
@@ -42,11 +39,12 @@ class App extends React.Component {
       loginPassword: ''
     }
     this.onToken = this.onToken.bind(this)
-    this.update = this.update.bind(this)
+    //this.update = this.update.bind(this)
     this.getTrumpTweetsFromDb = this.getTrumpTweetsFromDb.bind(this)
+    this.submitLogin = this.submitLogin.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
-    }, 60000);
+    }, 30000);
   }
 
   componentDidMount() {
@@ -115,7 +113,6 @@ class App extends React.Component {
         console.log('error:', err)
       })
     }
-    
   }
 
   handleCloseLogin(name) {
@@ -129,12 +126,12 @@ class App extends React.Component {
       console.log('this.state.loginPassword:', this.state.loginPassword);
       this.submitLogin(this.state.loginUsername, this.state.loginPassword);
     });
-
   }
 
   submitLogin(username, password) {
     // make a post req to server with username and password
     var context = this;
+    console.log(username, password)
     axios.post('/login', {
       username: username,
       password: password
@@ -146,7 +143,7 @@ class App extends React.Component {
         });     
       } 
     }).catch(err => {
-      console.log(err);
+      console.log('ERRORfbehjkfbehjl', err);
     })
   }
 
@@ -164,16 +161,16 @@ class App extends React.Component {
     })
   }
 
-  update() {
-    axios.post('/update', {
-      quantity: 10
-    }).then(res => {
-      // call render stripe token
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
-  }
+  // update() {
+  //   axios.post('/update', {
+  //     quantity: 10
+  //   }).then(res => {
+  //     // call render stripe token
+  //     console.log(res)
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // }
 
   render () {
     const muiTheme = getMuiTheme({

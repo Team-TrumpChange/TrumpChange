@@ -13,12 +13,11 @@ const twitterClient = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
 });
 
-function getTweets(callback) {
+function getTweets(callback, count) {
   const params = {
     screen_name: 'realdonaldtrump',
-    count: 5,
+    count: count || 5,
   };
-
   twitterClient.get('statuses/user_timeline', params, (error, tweets) => {
     if (!error) {
       callback(tweets);
@@ -26,6 +25,18 @@ function getTweets(callback) {
       callback(error);
     }
   });
+}
+
+function updateRetweetAndFavoriteCount() {
+  db.Tweet.count({}, (err, count) => {
+    getTweets(tweets => {
+      for (let tweet of tweets) {
+        db.Tweet.update({ tweetid: tweet.id }, { $set: { favorites: tweet.favorite_count, retweets: tweet.retweet_count}}, (err, res) => {
+          !err ? console.log('Successful update of retweets and favorites') : console.log('Error updating retweets and favorites');
+        })
+      }
+    }, count);
+  })
 }
 
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
@@ -51,10 +62,11 @@ function checkPassword(username, password, callback) {
   db.User.findOne({username: username})
     .then(function(doc) {
       callback(bcrypt.compareSync(password, doc.password));
-    });
+    })
+    .catch(error => {
+      console.log(error);
+    })
 }
-
-
 
 function saveTweetIntoDataBase(avatar, tweetid, username, name, tweet, favorites, retweets, dateTweeted) {
   const newTweet = new db.Tweet({ avatar: avatar, tweetid: tweetid, username: username, name: name, tweet: tweet, favorites: favorites, retweets: retweets, dateTweeted: dateTweeted, dateObject: moment(dateTweeted).toDate()});
@@ -70,7 +82,6 @@ function hashPassword(userObj) {
   userObj.password = hash;
 }
 
-
 function addSubscriberID(id, username, callback) {
   console.log('id:', id);
   console.log('username:', username);
@@ -85,20 +96,22 @@ function addSubscriberID(id, username, callback) {
             callback();
           }
       });
-    });
+    })
+    .catch(error => {
+      console.log(error);
+      
+    })
 }
 
 function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
     db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
       if (!res.length) {
-        saveTweetIntoDataBase(tweet.user.profile_image_url, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
+        saveTweetIntoDataBase(tweet.user.profile_image_url_https, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
       }
     })
   }
 }
-
-// db.Tweet.find().sort({ dateTweeted: -1 })
 
 function getTrumpTweets(callback) {
   db.Tweet.find({}).sort({ dateObject: -1 }).exec((err, res) => {
@@ -115,7 +128,11 @@ function updateSubscriptions(callback) {
       console.log('results:', results);
       console.log('callback:', callback);
       callback(results);
-   });
+   })
+   .catch(error => {
+     console.log(error);
+     
+   })
 }
 
 function updateUserAmountDonated(numDonations, user, callback) { // takes in the amount donated that week and adds it to the total in their table row
@@ -139,7 +156,7 @@ function updateUserAmountDonated(numDonations, user, callback) { // takes in the
     });
 }
 
-
+exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
