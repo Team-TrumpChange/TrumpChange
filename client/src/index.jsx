@@ -17,6 +17,7 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
+import Chart from './Chart.jsx'
 
 class App extends React.Component {
   constructor(props) {
@@ -36,7 +37,11 @@ class App extends React.Component {
       signupConfirmPassword: '',
       loginUsername: '',
       loginPassword: '',
-      username: ''
+      username: '',
+      userDonated: null,
+      totalDonated: null,
+      totalUsers: null,
+      totalNumTweets: null
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -45,7 +50,8 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    this.getTrumpTweetsFromDb();
+    this.getTrumpTweetsFromDb() 
+    this.getStats()
   }
 
   //this function asks the server to get trump's tweets from the db and send them here to display
@@ -147,6 +153,26 @@ class App extends React.Component {
       })
   }
 
+  getStats () { // retrieves stats from all users to show on main page- gets called in componenetDidMount
+    var context = this;
+    axios.get('/stats')
+      .then(res => {
+        console.log('res.data in getTotalDonated:', res.data);
+        context.setState({
+          totalDonated: Number(res.data.totalDonated),
+          totalUsers: res.data.totalUsers,
+          totalNumTweets: res.data.totalNumTweets
+        }, () => {
+          console.log('context.state.totalDonated:', context.state.totalDonated);
+          console.log('context.state.totalUsers:', context.state.totalUsers);
+          console.log('context.state.totalNumTweets:', context.state.totalNumTweets);
+        });
+      })
+      .catch(err => {
+        console.log('err getting totalDonated:', err);
+      })
+  }
+
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     axios.post('/customerToken', {
@@ -209,7 +235,7 @@ class App extends React.Component {
         backgroundColor: fullWhite,
         height: '75vh',
         overflow: 'scroll',
-        backgroundColor: fullWhite
+        backgroundColor: fullWhite,
       },
       image: {
         height: 90,
@@ -405,6 +431,7 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
+                <Chart/>
               </Paper>
               <Paper
                 style={style.paper}
