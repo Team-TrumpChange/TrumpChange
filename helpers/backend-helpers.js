@@ -55,6 +55,7 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
 }
 
 function checkPassword(username, password, callback) {
+  console.log(password)
    db.User.findOne({username: username})
     .then(function(doc) {
       callback(bcrypt.compareSync(password, doc.password));

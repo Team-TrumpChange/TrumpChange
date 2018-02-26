@@ -22,7 +22,7 @@ app.use(session({
   secret: 'nerfgun',
   resave: true,
   saveUninitialized: true,
-  store: new MongoStore({ mongooseConnection: mongoose.connection })
+  store: new MongoStore({ mongooseConnection: mongoose.connection, ttl: 60 })
 }));
 
 let count = 0;
