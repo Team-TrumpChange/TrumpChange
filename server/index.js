@@ -25,9 +25,7 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
-let count = 0;
-let billCycleMoment = 'Sat Feb 24 21:44 +0000 2018';
-let totalDonated = 0;
+let billCycleMoment = 'Mon Feb 26 18:59 +0000 2018';
 
 setInterval(() => {
   helpers.updateRetweetAndFavoriteCount();
@@ -48,7 +46,7 @@ function sessionCleanup() {
   });
 }
 
-var updateSubs = function(count) {
+var updateSubs = function(count) { // this function updates Subscriptions but also calls function to update userAmountDonated and totalAmountDonated
   helpers.updateSubscriptions(function (users) {
     console.log('in updateSubscriptions');
 
@@ -66,27 +64,32 @@ var updateSubs = function(count) {
         console.log('updateNum:', updateNum);
         console.log('userProfile.subscriberID:', userProfile.subscriberID);
 
-        stripe.subscriptions.update( // then updated the number of subscriptions in stripe DB
+        stripe.subscriptions.update( // then update the number of plans for each user in stripe DB
           userProfile.subscriberID,
           {quantity: updateNum} , function(err, user) {
             if (err) {
               console.log('error updating user', err);
             } else {
               console.log('user updated, user.quantity:', user.quantity);
-              
-              totalDonated = totalDonated + updateNum;
-              console.log('totalDonated:', totalDonated);
-
               helpers.updateUserAmountDonated(updateNum, userProfile, function(err) {
                 if (!err) {
                   if (index === users.length) { // base case
                     return;
                   }
-                  subroutine(users[index], index + 1);      
+                  helpers.updateTotalDonated(updateNum, function(err) { // update totalDonated
+                    if (!err) {
+                      console.log('about to call next subroutine');
+                      subroutine(users[index], index + 1);      
+                    } else {
+                      console.log('error updating total donating, about to call next subroutine to move onto updating next user sub');
+                      subroutine(users[index], index + 1); // even if updateTotalDonated goes wrong, still go onto updating next user sub
+                    }
+                  })
                 } else {
-                  console.log('error in updatingUserAmountDonated (inside updateSubs):', err);
+                  console.log('error in updatingUserAmountDonated (inside updateSubs), about to call next subroutine anyway:', err);
+                  subroutine(users[index], index + 1); // move onto next user, if one doesnt update correctly, still do the rest
                 }
-              }); // while we have access to that user, update the total amount donated as long as updating subscription was successful
+              }); 
              
             }
         });
@@ -110,7 +113,7 @@ setInterval(() => {
     const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
     console.log('seven days ago from this very moment', sevenDaysAgo);
     db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
-      count = res;
+      let count = res;
       updateSubs(count);
     })
     billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY"); 
@@ -185,7 +188,38 @@ app.get('/getTrumpTweets/db', (req, res) => {
   helpers.getTrumpTweets(function(results) {
     res.json(results)
   })
-})
+});
+
+
+app.get('/stats', (req, res) => { // handles get request from front end for the total donated
+  let stats = {};
+  helpers.getTotalDonated(function(err, result) {
+    if (err) {
+      res.send('error retrieving totalDonated');
+    } else {
+      stats.totalDonated = result;
+      // here call other funcs to get other stats
+      helpers.getTotalUsers(function(err, result) {
+        if (err) {
+          stats.totalUsers = 'error';
+          res.send(stats);
+        } else {
+          stats.totalUsers = result;
+          helpers.getTotalNumTweets(function(err, result) {
+            if (err) {
+              stats.totalNumTweets = 'error';
+            } else {
+              stats.totalNumTweets = result;
+              res.send(stats);
+            }
+          })
+        }
+      })
+      // res.send(result);
+    }
+  })
+});
+
 
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription

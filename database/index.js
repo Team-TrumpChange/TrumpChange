@@ -25,8 +25,15 @@ let tweetsSchema = mongoose.Schema({
   dateObject: Date
 });
 
+let globalSchema = mongoose.Schema({
+  name: String,
+  value: String
+});
+
 let User = mongoose.model('User', userSchema);
 let Tweet = mongoose.model('Tweet', tweetsSchema);
+let GlobalVariable = mongoose.model('GlobalVariable', globalSchema);
 
 exports.User = User;
 exports.Tweet = Tweet;
+exports.GlobalVariable = GlobalVariable;

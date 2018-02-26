@@ -36,7 +36,11 @@ class App extends React.Component {
       signupConfirmPassword: '',
       loginUsername: '',
       loginPassword: '',
-      username: ''
+      username: '',
+      userDonated: null,
+      totalDonated: null,
+      totalUsers: null,
+      totalNumTweets: null
     }
     this.onToken = this.onToken.bind(this)
     //this.update = this.update.bind(this)
@@ -49,6 +53,7 @@ class App extends React.Component {
 
   componentDidMount() {
     this.getTrumpTweetsFromDb() 
+    this.getStats()
   }
 
   //this function asks the server to get trump's tweets from the db and send them here to display
@@ -145,6 +150,26 @@ class App extends React.Component {
     }).catch(err => {
       console.log('ERRORfbehjkfbehjl', err);
     })
+  }
+
+  getStats () { // retrieves stats from all users to show on main page- gets called in componenetDidMount
+    var context = this;
+    axios.get('/stats')
+      .then(res => {
+        console.log('res.data in getTotalDonated:', res.data);
+        context.setState({
+          totalDonated: Number(res.data.totalDonated),
+          totalUsers: res.data.totalUsers,
+          totalNumTweets: res.data.totalNumTweets
+        }, () => {
+          console.log('context.state.totalDonated:', context.state.totalDonated);
+          console.log('context.state.totalUsers:', context.state.totalUsers);
+          console.log('context.state.totalNumTweets:', context.state.totalNumTweets);
+        });
+      })
+      .catch(err => {
+        console.log('err getting totalDonated:', err);
+      })
   }
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
