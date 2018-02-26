@@ -42,7 +42,6 @@
     "request": "^2.83.0",
     "session-memory-store": "^0.2.2",
     "stripe": "^5.4.0",
-    "twitter": "^1.7.1",
-    "webpack": "^2.7.0"
+    "twitter": "^1.7.1"
   }
 }
