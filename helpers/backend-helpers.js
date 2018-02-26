@@ -44,9 +44,11 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
     if (result === null) {
       const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
       newUser.save(() => {
-        console.log('user saved');
+        console.log('user saved in saveUserIntoDataBase');
         callback();
       });
+    } else if (err) {
+      callback('error');
     } else {
       callback('Username already exists!');
     }
@@ -55,8 +57,14 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
 }
 
 function checkPassword(username, password, callback) {
-   db.User.findOne({username: username})
+  console.log('username in checkPassword:', username);
+  console.log('password in checkPassword:', password);
+  db.User.findOne({username: username})
     .then(function(doc) {
+      if (doc === null) {
+        callback(false);
+      }
+      console.log('password in checkPassword:', password);
       callback(bcrypt.compareSync(password, doc.password));
     })
     .catch(error => {
@@ -131,7 +139,28 @@ function updateSubscriptions(callback) {
    })
 }
 
-exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;
+function updateUserAmountDonated(numDonations, user, callback) { // takes in the amount donated that week and adds it to the total in their table row
+  console.log('user in updateUser:', user);
+  db.User.findOne({username: user.username})
+    .then(function(user) {
+      user.totalMoneyDonated = user.totalMoneyDonated + numDonations;
+      user.save(function(err) {
+        if (err) {
+          console.log('error updating totalMondayDonated for user:', user, error);
+          callback(err);
+        } else {
+          console.log('success updating totalMoneyDonated for user:', user);
+          callback();
+        }
+      });
+    })  
+    .catch(function(err) {
+      console.log('error finding the user in updateUserAmountDonated', err);
+      callback(err);
+    });
+}
+
+exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
 exports.saveUserIntoDataBase = saveUserIntoDataBase;
@@ -141,3 +170,4 @@ exports.checkPassword = checkPassword;
 exports.getTrumpTweets = getTrumpTweets;
 exports.addSubscriberID = addSubscriberID;
 exports.updateSubscriptions = updateSubscriptions;
+exports.updateUserAmountDonated = updateUserAmountDonated;
