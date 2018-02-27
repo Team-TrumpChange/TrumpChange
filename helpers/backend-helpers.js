@@ -229,6 +229,19 @@ function getUserProfile(username, callback) {
     })
 }
 
+function getBillingCycleMoment(callback) {
+  db.GlobalVariable.findOne({name: 'billCycleMoment'})
+    .then(result => {
+      console.log('result from getBillingCycleMoment:', result);
+      callback(null, result);
+    })
+    .catch(err => {
+      console.log('error getting getBillingCycleMoment:', err);
+      callback(err);
+    })
+}
+
+
 exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -245,3 +258,4 @@ exports.getTotalDonated = getTotalDonated;
 exports.getTotalUsers = getTotalUsers;
 exports.getTotalNumTweets = getTotalNumTweets;
 exports.getUserProfile = getUserProfile;
+exports.getBillingCycleMoment = getBillingCycleMoment;
