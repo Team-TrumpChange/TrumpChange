@@ -109,17 +109,38 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
 //counts tweets every week
 setInterval(() => {
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
-  if (now === billCycleMoment) {
-    console.log('BILLING!!');
-    const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
-    console.log('seven days ago from this very moment', sevenDaysAgo);
-    db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
-      let count = res;
-      updateSubs(count);
-    })
-    billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY"); 
-    console.log('7 days from this very moment', billCycleMoment);
-  }
+  console.log()
+  helpers.getBillingCycleMoment((err, result) => {
+    if (err) {
+      console.log('error getting getBillingCycleMoment in counting weekly tweets');
+    } else {
+      let billCycleMoment = result.value;
+      if (now === billCycleMoment) {
+        console.log('billCycleMoment in setInterval(server):', billCycleMoment); // move this down
+        console.log('BILLING!!');
+        const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
+        console.log('seven days ago from this very moment', sevenDaysAgo);
+        db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
+          let count = res;
+          updateSubs(count);
+        })
+        billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY"); 
+        console.log('7 days from this very moment', billCycleMoment);
+        helpers.getBillingCycleMoment((err, result) => {
+          if (err) {
+            res.status(400).send('error updating the billCycleMoment in DB');
+          } else {
+            result.value = billCycleMoment;
+            result.save(err => {
+              if (err) {
+                console.log('error saving updated billCycleMoment in DB');
+              }
+            })
+          }
+        });
+      }
+    }
+  })
 }, 60000);
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
@@ -260,27 +281,38 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
           console.log('customer.email:', customer.email);
           console.log(customer)
         // console.log(customer)
-           stripe.subscriptions.create({ // creates a new subscription
-               customer: customer.id,
-               items: [
-                {
-                  plan: 'plan_CM50jYu8LYbvMC',
-                  quantity: 0
-                }
-               ]
-           }, function(err, subscription) { // returns a subscription object
-               if (err) {
-                 console.log('error creating subscription:', err);
-                 res.send('error')
-               } else {
-                 console.log('saved subscription:', subscription);
-                 // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-                 helpers.addSubscriberID(subscription.id, req.body.username, function() {
-                   console.log('subsciprtionIDSaved');
-                   res.send('success saving subscription');
-                 });
-               }
-           });
+        helpers.getBillingCycleMoment((err, result) => {
+          if (err) {
+            res.status(400).send('error creating new billing cycle anchor, subscription not created');
+          } else {
+            var billCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").add(5, 'm').format('X'));
+            console.log('billCycleMoment + 5 min (before creating subscription):', billCycleMoment);
+            console.log('typeof billCycleMoment,', typeof billCycleMoment);
+             stripe.subscriptions.create({ // creates a new subscription
+                 customer: customer.id,
+                 items: [
+                  {
+                    plan: 'plan_CM50jYu8LYbvMC',
+                    quantity: 0
+                  }
+                 ],
+                 billing_cycle_anchor: billCycleMoment
+             }, function(err, subscription) { // returns a subscription object
+                 if (err) {
+                   console.log('error creating subscription:', err);
+                   res.send('error')
+                 } else {
+                   console.log('saved subscription:', subscription);
+                   // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
+                   helpers.addSubscriberID(subscription.id, req.body.username, function() {
+                     console.log('subsciprtionIDSaved');
+                     res.send('success saving subscription');
+                   });
+                 }
+             });
+          }
+        })
+
       }
    })
   } else {
