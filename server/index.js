@@ -26,7 +26,6 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: mongoose.connection, ttl: 60 })
 }));
 
-let billCycleMoment = 'Mon Feb 26 18:59 +0000 2018';
 
 setInterval(() => {
   helpers.updateRetweetAndFavoriteCount();
@@ -61,7 +60,7 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
         updateNum = count;
       }
 
-      if (userProfile.subscriberID) {
+      if (userProfile.subscriberID && !userProfile.newUser) {
         console.log('updateNum:', updateNum);
         console.log('userProfile.subscriberID:', userProfile.subscriberID);
 
@@ -90,9 +89,23 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
                   console.log('error in updatingUserAmountDonated (inside updateSubs), about to call next subroutine anyway:', err);
                   subroutine(users[index], index + 1); // move onto next user, if one doesnt update correctly, still do the rest
                 }
-              }); 
-             
+              });    
             }
+        });
+      } else if (userProfile.subscriberID) {
+        console.log('in the else if server/index line 96');
+        userProfile.newUser = false;
+        userProfile.save(err => {
+          if (err) {
+            console.log('error resaving user after changing newUser to false in updateSubs:', err);
+            subroutine(users[index], index + 1);
+          } else {
+            console.log('userProfile.newUser:', userProfile.newUser);
+            if (index === users.length) {
+              return;
+            }
+            subroutine(users[index], index + 1);
+          }
         });
       } else {
         if (index === users.length) {
@@ -107,14 +120,15 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
 }
 
 //counts tweets every week
-setInterval(() => {
+setInterval(() => { // also calls update subscriptions in line 136
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
-  console.log()
+  console.log('now in setInterval:', now)
   helpers.getBillingCycleMoment((err, result) => {
     if (err) {
       console.log('error getting getBillingCycleMoment in counting weekly tweets');
     } else {
       let billCycleMoment = result.value;
+      console.log('billCycleMoment:', billCycleMoment);
       if (now === billCycleMoment) {
         console.log('billCycleMoment in setInterval(server):', billCycleMoment); // move this down
         console.log('BILLING!!');
@@ -122,26 +136,27 @@ setInterval(() => {
         console.log('seven days ago from this very moment', sevenDaysAgo);
         db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
           let count = res;
-          updateSubs(count);
+          updateSubs(count); // calls update subscriptions
+          billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").add(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY"); 
+          console.log('7 days from this very moment', billCycleMoment);
+          helpers.getBillingCycleMoment((err, result) => {
+            if (err) {
+              res.status(400).send('error updating the billCycleMoment in DB');
+            } else {
+              result.value = billCycleMoment;
+              result.save(err => {
+                if (err) {
+                  console.log('error saving updated billCycleMoment in DB');
+                }
+              })
+            }
+          });
         })
-        billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").add(7, 'd').format("ddd MMM DD HH:mm ZZ YYYY"); 
-        console.log('7 days from this very moment', billCycleMoment);
-        helpers.getBillingCycleMoment((err, result) => {
-          if (err) {
-            res.status(400).send('error updating the billCycleMoment in DB');
-          } else {
-            result.value = billCycleMoment;
-            result.save(err => {
-              if (err) {
-                console.log('error saving updated billCycleMoment in DB');
-              }
-            })
-          }
-        });
       }
     }
   })
 }, 60000);
+
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
@@ -278,7 +293,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
           if (err) {
             res.status(400).send('error creating new billing cycle anchor, subscription not created');
           } else {
-            var billCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").add(5, 'm').format('X'));
+            var billCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X'));
             console.log('billCycleMoment + 5 min (before creating subscription):', billCycleMoment);
             console.log('typeof billCycleMoment,', typeof billCycleMoment);
              stripe.subscriptions.create({ // creates a new subscription
