@@ -60,9 +60,9 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
         callback();
       });
     } else if (err) {
-      callback('error');
+      callback('Error on looking up user in database');
     } else {
-      callback('Username already exists!');
+      callback('Username already exists');
     }
   });
 }
