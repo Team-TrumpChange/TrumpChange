@@ -136,7 +136,6 @@ setInterval(() => { // also calls update subscriptions in line 136
         console.log('seven days ago from this very moment', sevenDaysAgo);
         db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
           let count = res;
-          updateSubs(count); // calls update subscriptions
           billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").add(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY"); 
           console.log('7 days from this very moment', billCycleMoment);
           helpers.getBillingCycleMoment((err, result) => {
@@ -148,6 +147,7 @@ setInterval(() => { // also calls update subscriptions in line 136
                 if (err) {
                   console.log('error saving updated billCycleMoment in DB');
                 }
+                updateSubs(count); // calls update subscriptions
               })
             }
           });
@@ -299,9 +299,9 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
           if (err) {
             res.status(400).send('error creating new billing cycle anchor, subscription not created');
           } else {
-            var billCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X'));
-            console.log('billCycleMoment + 5 min (before creating subscription):', billCycleMoment);
-            console.log('typeof billCycleMoment,', typeof billCycleMoment);
+            var billingCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X'));
+            console.log('billCycleMoment + 5 min (before creating subscription):', billingCycleMoment);
+            console.log('typeof billCycleMoment,', typeof billingCycleMoment);
              stripe.subscriptions.create({ // creates a new subscription
                  customer: customer.id,
                  items: [
@@ -310,7 +310,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                     quantity: 0
                   }
                  ],
-                 billing_cycle_anchor: billCycleMoment
+                 billing_cycle_anchor: billingCycleMoment
              }, function(err, subscription) { // returns a subscription object
                  if (err) {
                    console.log('error creating subscription:', err);
