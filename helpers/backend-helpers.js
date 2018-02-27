@@ -131,7 +131,6 @@ function updateSubscriptions(callback) {
   db.User.find({})
     .then(function(results) {
       console.log('results:', results);
-      console.log('callback:', callback);
       callback(results);
    })
    .catch(error => {
@@ -233,7 +232,6 @@ function getUserProfile(username, callback) {
 function getBillingCycleMoment(callback) {
   db.GlobalVariable.findOne({name: 'billCycleMoment'})
     .then(result => {
-      console.log('result from getBillingCycleMoment:', result);
       callback(null, result);
     })
     .catch(err => {
