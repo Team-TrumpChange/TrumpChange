@@ -39,9 +39,9 @@ class App extends React.Component {
       loginPassword: '',
       username: '',
       userDonated: null,
-      totalDonated: null,
-      totalUsers: null,
-      totalNumTweets: null
+      totalDonated: 0,
+      totalUsers: 0,
+      totalNumTweets: 0
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -157,15 +157,12 @@ class App extends React.Component {
     var context = this;
     axios.get('/stats')
       .then(res => {
-        console.log('res.data in getTotalDonated:', res.data);
-        context.setState({
+        this.setState({
           totalDonated: Number(res.data.totalDonated),
-          totalUsers: res.data.totalUsers,
-          totalNumTweets: res.data.totalNumTweets
+          totalUsers: Number(parseInt(res.data.totalUsers)),
+          totalNumTweets: Number(parseInt(res.data.totalNumTweets))
         }, () => {
-          console.log('context.state.totalDonated:', context.state.totalDonated);
-          console.log('context.state.totalUsers:', context.state.totalUsers);
-          console.log('context.state.totalNumTweets:', context.state.totalNumTweets);
+     
         });
       })
       .catch(err => {
@@ -261,6 +258,14 @@ class App extends React.Component {
         flex: 1,
         display: 'flex',
       },
+      paperChart: {
+        borderRadius: 0,
+        margin: 10,
+        height: '96%',
+        width: '94.5%',
+        overflow: 'hidden',
+        diplay: 'flex'
+      }
     }
     const logIn = [
       <TextField
@@ -431,7 +436,13 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                <Chart/>
+                <Paper zDepth={2} style={style.paperChart}>
+                <Chart 
+                totalDonated={this.state.totalDonated}
+                totalUsers={this.state.totalUsers}
+                totalNumTweets={this.state.totalNumTweets}
+                />
+                </Paper>
               </Paper>
               <Paper
                 style={style.paper}
