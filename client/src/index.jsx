@@ -40,7 +40,8 @@ class App extends React.Component {
       userDonated: null,
       totalDonated: null,
       totalUsers: null,
-      totalNumTweets: null
+      totalNumTweets: null,
+      hasSubscriberId: null
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -152,6 +153,7 @@ class App extends React.Component {
           this.handleClose('openLogin');
           this.clearUserInput();
           this.getUserProfile(this.state.username);
+          this.checkforSubscription();
         } if (res.status === 200) {
             if (res.data === 'user not found') {
               console.log('user does not exist');
@@ -220,7 +222,10 @@ class App extends React.Component {
     axios.post('/logout')
     .then(() => {
       this.setState({
-        username: ''
+        username: '',
+        userProfile: null,
+        userDonated: null,
+        hasSubscriberId: null
       })
     })
     .catch(err => console.log('error on logout function:', err));
@@ -380,6 +385,7 @@ class App extends React.Component {
         email={this.state.signupEmail}
         currency="USD"
         stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
+        closed={this.clearUserInput.bind(this)}
       >
         <button
           className="submitbtn"
@@ -440,7 +446,8 @@ class App extends React.Component {
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
-                  open={this.state.openStripe}/>
+                  open={this.state.openStripe}
+                />
               </div>
               <div style={style.flexImage}>
                 <img

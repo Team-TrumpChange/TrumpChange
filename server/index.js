@@ -157,7 +157,6 @@ setInterval(() => { // also calls update subscriptions in line 136
   })
 }, 60000);
 
-
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   const {
