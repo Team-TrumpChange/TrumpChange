@@ -93,6 +93,7 @@ function addSubscriberIDAndCustomerID(subid, custid, username, callback) {
       doc.subscriberID = subid;
       doc.customerID = custid
       console.log('doc.subscriberID:', doc.subscriberID)
+      console.log('doc.customerID:', doc.customerID);
       doc.save(function(err) {
           if (err) {
             console.log('error saving subsriptionID');
