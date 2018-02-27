@@ -60,7 +60,7 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
         updateNum = count;
       }
 
-      if (userProfile.subscriberID && !userProfile.newUser) {
+      if (userProfile.subscriberID && !userProfile.newUser && !userProfile.canceled) {
         console.log('updateNum:', updateNum);
         console.log('userProfile.subscriberID:', userProfile.subscriberID);
 
@@ -338,6 +338,54 @@ app.post('/logout', function(req, res) {
     }
   });
 }); 
+
+app.post('/cancelSubscription', (req, res) => {
+  helpers.getUserProfile(req.body.username, (err, result) => {
+    if (err) {
+      res.send('error canceling subscription, couldnt find user');
+    } else {
+      console.log('result.subscriberID:', result.subscriberID);
+      stripe.subscriptions.del(result.subscriberID)
+        .then(() => {
+          result.canceled = true;
+          result.save((err) => {
+            if (err) {
+              console.log('subscription canceled, but error updating user profile subscription as canceled');
+              res.send('subscription canceled, but error updating user profile accordingly');
+            }
+              res.send('subscription canceled');
+          })
+        })
+        .catch(err => {
+          res.send('error canceling subscription');
+        });
+    }
+  });
+});
+
+app.post('/changeUserInfo', (req, res) => {
+  helpers.getUserProfile(req.body.username, (err, result) => {
+    if (err) {
+      res.send('error updating user Profile, couldnt find profile');
+    } else {
+      if (req.body.newName) {
+        result.username = req.body.newName
+      } 
+      if (req.body.maxWeeklyPlans) {
+        result.maxWeeklyPlans = req.body.maxWeeklyPlans
+      }
+      result.save(err => {
+        if (err) {
+          console.log('error saving updated user info');
+          res.send('error saving updated user info');
+        } else {
+          console.log('success saving updated user info');
+          res.send(result);
+        }
+      });
+    }
+  })
+});
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');

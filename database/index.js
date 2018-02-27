@@ -12,7 +12,9 @@ let userSchema = mongoose.Schema({
   email: String,
   maxWeeklyPlans: Number,
   totalMoneyDonated: Number,
-  newUser: Boolean
+  newUser: Boolean,
+  canceled: Boolean,
+  dateJoined: Date
 });
 
 let tweetsSchema = mongoose.Schema({
