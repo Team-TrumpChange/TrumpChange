@@ -267,13 +267,9 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
  const tokenId = req.body.id;
  const email = req.body.email;
- // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
  console.log('req.username:', req.body.username);
-
- // *check if token email matches db email 
-
 
  if (req.body.username) {
    stripe.customers.create({

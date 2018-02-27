@@ -30,11 +30,9 @@ class App extends React.Component {
       openDialog: 'none',
       signupUsername: '',
       signupPassword: '',
+      signupConfirmPassword: '',
       signupEmail: '',
       signupLimit: '',
-      singupUsername: '',
-      signupPassword: '',
-      signupConfirmPassword: '',
       loginUsername: '',
       loginPassword: '',
       username: '',
@@ -78,8 +76,20 @@ class App extends React.Component {
   handleClose(name) {
     this.setState({
       [name]: false,
-      openDialog: 'none'
+      openDialog: 'none',
     });
+  }
+
+  clearUserInput() {
+    this.setState({
+      loginUsername: '',
+      loginPassword: '',
+      signupUsername: '',
+      signupPassword: '',
+      signupConfirmPassword: '',
+      signupEmail: '',
+      signupLimit: ''
+    })
   }
 
   submitSignUp(username, password, passwordConfirm, email, limit) {
@@ -129,10 +139,6 @@ class App extends React.Component {
   submitLogin(username, password) {
     // make a post req to server with username and password
     console.log(username, password)
-    this.setState({
-      loginUsername: '',
-      loginPassword: ''
-    })
     axios.post('/login', {
       username: username,
       password: password
@@ -141,11 +147,11 @@ class App extends React.Component {
         console.log('loggin',res);
         if (res.status === 202) {
           this.setState({
-            username: res.data
-          }, () => {
-            this.handleClose('openLogin');
-            this.getUserProfile(this.state.username);
+            username: res.data,
           })
+          this.handleClose('openLogin');
+          this.clearUserInput();
+          this.getUserProfile(this.state.username);
         } if (res.status === 200) {
             if (res.data === 'user not found') {
               console.log('user does not exist');
@@ -304,9 +310,9 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick = {
-          this.handleClose.bind(this, 'openLogin')
-        }
+        onClick = {(e) => {
+          this.handleClose('openLogin'), this.clearUserInput();
+        }}
       />,
       <FlatButton
         label='Submit'
@@ -354,7 +360,7 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleClose.bind(this, 'openSignUp')}
+        onClick={(e) => {this.handleClose('openSignUp'); this.clearUserInput()}}
       />,
       <FlatButton
         label='Submit'
@@ -405,7 +411,7 @@ class App extends React.Component {
                   actions={signUp}
                   modal={false}
                   open={this.state.openSignUp}
-                  onRequestClose={this.handleClose.bind(this, 'openSignUp')}
+                  onRequestClose={(e) => { this.handleClose('openSignUp'); this.clearUserInput()}}
                 />
                 {this.state.username === '' ? 
                   <RaisedButton
@@ -427,8 +433,9 @@ class App extends React.Component {
                   modal={false}
                   open={this.state.openLogin}
                   onRequestClose = {
-                    this.handleClose.bind(this, 'openLogin')
-                  }
+                    (e) => {
+                      this.handleClose('openLogin'); this.clearUserInput()
+                  }}
                 />
                 <Dialog title='Enter Payment'
                   actions={stripe}
