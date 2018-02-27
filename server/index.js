@@ -145,21 +145,16 @@ setInterval(() => {
 
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
-  req.body.totalMoneyDonated = null;
   const {
     username: username,
     password: password,
     email: email,
     maxWeeklyPlans: maxWeeklyPlans,
-    totalMoneyDonated: totalMoneyDonated
-  } = req.body;  
+  } = req.body;
+  const totalMoneyDonated = null;
   
   helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function (message) {
-    if (!password || !username || !maxWeeklyPlans) {
-      res.send('Must enter valid username, password, and maxWeeklyPlans!');
-    } else if (message) {
-      res.send(message);
-    } else {
+    if (message === 'User saved in saveUserIntoDataBase') {
       req.session.regenerate(function(err) {
         if (!err) {
           req.session.username = username;
@@ -169,9 +164,8 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
           res.status(400).send('error loggin user in after saving to DB');
         }
       });
-      // req.session = null;
-      // req.session.username = username
-      // res.send(req.session.username)
+    } else {
+      res.send(message);
     }
   });
 });
@@ -274,7 +268,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
    }, function(err, customer) { // returns a customer object if successful
       if (err) {
           console.log('error in create function')
-          res.send('error');
+          res.send('error in create function');
       } else {
           console.log('customer.id:', customer.id);
           console.log('customer.email:', customer.email);
