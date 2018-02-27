@@ -130,9 +130,6 @@ class App extends React.Component {
       openLogin: false,
       openDialog: 'none'
     });
-    console.log('this.state.loginUsername:', this.state.loginUsername);
-    console.log('this.state.loginPassword:', this.state.loginPassword);
-    this.submitLogin(this.state.loginUsername, this.state.loginPassword);
   }
 
   submitLogin(username, password) {
@@ -152,13 +149,21 @@ class App extends React.Component {
           this.setState({
             username: res.data
           }, () => {
+            this.handleCloseLogin();
             this.getUserProfile(this.state.username);
           })
-
+        } if (res.status === 200) {
+            if (res.data === 'user not found') {
+              //this.userNotFound();
+              console.log('user does not exist');
+            } else if (res.data === 'password does not match') {
+              //this.passwordNotMatched();
+              console.log('password does not match');
+            }
         }
       })
       .catch(err => {
-        console.log('error on submit login function', err);
+        console.log(err)
       })
   }
 
@@ -319,7 +324,7 @@ class App extends React.Component {
         label='Submit'
         primary={true}
         keyboardFocused={false}
-        onClick={(e) => {e.preventDefault(); this.handleCloseLogin()}}
+        onClick={(e) => { e.preventDefault(); this.submitLogin(this.state.loginUsername, this.state.loginPassword)}}
       />,
     ];
     const signUp = [
