@@ -351,15 +351,12 @@ app.post('/logout', function(req, res) {
 }); 
 
 app.post('/cancelSubscription', (req, res) => {
-  // get user profile
-    // use subscriptionID to delete stripe subscription
-    // maybe change user's sub id to have canceled next to it, so we still have the record
-  helpers.getUserProfile(req.username, (err, result) => {
+  helpers.getUserProfile(req.body.username, (err, result) => {
     if (err) {
       res.send('error canceling subscription, couldnt find user');
     } else {
       console.log('result.subscriberID:', result.subscriberID);
-      stripe.del(result.subscriberID)
+      stripe.subscriptions.del(result.subscriberID)
         .then(() => {
           result.canceled = true;
           result.save((err) => {
@@ -370,9 +367,9 @@ app.post('/cancelSubscription', (req, res) => {
               res.send('subscription canceled');
           })
         })
-          .catch(err => {
-            res.send('error canceling subscription');
-          })
+        .catch(err => {
+          res.send('error canceling subscription');
+        });
     }
   });
 });

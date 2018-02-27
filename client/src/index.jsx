@@ -37,7 +37,7 @@ class App extends React.Component {
       signupConfirmPassword: '',
       loginUsername: '',
       loginPassword: '',
-      username: '',
+      username: 'glova25',
       userProfile: null,
       userDonated: null,
       totalDonated: null,
@@ -53,6 +53,7 @@ class App extends React.Component {
   componentDidMount() {
     this.getTrumpTweetsFromDb() 
     this.getStats()
+    this.cancelSubscription()
   }
 
   //this function asks the server to get trump's tweets from the db and send them here to display
@@ -230,6 +231,18 @@ class App extends React.Component {
       })
     })
     .catch(err => console.log('error on logout function:', err));
+  }
+
+  cancelSubscription() {
+    axios.post('/cancelSubscription', {
+      username: this.state.username
+    })
+      .then(data => {
+        console.log('data from cancelSubscription:', data);
+      })
+      .catch(err => {
+        console.log('error cancelling subsciption:', err);
+      });
   }
 
   render () {
