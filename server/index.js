@@ -198,12 +198,11 @@ app.post('/login', function(req, res) { // receives login information from front
               }
             })
           } else {
-            console.log('invalid credentials');
-            res.send('invalid credentials');
+            res.status(200).send('password does not match');
           }
         })
     } else {
-      res.status(400).send('error');
+      res.status(200).send('user not found');
     }
   });
 });
@@ -312,7 +311,6 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
              });
           }
         })
-
       }
    })
   } else {

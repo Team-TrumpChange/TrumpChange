@@ -17,6 +17,7 @@ function getTweets(callback, count) {
   const params = {
     screen_name: 'realdonaldtrump',
     count: count || 5,
+    tweet_mode: 'extended'
   };
   twitterClient.get('statuses/user_timeline', params, (error, tweets) => {
     if (!error) {
@@ -32,7 +33,7 @@ function updateRetweetAndFavoriteCount() {
     getTweets(tweets => {
       for (let tweet of tweets) {
         db.Tweet.update({ tweetid: tweet.id }, { $set: { favorites: tweet.favorite_count, retweets: tweet.retweet_count}}, (err, res) => {
-          !err ? console.log('Successful update of retweets and favorites') : console.log('Error updating retweets and favorites');
+          //!err ? console.log('Successful update of retweets and favorites') : console.log('Error updating retweets and favorites');
         })
       }
     }, count);
@@ -42,7 +43,7 @@ function updateRetweetAndFavoriteCount() {
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   db.User.findOne({username: username}, function(err, result) {
     if (result === null) {
-      const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
+      const newUser = new db.User({ username: username, password: password, customerID: null, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated, newUser: true });
       newUser.save(() => {
         console.log('user saved in saveUserIntoDataBase');
         callback();
@@ -84,12 +85,13 @@ function hashPassword(userObj) {
   userObj.password = hash;
 }
 
-function addSubscriberID(id, username, callback) {
-  console.log('id:', id);
+function addSubscriberIDAndCustomerID(subid, custid, username, callback) {
+  console.log('id:', subid);
   console.log('username:', username);
   db.User.findOne({username: username})
     .then(function(doc) {
-      doc.subscriberID = id;
+      doc.subscriberID = subid;
+      doc.customerID = custid
       console.log('doc.subscriberID:', doc.subscriberID)
       doc.save(function(err) {
           if (err) {
@@ -109,7 +111,7 @@ function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
     db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
       if (!res.length) {
-        saveTweetIntoDataBase(tweet.user.profile_image_url_https, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
+        saveTweetIntoDataBase(tweet.user.profile_image_url_https, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.full_text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
       }
     })
   }
@@ -248,7 +250,7 @@ exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
 exports.checkPassword = checkPassword;
 exports.getTrumpTweets = getTrumpTweets;
-exports.addSubscriberID = addSubscriberID;
+exports.addSubscriberIDAndCustomerID = addSubscriberIDAndCustomerID;
 exports.updateSubscriptions = updateSubscriptions;
 exports.updateUserAmountDonated = updateUserAmountDonated;
 exports.updateTotalDonated = updateTotalDonated;
