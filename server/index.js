@@ -303,7 +303,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                  } else {
                    console.log('saved subscription:', subscription);
                    // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
-                   helpers.addSubscriberID(subscription.id, req.body.username, function() {
+                   helpers.addSubscriberIDAndCustomerID(subscription.id, customer.id, req.body.username, function() {
                      console.log('subsciprtionIDSaved');
                      res.send('success saving subscription');
                    });
