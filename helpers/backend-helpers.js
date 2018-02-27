@@ -43,7 +43,18 @@ function updateRetweetAndFavoriteCount() {
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   db.User.findOne({username: username}, function(err, result) {
     if (result === null) {
-      const newUser = new db.User({ username: username, password: password, customerID: null, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated, newUser: true });
+      const newUser = new db.User({ 
+        username: username, 
+        password: password, 
+        customerID: null, 
+        subscriberID: null, 
+        email: email, 
+        maxWeeklyPlans: maxWeeklyPlans, 
+        totalMoneyDonated: totalMoneyDonated, 
+        newUser: true, 
+        canceled: false, 
+        dateJoined: moment.now()
+      });
       newUser.save(() => {
         console.log('user saved in saveUserIntoDataBase');
         callback();
