@@ -18,6 +18,7 @@ import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
 import Chart from './Chart.jsx'
+import UserProfile from './UserProfile.jsx'
 
 class App extends React.Component {
   constructor(props) {
@@ -147,7 +148,8 @@ class App extends React.Component {
         console.log('loggin',res);
         if (res.status === 202) {
           this.setState({
-            username: res.data
+            username: res.data,
+            loggedInUsername: res.data
           }, () => {
             this.handleCloseLogin();
             this.getUserProfile(this.state.username);
@@ -208,6 +210,7 @@ class App extends React.Component {
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     const context = this;
     console.log('onToken', token)
+    console.log(this.state.loggedInUsername)
     axios.post('/customerToken', {
       username: this.state.loggedInUsername,
       id: token.id,
@@ -216,7 +219,8 @@ class App extends React.Component {
       console.log(res)
       context.setState({
         openStripe: false
-      })
+      });
+      this.getUserProfile(this.state.loggedInUsername)
     }).catch(err => {
       console.log(err)
     })
@@ -226,7 +230,9 @@ class App extends React.Component {
     axios.post('/logout')
     .then(() => {
       this.setState({
-        username: ''
+        username: '',
+        userProfile: '',
+        loggedInUsername: ''
       })
     })
     .catch(err => console.log('error on logout function:', err));
@@ -465,11 +471,14 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                <Chart/>
+                {this.state.totalDonated ? 
+                <Chart totalNumTweets={this.state.totalNumTweets} totalDonated={this.state.totalDonated} totalUsers={this.state.totalUsers}/>
+              : <div></div>}
               </Paper>
               <Paper
                 style={style.paper}
                 zDepth={2}>
+                <UserProfile onToken={this.onToken} userProfile={this.state.userProfile} username={this.state.username}/>
               </Paper>
             </div>
           </div>
