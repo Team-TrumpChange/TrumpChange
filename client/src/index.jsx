@@ -17,9 +17,13 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
-import Chart from './Chart.jsx';
+
+import Chart from './Chart.jsx'
+import UserProfile from './UserProfile.jsx'
+
+
 import About from './About.jsx';
-import UserProfile from './UserProfile.jsx';
+
 
 class App extends React.Component {
   constructor(props) {
@@ -150,6 +154,12 @@ class App extends React.Component {
         if (res.status === 202) {
           this.setState({
             username: res.data,
+
+            loggedInUsername: res.data
+          }, () => {
+            this.handleCloseLogin();
+            this.getUserProfile(this.state.username);
+
           })
           this.handleClose('openLogin');
           this.clearUserInput();
@@ -205,6 +215,7 @@ class App extends React.Component {
 
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
+    console.log(this.state.loggedInUsername)
     axios.post('/customerToken', {
       username: this.state.username,
       id: token.id,
@@ -213,7 +224,8 @@ class App extends React.Component {
       console.log(res)
       this.setState({
         openStripe: false
-      })
+      });
+      this.getUserProfile(this.state.loggedInUsername)
     }).catch(err => {
       console.log(err)
     })
@@ -224,9 +236,8 @@ class App extends React.Component {
     .then(() => {
       this.setState({
         username: '',
-        userProfile: null,
-        userDonated: null,
-        hasSubscriberId: null
+        userProfile: '',
+        loggedInUsername: ''
       })
     })
     .catch(err => console.log('error on logout function:', err));
@@ -502,18 +513,20 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                <Paper zDepth={2} style={style.paperChart}>
-                <Chart 
-                totalDonated={this.state.totalDonated}
-                totalUsers={this.state.totalUsers}
-                totalNumTweets={this.state.totalNumTweets}
-                />
-                </Paper>
+
+                {this.state.totalDonated ? 
+                <Chart totalNumTweets={this.state.totalNumTweets} totalDonated={this.state.totalDonated} totalUsers={this.state.totalUsers}/>
+              : <div></div>}
+
               </Paper>
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                {this.state.username === '' ? <About /> : <UserProfile props={this.state.userProfile}/>}
+
+                <UserProfile onToken={this.onToken} userProfile={this.state.userProfile} username={this.state.username}/>
+
+                
+
               </Paper>
             </div>
           </div>
