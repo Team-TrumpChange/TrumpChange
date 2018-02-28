@@ -243,20 +243,6 @@ class App extends React.Component {
     .catch(err => console.log('error on logout function:', err));
   }
 
-  cancelSubscription() {
-    axios.post('/cancelSubscription', {
-      username: this.state.username
-    })
-      .then(data => {
-        console.log('data from cancelSubscription:', data);
-      })
-      .catch(err => {
-        console.log('error cancelling subsciption:', err);
-      });
-  }
-
-
-
   render () {
     const muiTheme = getMuiTheme({
       palette: {
