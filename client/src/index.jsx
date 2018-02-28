@@ -80,11 +80,14 @@ class App extends React.Component {
     });
   }
 
-  handleClose(name) {
+  handleClose(name, callback) {
     this.setState({
       [name]: false,
       openDialog: 'none',
     });
+    if (callback) {
+      callback();
+    }
   }
 
   clearUserInput() {
@@ -131,13 +134,14 @@ class App extends React.Component {
         } else if (res.data === 'Email already exists') {
           console.log('A user with this email already exists')
         } else if ('User saved in saveUserIntoDataBase') {
-          this.handleClose('openSignUp');
-          this.setState({
-            username: res.data,
-            openStripe: true,
-          }, () => {
-            console.log('this.state.username:', this.state.username);
-            this.getUserProfile(this.state.username);
+          this.handleClose('openSignUp', () => {
+            this.setState({
+              username: res.data,
+              openStripe: true,
+            }, () => {
+              console.log('this.state.username:', this.state.username);
+              this.getUserProfile(this.state.username);
+            });
           });
         }
       }).catch(err => {
@@ -216,19 +220,22 @@ class App extends React.Component {
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     console.log(this.state.loggedInUsername)
-    axios.post('/customerToken', {
-      username: this.state.username,
-      id: token.id,
-      email: token.email,
-      cardID: token.card.id
-    }).then(res => {
-      console.log(res)
-      this.setState({
-        openStripe: false
-      });
-    }).catch(err => {
-      console.log(err)
-    })
+    this.setState({
+      openStripe: false
+    }, (err) => {
+      if (!err) {
+        axios.post('/customerToken', {
+          username: this.state.username,
+          id: token.id,
+          email: token.email,
+          cardID: token.card.id
+        }).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    });
   }
 
   logout() {console.log('running')
