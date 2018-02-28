@@ -60,7 +60,7 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
         updateNum = count;
       }
 
-      if (userProfile.subscriberID && !userProfile.newUser) {
+      if (userProfile.subscriberID && !userProfile.newUser && !userProfile.canceled) {
         console.log('updateNum:', updateNum);
         console.log('userProfile.subscriberID:', userProfile.subscriberID);
 
@@ -136,7 +136,6 @@ setInterval(() => { // also calls update subscriptions in line 136
         console.log('seven days ago from this very moment', sevenDaysAgo);
         db.Tweet.count({ dateTweeted: { $gt: sevenDaysAgo } }, (err, res) => {
           let count = res;
-          updateSubs(count); // calls update subscriptions
           billCycleMoment = moment(billCycleMoment, "ddd MMM DD HH:mm ZZ YYYY").add(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY"); 
           console.log('7 days from this very moment', billCycleMoment);
           helpers.getBillingCycleMoment((err, result) => {
@@ -148,6 +147,7 @@ setInterval(() => { // also calls update subscriptions in line 136
                 if (err) {
                   console.log('error saving updated billCycleMoment in DB');
                 }
+                updateSubs(count); // calls update subscriptions
               })
             }
           });
@@ -157,36 +157,30 @@ setInterval(() => { // also calls update subscriptions in line 136
   })
 }, 60000);
 
-
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
-  req.body.totalMoneyDonated = null;
   const {
     username: username,
     password: password,
     email: email,
     maxWeeklyPlans: maxWeeklyPlans,
-    totalMoneyDonated: totalMoneyDonated
-  } = req.body;  
+  } = req.body;
+  const totalMoneyDonated = null;
   
   helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function (message) {
-    if (!password || !username || !maxWeeklyPlans) {
-      res.send('Must enter valid username, password, and maxWeeklyPlans!');
-    } else if (message) {
-      res.send(message);
-    } else {
+    if (message === 'User saved in saveUserIntoDataBase') {
       req.session.regenerate(function(err) {
         if (!err) {
           req.session.username = username;
+          console.log('req.session.username:', req.session.username);
           res.send(req.session.username);
         } else {
           console.log('error creating session');
           res.status(400).send('error loggin user in after saving to DB');
         }
       });
-      // req.session = null;
-      // req.session.username = username
-      // res.send(req.session.username)
+    } else {
+      res.send(message);
     }
   });
 });
@@ -273,13 +267,9 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
  const tokenId = req.body.id;
  const email = req.body.email;
- // console.log('token.card.name:', token.card.name);
  console.log('TOKENID:', tokenId);
  console.log('email', email);
  console.log('req.username:', req.body.username);
-
- // *check if token email matches db email 
-
 
  if (req.body.username) {
    stripe.customers.create({
@@ -289,7 +279,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
    }, function(err, customer) { // returns a customer object if successful
       if (err) {
           console.log('error in create function')
-          res.send('error');
+          res.send('error in create function');
       } else {
           console.log('customer.id:', customer.id);
           console.log('customer.email:', customer.email);
@@ -299,9 +289,9 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
           if (err) {
             res.status(400).send('error creating new billing cycle anchor, subscription not created');
           } else {
-            var billCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X'));
-            console.log('billCycleMoment + 5 min (before creating subscription):', billCycleMoment);
-            console.log('typeof billCycleMoment,', typeof billCycleMoment);
+            var billingCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X'));
+            console.log('billCycleMoment + 5 min (before creating subscription):', billingCycleMoment);
+            console.log('typeof billCycleMoment,', typeof billingCycleMoment);
              stripe.subscriptions.create({ // creates a new subscription
                  customer: customer.id,
                  items: [
@@ -310,7 +300,7 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                     quantity: 0
                   }
                  ],
-                 billing_cycle_anchor: billCycleMoment
+                 billing_cycle_anchor: billingCycleMoment
              }, function(err, subscription) { // returns a subscription object
                  if (err) {
                    console.log('error creating subscription:', err);
@@ -349,6 +339,54 @@ app.post('/logout', function(req, res) {
     }
   });
 }); 
+
+app.post('/cancelSubscription', (req, res) => {
+  helpers.getUserProfile(req.body.username, (err, result) => {
+    if (err) {
+      res.send('error canceling subscription, couldnt find user');
+    } else {
+      console.log('result.subscriberID:', result.subscriberID);
+      stripe.subscriptions.del(result.subscriberID)
+        .then(() => {
+          result.canceled = true;
+          result.save((err) => {
+            if (err) {
+              console.log('subscription canceled, but error updating user profile subscription as canceled');
+              res.send('subscription canceled, but error updating user profile accordingly');
+            }
+              res.send('subscription canceled');
+          })
+        })
+        .catch(err => {
+          res.send('error canceling subscription');
+        });
+    }
+  });
+});
+
+app.post('/changeUserInfo', (req, res) => {
+  helpers.getUserProfile(req.body.username, (err, result) => {
+    if (err) {
+      res.send('error updating user Profile, couldnt find profile');
+    } else {
+      if (req.body.newName) {
+        result.username = req.body.newName
+      } 
+      if (req.body.maxWeeklyPlans) {
+        result.maxWeeklyPlans = req.body.maxWeeklyPlans
+      }
+      result.save(err => {
+        if (err) {
+          console.log('error saving updated user info');
+          res.send('error saving updated user info');
+        } else {
+          console.log('success saving updated user info');
+          res.send(result);
+        }
+      });
+    }
+  })
+});
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
