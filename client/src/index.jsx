@@ -38,10 +38,16 @@ class App extends React.Component {
       username: '',
       userProfile: null,
       userDonated: null,
+<<<<<<< HEAD
+      totalDonated: 0,
+      totalUsers: 0,
+      totalNumTweets: 0
+=======
       totalDonated: null,
       totalUsers: null,
       totalNumTweets: null,
       hasSubscriberId: null
+>>>>>>> f083a0c8a3c5792454078a672066414b3cc19d20
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -190,11 +196,20 @@ class App extends React.Component {
   getStats () { // retrieves stats from all users to show on main page- gets called in componenetDidMount
     axios.get('/stats')
       .then(res => {
+<<<<<<< HEAD
+        this.setState({
+          totalDonated: Number(res.data.totalDonated),
+          totalUsers: Number(parseInt(res.data.totalUsers)),
+          totalNumTweets: Number(parseInt(res.data.totalNumTweets))
+        }, () => {
+     
+=======
         console.log('res.data in getTotalDonated:', res.data);
         this.setState({
           totalDonated: Number(res.data.totalDonated),
           totalUsers: res.data.totalUsers,
           totalNumTweets: res.data.totalNumTweets
+>>>>>>> f083a0c8a3c5792454078a672066414b3cc19d20
         });
       })
       .catch(err => {
@@ -322,6 +337,14 @@ class App extends React.Component {
         flex: 1,
         display: 'flex',
       },
+      paperChart: {
+        borderRadius: 0,
+        margin: 10,
+        height: '96%',
+        width: '94.5%',
+        overflow: 'hidden',
+        diplay: 'flex'
+      }
     }
     const logIn = [
       <TextField
@@ -493,7 +516,13 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                <Chart/>
+                <Paper zDepth={2} style={style.paperChart}>
+                <Chart 
+                totalDonated={this.state.totalDonated}
+                totalUsers={this.state.totalUsers}
+                totalNumTweets={this.state.totalNumTweets}
+                />
+                </Paper>
               </Paper>
               <Paper
                 style={style.paper}

@@ -1,32 +1,35 @@
 import React, { Component } from 'react';
 import { ResponsiveContainer, RadialBarChart, RadialBar, Legend} from 'recharts';
-import { redA200, redA500, blueA200, blue300, greenA100, grey300, blueA100, fullWhite, fullBlack, darkBlack, white, redA100 } from 'material-ui/styles/colors';
-    
-
-const data = [
-  { name: 'Number of Donations', uv: 26.69, number: 325, fill: redA100 },
-  { name: 'TrumpTweets', uv: 31.47, number: 41, fill: blueA100},
-  { name: 'People Contributing to Change', uv: 15.69, number: 28, fill: greenA100 },
-];
-
-
+import {
+  blue200, blue400, blue600, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
+import Paper from 'material-ui/Paper';
 class Chart extends Component {
 
 	render () {
     const style = {
-      top: 20,
-      left: 50,
-      lineHeight: '24px',
-      fontSize: '13px'
-    }; 
+      top: 10,
+      left: 10,
+      lineHeight: '18px',
+      fontSize: '13px',
+    };
 
+    const totalDonated = this.props.totalDonated
+    const totalUsers = this.props.totalUsers
+    const totalNumTweets = this.props.totalNumTweets
+   
   	return (
-      <ResponsiveContainer>
-        <RadialBarChart innerRadius='50%' outerRadius='100%' data={data} startAngle={180} endAngle={-179}>
-          <RadialBar minAngle={0} label={{ fill: '#fff', position: 'insideStart'}} background clockWise={true} dataKey= 'number' />
-          <Legend layout='vertical' verticalAlign='top' wrapperStyle={style}/>
-        </RadialBarChart>
-      </ResponsiveContainer>
+        <ResponsiveContainer>
+          <RadialBarChart innerRadius='55%' outerRadius='100%' 
+          data={[{
+            name: 'Number of Donations', number: totalDonated, fill: blue200 },
+          { name: 'TrumpTweets', number: totalUsers, fill: blue400 },
+          { name: 'People Contributing to Change', number: totalNumTweets, fill: blue600 }
+          ]} 
+          startAngle={180} endAngle={-179}>
+            <RadialBar minAngle={0} label={{ fill: '#ffffff', position: 'insideStart'}} background clockWise={true} dataKey= 'number' />
+            <Legend layout='vertical' verticalAlign='top' wrapperStyle={style}/>
+          </RadialBarChart>
+        </ResponsiveContainer>
     );
   }
 }

@@ -4,18 +4,13 @@ import Tweet from './Tweet.jsx';
 class TweetList extends React.Component {
   
   render() {
-    const style = {
-      div: {
-       
-      }
-    }
     const content = this.props.tweets.map(tweet => {
       return (
         <Tweet key={tweet._id} tweet={tweet} />
       )
     });
     return (
-      <div style={style.div} className="tweet-list">{content}</div>
+      <div className="tweet-list">{content}</div>
     )
   }
 };
