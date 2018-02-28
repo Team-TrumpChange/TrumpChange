@@ -43,35 +43,18 @@ class UserProfile extends React.Component {
       console.log('Please enter a number under 100');
     } else {
       axios.post('/changeUserInfo', {
-        username: 'glova25',
-        newName: 'glov3',
-        maxWeeklyPlans: 4
+        currentName: this.props.userProfile.username,
+        newName: username,
+        maxWeeklyPlans: limit
       })
       .then(data => {
         console.log('data from changeUserInfo:', data);
+        this.handleClose();
       })
       .catch(err => {
         console.log('error changing user info:', err);
       })
     }
-  }
-
-  submitUpdate(username, limit) {
-    if (username === '' && limit === '') {
-      console.log('Please enter a username or limit');
-    } else if (limit === '' && isNaN(Number(limit)) && Number(limit) > 100) {
-      console.log('Please enter a number under 100');
-    } else {
-      axios.post('/updateUser', {
-        id: this.state.userProfile._id,
-        username: username,
-        limit: limit
-      })
-      .then(res =>
-        console.log('yeahhhhhhh', res.data)
-      )
-    }
-    this.handleClose()
   }
 
   render() {
@@ -117,18 +100,18 @@ class UserProfile extends React.Component {
           <div>Email: {this.props.userProfile.email}</div>
           <div>Weekly Limit: {this.props.userProfile.maxWeeklyPlans}</div>
           <StripeCheckout
-          name="TrumpChange"
-          description="Enter Your Card Info Below"
-          panelLabel="Submit"
-          allowRememberMe={false}
-          token={this.props.onToken}
-          email={this.props.userProfile.email}
-          currency="USD"
-          stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
+            name="TrumpChange"
+            description="Enter Your Card Info Below"
+            panelLabel="Submit"
+            allowRememberMe={false}
+            token={this.props.onToken}
+            email={this.props.userProfile.email}
+            currency="USD"
+            stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
           >
           <button
-          type="submit"
-          value="Submit">Enter or Update Payment Method
+            type="submit"
+            value="Submit"> {this.props.userProfile.subscriberID ? 'Update' : 'Enter'} Payment Method
           </button>
           </StripeCheckout> 
           <Dialog
