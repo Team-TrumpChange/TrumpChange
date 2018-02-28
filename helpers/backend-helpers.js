@@ -96,13 +96,14 @@ function hashPassword(userObj) {
   userObj.password = hash;
 }
 
-function addSubscriberIDAndCustomerID(subid, custid, username, callback) {
+function addSubscriberIDAndCustomerID(subid, custid, username, cardID, callback) {
   console.log('id:', subid);
   console.log('username:', username);
   db.User.findOne({username: username})
     .then(function(doc) {
       doc.subscriberID = subid;
-      doc.customerID = custid
+      doc.customerID = custid;
+      doc.cardID = cardID;
       console.log('doc.subscriberID:', doc.subscriberID)
       console.log('doc.customerID:', doc.customerID);
       doc.save(function(err) {
