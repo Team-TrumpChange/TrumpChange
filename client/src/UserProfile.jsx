@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import $ from 'jquery';
 import StripeCheckout from 'react-stripe-checkout';
 //import FadeIn from 'react-fade-in'
@@ -69,3 +70,7 @@ class UserProfile extends React.Component {
 }
 
 export default UserProfile
+=======
+
+
+
