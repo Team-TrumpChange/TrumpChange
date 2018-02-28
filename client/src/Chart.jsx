@@ -11,10 +11,6 @@ import t from './index.jsx'
 //   { name: 'People Contributing to Change', uv: 15.69, number: 28, fill: greenA100 },
 // ];
 
-
-
-import {
-  blue200, blue400, blue600, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Paper from 'material-ui/Paper';
 
 class Chart extends Component {
