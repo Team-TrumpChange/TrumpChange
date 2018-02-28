@@ -513,7 +513,7 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                {this.state.username === '' ? <About /> : <UserProfile props={this.state.userProfile}/>}
+                {this.state.username === '' ? <About /> : <UserProfile userProfile={this.state.userProfile}/>}
               </Paper>
             </div>
           </div>

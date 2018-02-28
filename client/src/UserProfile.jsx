@@ -5,6 +5,7 @@ class UserProfile extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      userProfile: this.props.userProfile
 
     }
   }
@@ -12,7 +13,7 @@ class UserProfile extends React.Component {
   render() {
     return (
       <div>
-        Hello World! from User Profile!
+        {this.state.userProfile === undefined ? 'Loading...' : this.state.userProfile.customerID}
       </div>
     )
   }
