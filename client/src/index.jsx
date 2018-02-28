@@ -17,7 +17,9 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
-import Chart from './Chart.jsx'
+import Chart from './Chart.jsx';
+import About from './About.jsx';
+import UserProfile from './UserProfile.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -152,7 +154,6 @@ class App extends React.Component {
           this.handleClose('openLogin');
           this.clearUserInput();
           this.getUserProfile(this.state.username);
-          this.checkforSubscription();
         } if (res.status === 200) {
             if (res.data === 'user not found') {
               console.log('user does not exist');
@@ -512,6 +513,7 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
+                {this.state.username === '' ? <About /> : <UserProfile props={this.state.userProfile}/>}
               </Paper>
             </div>
           </div>
