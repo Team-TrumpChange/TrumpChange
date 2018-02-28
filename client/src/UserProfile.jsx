@@ -85,12 +85,13 @@ class UserProfile extends React.Component {
       console.log('Please enter a number under 100');
     } else {
       axios.post('/changeUserInfo', {
-        username: 'glova25',
-        newName: 'glov3',
-        maxWeeklyPlans: 4
+        currentName: this.props.userProfile.username,
+        newName: username,
+        maxWeeklyPlans: limit
       })
       .then(data => {
         console.log('data from changeUserInfo:', data);
+        this.handleClose();
       })
       .catch(err => {
         console.log('error changing user info:', err);
@@ -228,8 +229,8 @@ class UserProfile extends React.Component {
             stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
           >
           <button
-          type="submit"
-          value="Submit">Enter or Update Payment Method
+            type="submit"
+            value="Submit"> {this.props.userProfile.subscriberID ? 'Update' : 'Enter'} Payment Method
           </button>
           </StripeCheckout> 
           <Dialog
