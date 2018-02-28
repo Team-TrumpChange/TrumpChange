@@ -16,6 +16,7 @@ class Tweet extends React.Component {
   render() {
     const style = {
       tweet: {
+        font : 'Helvetica Neue',
         fontSize: 11,
         margin: 5,
       },
