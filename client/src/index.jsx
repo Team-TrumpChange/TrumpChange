@@ -156,10 +156,6 @@ class App extends React.Component {
             username: res.data,
 
             loggedInUsername: res.data
-          }, () => {
-            this.handleCloseLogin();
-            this.getUserProfile(this.state.username);
-
           })
           this.handleClose('openLogin');
           this.clearUserInput();
@@ -236,7 +232,8 @@ class App extends React.Component {
     .then(() => {
       this.setState({
         username: '',
-        userProfile: '',
+        userProfile: null,
+        userDonated: null,
         loggedInUsername: ''
       })
     })
@@ -522,11 +519,7 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-
-                <UserProfile onToken={this.onToken} userProfile={this.state.userProfile} username={this.state.username}/>
-
-                
-
+                {this.state.userProfile === null ? <About /> : <UserProfile />}
               </Paper>
             </div>
           </div>
