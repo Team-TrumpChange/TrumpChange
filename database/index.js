@@ -14,7 +14,8 @@ let userSchema = mongoose.Schema({
   totalMoneyDonated: Number,
   newUser: Boolean,
   canceled: Boolean,
-  dateJoined: Date
+  dateJoined: Date,
+  cardID: String
 });
 
 let tweetsSchema = mongoose.Schema({

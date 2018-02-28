@@ -219,7 +219,8 @@ class App extends React.Component {
     axios.post('/customerToken', {
       username: this.state.username,
       id: token.id,
-      email: token.email
+      email: token.email,
+      cardID: token.card.id
     }).then(res => {
       console.log(res)
       this.setState({
@@ -454,15 +455,15 @@ class App extends React.Component {
                     label='Log Out'
                     onClick={this.logout.bind(this)}
                   />}
-                <Dialog title='Enter your username and password'
-                  actions={logIn}
-                  modal={false}
-                  open={this.state.openLogin}
-                  onRequestClose = {
-                    (e) => {
-                      this.handleClose('openLogin'); this.clearUserInput()
-                  }}
-                />
+                  <Dialog title='Enter your username and password'
+                    actions={logIn}
+                    modal={false}
+                    open={this.state.openLogin}
+                    onRequestClose = {
+                      (e) => {
+                        this.handleClose('openLogin'); this.clearUserInput()
+                    }}
+                  />
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
