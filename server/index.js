@@ -172,6 +172,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
       req.session.regenerate(function(err) {
         if (!err) {
           req.session.username = username;
+          console.log('req.session.username:', req.session.username);
           res.send(req.session.username);
         } else {
           console.log('error creating session');

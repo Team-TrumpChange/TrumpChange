@@ -124,7 +124,7 @@ class App extends React.Component {
         email: this.state.signupEmail,
         maxWeeklyPlans: this.state.signupLimit
       }).then(res => {
-        console.log(res)
+        console.log('res.data from /createAccount post:', res.data);
         if (res.data === 'Username already exists') {
           console.log('Username already exists');
         } else if (res.data === 'Email already exists') {
@@ -134,7 +134,10 @@ class App extends React.Component {
           this.setState({
             username: res.data,
             openStripe: true,
-          })
+          }, () => {
+            console.log('this.state.username:', this.state.username);
+            this.getUserProfile(this.state.username);
+          });
         }
       }).catch(err => {
         console.log('error:', err)
@@ -221,7 +224,6 @@ class App extends React.Component {
       this.setState({
         openStripe: false
       });
-      this.getUserProfile(this.state.loggedInUsername)
     }).catch(err => {
       console.log(err)
     })

@@ -57,7 +57,7 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
       });
       newUser.save(() => {
         console.log('user saved in saveUserIntoDataBase');
-        callback();
+        callback('User saved in saveUserIntoDataBase');
       });
     } else if (err) {
       callback('Error on looking up user in database');
