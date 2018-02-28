@@ -157,28 +157,6 @@ setInterval(() => { // also calls update subscriptions in line 136
   })
 }, 60000);
 
-app.post('/updateUser', (req, res) => {
-  if (req.body.username === '') {
-    console.log('username not entered');
-  } else if (req.body.limit === '') {
-    db.User.findOne({_id: req.body.id}, (err, result) => {
-      if (result === null) {
-        res.send('User does not exist');
-      } else {
-        res.send('User already exist');
-      }
-    })
-  } else {
-    db.User.findOne({ username: req.body.username }, (err, result) => {
-      if (result === null) {
-        res.send('User does not exist');
-      } else {
-        res.send('Update Successful');
-      }
-    })
-  }
-})
-
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   const {
@@ -385,29 +363,44 @@ app.post('/cancelSubscription', (req, res) => {
   });
 });
 
-app.post('/changeUserInfo', (req, res) => {
-  helpers.getUserProfile(req.body.username, (err, result) => {
-    if (err) {
-      res.send('error updating user Profile, couldnt find profile');
-    } else {
-      if (req.body.newName) {
-        result.username = req.body.newName
-      } 
-      if (req.body.maxWeeklyPlans) {
-        result.maxWeeklyPlans = req.body.maxWeeklyPlans
-      }
-      result.save(err => {
-        if (err) {
-          console.log('error saving updated user info');
-          res.send('error saving updated user info');
-        } else {
-          console.log('success saving updated user info');
-          res.send(result);
-        }
-      });
-    }
-  })
-});
+// app.post('/changeUserInfo', (req, res) => {
+//   helpers.getUserProfile(req.body.currentName, (err, result) => {
+//     if (req.body.newName !== '') {
+//       helpers.getUserProfile(req.body.newName, (err, result) => {
+//         if (result === null) {
+          
+//         } else {
+//           res.send(console.log('desired username already exists!'))
+//         }
+//       })
+//     } 
+//     if (req.body.maxWeeklyPlans !== '') {
+
+//     }
+//   }
+//   helpers.getUserProfile(req.body.currentName, (err, result) => {
+//     if (err) {
+//       res.send('error updating user Profile, couldnt find profile');
+//     } else {
+//       console.log(result);
+//       if (req.body.newName !== '') {
+//         result.username = req.body.newName
+//       } 
+//       if (req.body.maxWeeklyPlans !== '') {
+//         result.maxWeeklyPlans = req.body.maxWeeklyPlans
+//       }
+//       result.save(err => {
+//         if (err) {
+//           console.log('error saving updated user info');
+//           res.send('error saving updated user info');
+//         } else {
+//           console.log('success saving updated user info');
+//           res.send(result);
+//         }
+//       });
+//     }
+//   })
+// });
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
