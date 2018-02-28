@@ -38,16 +38,9 @@ class App extends React.Component {
       username: '',
       userProfile: null,
       userDonated: null,
-<<<<<<< HEAD
       totalDonated: 0,
       totalUsers: 0,
       totalNumTweets: 0
-=======
-      totalDonated: null,
-      totalUsers: null,
-      totalNumTweets: null,
-      hasSubscriberId: null
->>>>>>> f083a0c8a3c5792454078a672066414b3cc19d20
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -196,20 +189,12 @@ class App extends React.Component {
   getStats () { // retrieves stats from all users to show on main page- gets called in componenetDidMount
     axios.get('/stats')
       .then(res => {
-<<<<<<< HEAD
         this.setState({
           totalDonated: Number(res.data.totalDonated),
           totalUsers: Number(parseInt(res.data.totalUsers)),
           totalNumTweets: Number(parseInt(res.data.totalNumTweets))
         }, () => {
      
-=======
-        console.log('res.data in getTotalDonated:', res.data);
-        this.setState({
-          totalDonated: Number(res.data.totalDonated),
-          totalUsers: res.data.totalUsers,
-          totalNumTweets: res.data.totalNumTweets
->>>>>>> f083a0c8a3c5792454078a672066414b3cc19d20
         });
       })
       .catch(err => {
