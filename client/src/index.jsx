@@ -17,6 +17,7 @@ import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import Chart from './Chart.jsx'
 import UserProfile from './UserProfile.jsx'
@@ -252,19 +253,7 @@ class App extends React.Component {
       });
   }
 
-  changeUserInfo() {
-    axios.post('/changeUserInfo', {
-      username: 'glova25',
-      newName: 'glov3',
-      maxWeeklyPlans: 4
-    })
-      .then(data => {
-        console.log('data from changeUserInfo:', data);
-      })
-      .catch(err => {
-        console.log('error changing user info:', err);
-      })
-  }
+
 
   render () {
     const muiTheme = getMuiTheme({
@@ -449,7 +438,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{ margin: 7.925 }}
                     labelColor={white}
-                    backgroundColor={red500}
+                    backgroundColor={blue400}
                     label='Sign Up'
                     onClick={this.handleOpen.bind(this, "openSignUp")}
                   /> :
@@ -466,14 +455,14 @@ class App extends React.Component {
                   <RaisedButton
                     style={{margin: 7.925}}
                     labelColor={white}
-                    backgroundColor={red500}
+                    backgroundColor={blue400}
                     label='Log In'
                     onClick={this.handleOpen.bind(this, "openLogin")}
                   /> :
                   <RaisedButton
                     style={{ margin: 7.925 }}
                     labelColor={white}
-                    backgroundColor={red500}
+                    backgroundColor={blue400}
                     label='Log Out'
                     onClick={this.logout.bind(this)}
                   />}
@@ -519,7 +508,19 @@ class App extends React.Component {
               <Paper
                 style={style.paper}
                 zDepth={2}>
-                {this.state.userProfile === null ? <About /> : <UserProfile />}
+                {
+                  this.state.username === '' 
+                    ? 
+                      <About />
+                    :
+                      this.state.userProfile === null 
+                        ? 
+                          <div>
+                            <CircularProgress size={80} thickness={5} color={blue400}/>
+                          </div> 
+                        :
+                          <UserProfile userProfile={this.state.userProfile} onToken={this.onToken}/>
+                }
               </Paper>
             </div>
           </div>

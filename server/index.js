@@ -157,6 +157,28 @@ setInterval(() => { // also calls update subscriptions in line 136
   })
 }, 60000);
 
+app.post('/updateUser', (req, res) => {
+  if (req.body.username === '') {
+    console.log('username not entered');
+  } else if (req.body.limit === '') {
+    db.User.findOne({_id: req.body.id}, (err, result) => {
+      if (result === null) {
+        res.send('User does not exist');
+      } else {
+        res.send('User already exist');
+      }
+    })
+  } else {
+    db.User.findOne({ username: req.body.username }, (err, result) => {
+      if (result === null) {
+        res.send('User does not exist');
+      } else {
+        res.send('Update Successful');
+      }
+    })
+  }
+})
+
 app.post('/createAccount', function(req, res) { // receives new account info from client and saves it to db. also creates a session
   helpers.hashPassword(req.body)
   const {
