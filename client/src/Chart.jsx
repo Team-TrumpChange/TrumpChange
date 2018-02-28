@@ -12,9 +12,6 @@ import t from './index.jsx'
 // ];
 
 
-
-import {
-  blue200, blue400, blue600, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Paper from 'material-ui/Paper';
 
 class Chart extends Component {
