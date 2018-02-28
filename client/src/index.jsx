@@ -12,7 +12,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import spacing from 'material-ui/styles/spacing';
 import { fade } from 'material-ui/utils/colorManipulator';
-import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
+import { lightBlue500, red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
@@ -451,7 +451,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{ margin: 7.925 }}
                     labelColor={white}
-                    backgroundColor={red500}
+                    backgroundColor={lightBlue500}
                     label='Sign Up'
                     onClick={this.handleOpen.bind(this, "openSignUp")}
                   /> :
@@ -468,7 +468,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{margin: 7.925}}
                     labelColor={white}
-                    backgroundColor={red500}
+                    backgroundColor={lightBlue500}
                     label='Log In'
                     onClick={this.handleOpen.bind(this, "openLogin")}
                   /> :
