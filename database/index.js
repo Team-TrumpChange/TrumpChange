@@ -7,10 +7,14 @@ const db = mongoose.connect(process.env.MONGO_DATABASE);
 let userSchema = mongoose.Schema({
   username: String,
   password: String,
+  customerID: String,
   subscriberID: String,
   email: String,
   maxWeeklyPlans: Number,
-  totalMoneyDonated: Number
+  totalMoneyDonated: Number,
+  newUser: Boolean,
+  canceled: Boolean,
+  dateJoined: Date
 });
 
 let tweetsSchema = mongoose.Schema({

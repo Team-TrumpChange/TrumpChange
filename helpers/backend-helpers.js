@@ -17,6 +17,7 @@ function getTweets(callback, count) {
   const params = {
     screen_name: 'realdonaldtrump',
     count: count || 5,
+    tweet_mode: 'extended'
   };
   twitterClient.get('statuses/user_timeline', params, (error, tweets) => {
     if (!error) {
@@ -32,7 +33,7 @@ function updateRetweetAndFavoriteCount() {
     getTweets(tweets => {
       for (let tweet of tweets) {
         db.Tweet.update({ tweetid: tweet.id }, { $set: { favorites: tweet.favorite_count, retweets: tweet.retweet_count}}, (err, res) => {
-          !err ? console.log('Successful update of retweets and favorites') : console.log('Error updating retweets and favorites');
+          //!err ? console.log('Successful update of retweets and favorites') : console.log('Error updating retweets and favorites');
         })
       }
     }, count);
@@ -42,15 +43,26 @@ function updateRetweetAndFavoriteCount() {
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   db.User.findOne({username: username}, function(err, result) {
     if (result === null) {
-      const newUser = new db.User({ username: username, password: password, subscriberID: null, email: email, maxWeeklyPlans: maxWeeklyPlans, totalMoneyDonated: totalMoneyDonated });
+      const newUser = new db.User({ 
+        username: username, 
+        password: password, 
+        customerID: null, 
+        subscriberID: null, 
+        email: email, 
+        maxWeeklyPlans: maxWeeklyPlans, 
+        totalMoneyDonated: totalMoneyDonated, 
+        newUser: true, 
+        canceled: false, 
+        dateJoined: moment.now()
+      });
       newUser.save(() => {
         console.log('user saved in saveUserIntoDataBase');
         callback();
       });
     } else if (err) {
-      callback('error');
+      callback('Error on looking up user in database');
     } else {
-      callback('Username already exists!');
+      callback('Username already exists');
     }
   });
 }
@@ -84,13 +96,15 @@ function hashPassword(userObj) {
   userObj.password = hash;
 }
 
-function addSubscriberID(id, username, callback) {
-  console.log('id:', id);
+function addSubscriberIDAndCustomerID(subid, custid, username, callback) {
+  console.log('id:', subid);
   console.log('username:', username);
   db.User.findOne({username: username})
     .then(function(doc) {
-      doc.subscriberID = id;
+      doc.subscriberID = subid;
+      doc.customerID = custid
       console.log('doc.subscriberID:', doc.subscriberID)
+      console.log('doc.customerID:', doc.customerID);
       doc.save(function(err) {
           if (err) {
             console.log('error saving subsriptionID');
@@ -109,7 +123,7 @@ function addUniqueTweet(tweetsArray) {
   for (let tweet of tweetsArray) {
     db.Tweet.find({ tweetid: tweet.id}, (err, res) => {
       if (!res.length) {
-        saveTweetIntoDataBase(tweet.user.profile_image_url_https, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
+        saveTweetIntoDataBase(tweet.user.profile_image_url_https, tweet.id, tweet.user.screen_name, tweet.user.name, tweet.full_text, tweet.favorite_count, tweet.retweet_count, tweet.created_at);
       }
     })
   }
@@ -128,7 +142,6 @@ function updateSubscriptions(callback) {
   db.User.find({})
     .then(function(results) {
       console.log('results:', results);
-      console.log('callback:', callback);
       callback(results);
    })
    .catch(error => {
@@ -215,6 +228,30 @@ function getTotalNumTweets(callback) {
     });
 }
 
+function getUserProfile(username, callback) {
+  db.User.findOne({username: username})
+    .then(result => {
+      console.log('result from find in getUserProfile:', result);
+      callback(null, result);
+    })
+    .catch(err => {
+      console.log('error in getUserProfile:', err);
+      callback(err);
+    })
+}
+
+function getBillingCycleMoment(callback) {
+  db.GlobalVariable.findOne({name: 'billCycleMoment'})
+    .then(result => {
+      callback(null, result);
+    })
+    .catch(err => {
+      console.log('error getting getBillingCycleMoment:', err);
+      callback(err);
+    })
+}
+
+
 exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -223,10 +260,12 @@ exports.saveTweetIntoDataBase = saveTweetIntoDataBase;
 exports.hashPassword = hashPassword;
 exports.checkPassword = checkPassword;
 exports.getTrumpTweets = getTrumpTweets;
-exports.addSubscriberID = addSubscriberID;
+exports.addSubscriberIDAndCustomerID = addSubscriberIDAndCustomerID;
 exports.updateSubscriptions = updateSubscriptions;
 exports.updateUserAmountDonated = updateUserAmountDonated;
 exports.updateTotalDonated = updateTotalDonated;
 exports.getTotalDonated = getTotalDonated;
 exports.getTotalUsers = getTotalUsers;
 exports.getTotalNumTweets = getTotalNumTweets;
+exports.getUserProfile = getUserProfile;
+exports.getBillingCycleMoment = getBillingCycleMoment;

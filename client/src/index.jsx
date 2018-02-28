@@ -30,18 +30,24 @@ class App extends React.Component {
       openDialog: 'none',
       signupUsername: '',
       signupPassword: '',
+      signupConfirmPassword: '',
       signupEmail: '',
       signupLimit: '',
-      singupUsername: '',
-      signupPassword: '',
-      signupConfirmPassword: '',
       loginUsername: '',
       loginPassword: '',
       username: '',
+      userProfile: null,
       userDonated: null,
+<<<<<<< HEAD
       totalDonated: 0,
       totalUsers: 0,
       totalNumTweets: 0
+=======
+      totalDonated: null,
+      totalUsers: null,
+      totalNumTweets: null,
+      hasSubscriberId: null
+>>>>>>> f083a0c8a3c5792454078a672066414b3cc19d20
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -74,28 +80,45 @@ class App extends React.Component {
     });
   }
 
-  handleCloseSignupCancel(name) {
+  handleClose(name) {
     this.setState({
       [name]: false,
-      openDialog: 'none'
+      openDialog: 'none',
     });
   }
 
-  handleCloseSignupSubmit(name) {
-    if (!this.state.signupUsername || !this.state.signupPassword || !this.state.signupEmail || !this.state.signupLimit || !this.state.signupConfirmPassword ) {
-       return console.log('INFO MISSING YOU BITCH')
-    } if (this.state.signupPassword !== this.state.signupConfirmPassword) {
-      return console.log('PASSWORDS DONT MATCH DUMBASS')
-    } if (isNaN(Number(this.state.signupLimit))) {
-       return console.log('LIMIT NEEDS TO BE A NUMBER DOOSHBAG', this.state.signupLimit, Number(this.state.signupLimit))
-    }
-    else {
-      this.setState({
-        [name]: false,
-        openDialog: 'none',
-        openStripe: true,
-      });
+  clearUserInput() {
+    this.setState({
+      loginUsername: '',
+      loginPassword: '',
+      signupUsername: '',
+      signupPassword: '',
+      signupConfirmPassword: '',
+      signupEmail: '',
+      signupLimit: ''
+    })
+  }
 
+  submitSignUp(username, password, passwordConfirm, email, limit) {
+    if (username === '') {
+      console.log('Please fill in username');
+    } else if (password === '') {
+      console.log('Please fill in password');
+    } else if (passwordConfirm === '') {
+      console.log('Please confirm password');
+    } else if (password !== passwordConfirm) {
+      console.log('Passwords do not match');
+    } else if (email === '') {
+      console.log('Please fill in email');
+    } else if (limit === '') {
+      console.log('Please enter a limit')
+    } else if (isNaN(Number(limit))) {
+      console.log('Please enter in only a number');
+    } else if (Number(limit) > 99) {
+      console.log('Please enter a number less 100')
+    } else if (Number(limit) % 1 !== 0) {
+      console.log('Please enter in a whole number');
+    } else {
       axios.post('/createAccount', {
         username: this.state.signupUsername,
         password: this.state.signupPassword,
@@ -103,11 +126,15 @@ class App extends React.Component {
         maxWeeklyPlans: this.state.signupLimit
       }).then(res => {
         console.log(res)
-        if (res.data !== 'Username already exists!' || res.data !== 'error') {
+        if (res.data === 'Username already exists') {
+          console.log('Username already exists');
+        } else if (res.data === 'Email already exists') {
+          console.log('A user with this email already exists')
+        } else if ('User saved in saveUserIntoDataBase') {
+          this.handleClose('openSignUp');
           this.setState({
-            loggedInUsername: res.data
-          }, () => {
-            console.log('this.state.loggedInUsername:', this.state.loggedInUsername);
+            username: res.data,
+            openStripe: true,
           })
         }
       }).catch(err => {
@@ -116,26 +143,9 @@ class App extends React.Component {
     }
   }
 
-  handleCloseLogin(name) {
-    // how to get username and password info to call submitLogin Func?
-    this.setState({
-      openLogin: false,
-      openDialog: 'none'
-    });
-    if (name === 'submit') {
-        console.log('this.state.loginUsername:', this.state.loginUsername);
-        console.log('this.state.loginPassword:', this.state.loginPassword);
-        this.submitLogin(this.state.loginUsername, this.state.loginPassword);
-    }
-  }
-
   submitLogin(username, password) {
     // make a post req to server with username and password
     console.log(username, password)
-    this.setState({
-      loginUsername: '',
-      loginPassword: ''
-    })
     axios.post('/login', {
       username: username,
       password: password
@@ -144,25 +154,62 @@ class App extends React.Component {
         console.log('loggin',res);
         if (res.status === 202) {
           this.setState({
-            username: res.data
-          });     
+            username: res.data,
+          })
+          this.handleClose('openLogin');
+          this.clearUserInput();
+          this.getUserProfile(this.state.username);
+          this.checkforSubscription();
+        } if (res.status === 200) {
+            if (res.data === 'user not found') {
+              console.log('user does not exist');
+              //this.userNotFound();
+            } else if (res.data === 'password does not match') {
+              console.log('password does not match');
+              //this.passwordNotMatched();
+            }
         }
       })
       .catch(err => {
-        console.log('error on submit login function', err);
+        console.log(err)
+      })
+  }
+
+  getUserProfile(username) {
+    var context = this;
+    axios.post('/userProfile', {
+      username: username  
+    })
+      .then(res => {
+        console.log('res.data from getting User Profile:', res.data);
+        context.setState({
+          userProfile: res.data
+        }, () => {
+          console.log('this.state.userProfile:', this.state.userProfile);
+        })
+      })
+      .catch(err => {
+        console.log('error getting user Profile:', err);
       })
   }
 
   getStats () { // retrieves stats from all users to show on main page- gets called in componenetDidMount
-    var context = this;
     axios.get('/stats')
       .then(res => {
+<<<<<<< HEAD
         this.setState({
           totalDonated: Number(res.data.totalDonated),
           totalUsers: Number(parseInt(res.data.totalUsers)),
           totalNumTweets: Number(parseInt(res.data.totalNumTweets))
         }, () => {
      
+=======
+        console.log('res.data in getTotalDonated:', res.data);
+        this.setState({
+          totalDonated: Number(res.data.totalDonated),
+          totalUsers: res.data.totalUsers,
+          totalNumTweets: res.data.totalNumTweets
+>>>>>>> f083a0c8a3c5792454078a672066414b3cc19d20
         });
       })
       .catch(err => {
@@ -173,11 +220,14 @@ class App extends React.Component {
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     axios.post('/customerToken', {
-      username: this.state.loggedInUsername,
+      username: this.state.username,
       id: token.id,
-      email: token.card.name
+      email: token.email
     }).then(res => {
       console.log(res)
+      this.setState({
+        openStripe: false
+      })
     }).catch(err => {
       console.log(err)
     })
@@ -187,10 +237,39 @@ class App extends React.Component {
     axios.post('/logout')
     .then(() => {
       this.setState({
-        username: ''
+        username: '',
+        userProfile: null,
+        userDonated: null,
+        hasSubscriberId: null
       })
     })
     .catch(err => console.log('error on logout function:', err));
+  }
+
+  cancelSubscription() {
+    axios.post('/cancelSubscription', {
+      username: this.state.username
+    })
+      .then(data => {
+        console.log('data from cancelSubscription:', data);
+      })
+      .catch(err => {
+        console.log('error cancelling subsciption:', err);
+      });
+  }
+
+  changeUserInfo() {
+    axios.post('/changeUserInfo', {
+      username: 'glova25',
+      newName: 'glov3',
+      maxWeeklyPlans: 4
+    })
+      .then(data => {
+        console.log('data from changeUserInfo:', data);
+      })
+      .catch(err => {
+        console.log('error changing user info:', err);
+      })
   }
 
   render () {
@@ -285,13 +364,15 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleCloseLogin.bind(this, 'cancel')}
+        onClick = {(e) => {
+          this.handleClose('openLogin'), this.clearUserInput();
+        }}
       />,
       <FlatButton
         label='Submit'
         primary={true}
-        keyboardFocused={true}
-        onClick={this.handleCloseLogin.bind(this, 'submit')}
+        keyboardFocused={false}
+        onClick={(e) => { e.preventDefault(); this.submitLogin(this.state.loginUsername, this.state.loginPassword)}}
       />,
     ];
     const signUp = [
@@ -333,13 +414,13 @@ class App extends React.Component {
       <FlatButton
         label='Cancel'
         primary={true}
-        onClick={this.handleCloseSignupCancel.bind(this, this.state.openDialog)}
+        onClick={(e) => {this.handleClose('openSignUp'); this.clearUserInput()}}
       />,
       <FlatButton
         label='Submit'
         primary={true}
         keyboardFocused={true}
-        onClick={this.handleCloseSignupSubmit.bind(this, this.state.openDialog)}
+        onClick={(e) => {e.preventDefault(); this.submitSignUp(this.state.signupUsername, this.state.signupPassword, this.state.signupConfirmPassword, this.state.signupEmail, this.state.signupLimit)}}
       />,
     ];
     const stripe = [
@@ -353,6 +434,7 @@ class App extends React.Component {
         email={this.state.signupEmail}
         currency="USD"
         stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
+        closed={this.clearUserInput.bind(this)}
       >
         <button
           className="submitbtn"
@@ -377,20 +459,14 @@ class App extends React.Component {
                     label='Sign Up'
                     onClick={this.handleOpen.bind(this, "openSignUp")}
                   /> :
-                  <RaisedButton
-                    style={{ margin: 7.925 }}
-                    labelColor={white}
-                    backgroundColor={red500}
-                    label='My Profile'
-                    onClick={this.handleOpen.bind(this, "openSignUp")}
-                  /> 
+                  null
                 }
                 <Dialog
                   title='Enter a new username, password, and email'
                   actions={signUp}
                   modal={false}
                   open={this.state.openSignUp}
-                  onRequestClose={this.handleCloseSignupCancel.bind(this, 'openSignUp')}
+                  onRequestClose={(e) => { this.handleClose('openSignUp'); this.clearUserInput()}}
                 />
                 {this.state.username === '' ? 
                   <RaisedButton
@@ -411,12 +487,16 @@ class App extends React.Component {
                   actions={logIn}
                   modal={false}
                   open={this.state.openLogin}
-                  //onRequestClose={this.handleCloseLogin.bind(this, 'openLogin')}
+                  onRequestClose = {
+                    (e) => {
+                      this.handleClose('openLogin'); this.clearUserInput()
+                  }}
                 />
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
-                  open={this.state.openStripe}/>
+                  open={this.state.openStripe}
+                />
               </div>
               <div style={style.flexImage}>
                 <img
