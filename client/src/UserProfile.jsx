@@ -15,6 +15,21 @@ class UserProfile extends React.Component {
       updatedWeeklyLimit: '',
       openUpdate: false
     }
+    this.onTokenUpdateCard= this.onTokenUpdateCard.bind(this)
+  }
+
+  onTokenUpdateCard(token) {
+      console.log('updating', token)
+      console.log(token.card.id)
+      axios.post('/updateCustomer', {
+          customerId : this.props.userProfile.customerID,
+          card : this.props.userProfile.cardID,
+          token : token.id
+      }).then(res => {
+          console.log('success', res.data)
+      }).catch(err => {
+          console.log('error', err)
+      })
   }
 
   clearUserInput() {
@@ -104,7 +119,7 @@ class UserProfile extends React.Component {
             description="Enter Your Card Info Below"
             panelLabel="Submit"
             allowRememberMe={false}
-            token={this.props.onToken}
+            token= {this.props.userProfile.subscriberID ? this.onTokenUpdateCard : this.props.onToken} 
             email={this.props.userProfile.email}
             currency="USD"
             stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 

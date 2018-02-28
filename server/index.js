@@ -262,6 +262,41 @@ app.post('/userProfile', (req, res) => {
   })
 });
 
+app.post('/updateCustomer', function(req, res) {
+  stripe.customers.deleteCard(
+    req.body.customerId,
+    req.body.card,
+    function(err, confirmation) {
+      if (err) {
+        console.log('error deleting card', err)
+        res.send('error deleting card')
+      } else {
+        console.log('success', confirmation)
+        stripe.customers.createSource(
+          req.body.customerId,
+          { source: req.body.token },
+          function(err, card) {
+            if (err) {
+              console.log('error creating card', err)
+              res.send('error creating card')
+            } else {
+              console.log('success adding card', card)
+              res.send('success')
+            }
+          }
+        )
+      }
+    }
+  );
+
+
+
+
+
+
+
+})
+
 
 app.post('/customerToken', function(req, res) { // this will receive customer token
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
