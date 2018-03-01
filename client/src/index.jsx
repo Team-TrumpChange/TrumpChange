@@ -12,7 +12,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import spacing from 'material-ui/styles/spacing';
 import { fade } from 'material-ui/utils/colorManipulator';
-import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
+import { lightBlue500, red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
@@ -53,6 +53,7 @@ class App extends React.Component {
     setInterval(() => {
       this.getTrumpTweetsFromDb()
     }, 30000);
+    this.getUserProfile= this.getUserProfile.bind(this)
   }
 
   componentDidMount() {
@@ -184,13 +185,12 @@ class App extends React.Component {
   }
 
   getUserProfile(username) {
-    var context = this;
     axios.post('/userProfile', {
       username: username  
     })
       .then(res => {
         console.log('res.data from getting User Profile:', res.data);
-        context.setState({
+        this.setState({
           userProfile: res.data
         }, () => {
           console.log('this.state.userProfile:', this.state.userProfile);
@@ -250,6 +250,20 @@ class App extends React.Component {
     })
     .catch(err => console.log('error on logout function:', err));
   }
+
+  cancelSubscription() {
+    axios.post('/cancelSubscription', {
+      username: this.state.username
+    })
+      .then(data => {
+        console.log('data from cancelSubscription:', data);
+      })
+      .catch(err => {
+        console.log('error cancelling subsciption:', err);
+      });
+  }
+
+
 
   render () {
     const muiTheme = getMuiTheme({
@@ -434,7 +448,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{ margin: 7.925 }}
                     labelColor={white}
-                    backgroundColor={blue400}
+                    backgroundColor={lightBlue500}
                     label='Sign Up'
                     onClick={this.handleOpen.bind(this, "openSignUp")}
                   /> :
@@ -451,7 +465,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{margin: 7.925}}
                     labelColor={white}
-                    backgroundColor={blue400}
+                    backgroundColor={lightBlue500}
                     label='Log In'
                     onClick={this.handleOpen.bind(this, "openLogin")}
                   /> :
@@ -462,15 +476,15 @@ class App extends React.Component {
                     label='Log Out'
                     onClick={this.logout.bind(this)}
                   />}
-                  <Dialog title='Enter your username and password'
-                    actions={logIn}
-                    modal={false}
-                    open={this.state.openLogin}
-                    onRequestClose = {
-                      (e) => {
-                        this.handleClose('openLogin'); this.clearUserInput()
-                    }}
-                  />
+                <Dialog title='Enter your username and password'
+                  actions={logIn}
+                  modal={false}
+                  open={this.state.openLogin}
+                  onRequestClose = {
+                    (e) => {
+                      this.handleClose('openLogin'); this.clearUserInput()
+                  }}
+                />
                 <Dialog title='Enter Payment'
                   actions={stripe}
                   modal={false}
@@ -515,7 +529,7 @@ class App extends React.Component {
                             <CircularProgress size={80} thickness={5} color={blue400}/>
                           </div> 
                         :
-                          <UserProfile userProfile={this.state.userProfile} onToken={this.onToken}/>
+                          <UserProfile getUserProfile={this.getUserProfile} userProfile={this.state.userProfile} onToken={this.onToken}/>
                 }
               </Paper>
             </div>

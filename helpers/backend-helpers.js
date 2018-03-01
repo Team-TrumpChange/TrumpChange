@@ -40,6 +40,20 @@ function updateRetweetAndFavoriteCount() {
   });
 }
 
+function updateCard(customerId, customerCard) {
+  db.User.findOne({customerID : customerId}, (err, res) => {
+    if (!err) {
+      res.cardID = customerCard
+      res.save(err => {
+        if (!err) {
+          console.log('this shit worked!!')
+        }
+      })
+    }
+  })
+}
+
+
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   db.User.findOne({username: username}, function(err, result) {
     if (result === null) {
@@ -270,3 +284,4 @@ exports.getTotalUsers = getTotalUsers;
 exports.getTotalNumTweets = getTotalNumTweets;
 exports.getUserProfile = getUserProfile;
 exports.getBillingCycleMoment = getBillingCycleMoment;
+exports.updateCard = updateCard
