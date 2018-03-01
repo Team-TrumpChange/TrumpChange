@@ -99,7 +99,7 @@ class UserProfile extends React.Component {
     const styles = {
       main: {
         display: 'grid',
-        height: '20%',
+        height: '60px',
         gridTemplateRows: 'repeat(5, 1fr)',
         alignItems: 'center',
         fontWeight: 80
@@ -134,7 +134,7 @@ class UserProfile extends React.Component {
       heading: {
         // padding: 40,
         display: 'grid',
-        height: '20%',
+        height: '60px',
         gridTemplateRows: 'repeat(5, 1fr)',
         alignItems: 'center',
         fontSize: 30
