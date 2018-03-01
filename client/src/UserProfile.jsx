@@ -9,6 +9,9 @@ import $ from 'jquery';
 import axios from 'axios';
 import StripeCheckout from 'react-stripe-checkout';
 import CircularProgress from 'material-ui/CircularProgress';
+import Paper from 'material-ui/Paper';
+import Divider from 'material-ui/Divider';
+
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -96,20 +99,46 @@ class UserProfile extends React.Component {
     const styles = {
       main: {
         display: 'grid',
-        height: '100%',
-        gridTemplateRows: 'repeat(5, 1fr)'
+        height: '20%',
+        gridTemplateRows: 'repeat(5, 1fr)',
+        alignItems: 'center',
+        fontWeight: 80
+        // fontSize: 20
+        // margin: 7.925
       },
-      flexButton: {
-        flex: 1,
-        flexDirection: 'row-reverse',
-        display:'flex',
-        justifyContent: 'flex-start',
-        paddingRight: 15.85
-      },
+      // flexButton: {
+      //   flex: 1,
+      //   flexDirection: 'row-reverse',
+      //   display:'flex',
+      //   justifyContent: 'flex-start',
+      //   paddingRight: 15.85
+      // },
       button: {
-        display: ''
+        display: 'grid',
+        heigth: '30%'
+      },
+      paper: {
+        textAlign: 'center',
+        margin: 0,
+        padding: 8
+      },
+      info: {
+        height: '40px',
+        textAlign: 'center',
+        padding: 10
+      },
+      all: {
+        marginLeft: 10,
+        marginRight: 10
+      },
+      heading: {
+        // padding: 40,
+        display: 'grid',
+        height: '20%',
+        gridTemplateRows: 'repeat(5, 1fr)',
+        alignItems: 'center',
+        fontSize: 30
       }
-
     }
     const cancel = [
       <FlatButton
@@ -155,24 +184,17 @@ class UserProfile extends React.Component {
 
     return (
         <div style={styles.main}>
-          Hey {this.props.userProfile.username}!          
-          <div>Email: {this.props.userProfile.email}</div>
-          <div>Weekly Limit: {this.props.userProfile.maxWeeklyPlans}</div>
-          <StripeCheckout
-            name="TrumpChange"
-            description="Enter Your Card Info Below"
-            panelLabel="Submit"
-            allowRememberMe={false}
-            token= {this.props.userProfile.subscriberID ? this.onTokenUpdateCard : this.props.onToken} 
-            email={this.props.userProfile.email}
-            currency="USD"
-            stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
-          >
-          <button
-          type="submit"
-          value="Submit">{this.props.userProfile.subscriberID ? 'Update' : 'Enter'} Payment Method 
-          </button>
-          </StripeCheckout> 
+        <Paper style={styles.paper}>
+          <div style={styles.heading}>
+            Hey {this.props.userProfile.username}!
+          </div>
+        </Paper>
+        <Paper>
+          <div style={styles.info}>Email: {this.props.userProfile.email}</div>
+        </Paper>  
+        <Paper>
+          <div style={styles.info}>Weekly Limit: {this.props.userProfile.maxWeeklyPlans}</div>
+          </Paper>
           <Dialog 
             title="Confirm Subscription Cancelation"
             actions={this.state.cancelClicked ? spinny : cancel}
@@ -193,22 +215,41 @@ class UserProfile extends React.Component {
             open={this.state.openUnconfirmed}
             onRequestClose={(e) => {this.handleCloseConfirmed()}}
           />
-          <div>
-            <RaisedButton
-              style={{margin: 7.925}}
-              labelColor={white}
-              backgroundColor={blueA400}
-              label='Update My Profile'
-              onClick={() => this.props.handleOpen('openUpdate')}
-            />
-            <RaisedButton 
-              style={{margin: 7.925}}
-              labelColor={white}
-              backgroundColor={red500}
-              label='Cancel Subscription'
-              onClick={this.openCancel.bind(this)}
-            />
-          </div>
+          <Paper>
+            <div style={styles.button}>
+              <StripeCheckout
+                name="TrumpChange"
+                description="Enter Your Card Info Below"
+                panelLabel="Submit"
+                allowRememberMe={false}
+                token= {this.props.userProfile.subscriberID ? this.onTokenUpdateCard : this.props.onToken} 
+                email={this.props.userProfile.email}
+                currency="USD"
+                stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
+              >
+                <RaisedButton
+                  style={{marginBottom: 7.925, display: 'grid'}}
+                  labelColor={white}
+                  backgroundColor={blueA400}
+                  label={this.props.userProfile.subscriberID ? 'Update Payment Method' : 'Enter Payment Method'}  
+                />
+              </StripeCheckout> 
+              <RaisedButton
+                style={{marginBottom: 7.925}}
+                labelColor={white}
+                backgroundColor={blueA400}
+                label='Update My Profile'
+                onClick={() => this.props.handleOpen('openUpdate')}
+              />
+              <RaisedButton 
+                style={{marginBottom: 7.925}}
+                labelColor={white}
+                backgroundColor={red500}
+                label='Cancel Subscription'
+                onClick={this.openCancel.bind(this)}
+              />
+            </div>
+          </Paper>
         </div>
     )
   }
