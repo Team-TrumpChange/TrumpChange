@@ -401,44 +401,60 @@ app.post('/cancelSubscription', (req, res) => {
   });
 });
 
-// app.post('/changeUserInfo', (req, res) => {
-//   helpers.getUserProfile(req.body.currentName, (err, result) => {
-//     if (req.body.newName !== '') {
-//       helpers.getUserProfile(req.body.newName, (err, result) => {
-//         if (result === null) {
-          
-//         } else {
-//           res.send(console.log('desired username already exists!'))
-//         }
-//       })
-//     } 
-//     if (req.body.maxWeeklyPlans !== '') {
+app.post('/changeWeeklyLimit', (req, res) => {
+  if (req.body.maxWeeklyPlans !== '') {
+    helpers.getUserProfile(req.body.currentName, (err, currentNameResult) => {
+      if (!err) {
+        currentNameResult.maxWeeklyPlans = req.body.maxWeeklyPlans;             
+        currentNameResult.save(err => {
+          if (!err) {
+            res.send('updated maxWeeklyPlans')
+          } else {
+            console.log('error updating maxWeeklyPlans');
+          }
+        });
+      } else {
+        res.send('error fetching current user');
+      }
+    });
+  } else {
+    res.send('no changes requested')
+  }
+});
 
-//     }
-//   }
-//   helpers.getUserProfile(req.body.currentName, (err, result) => {
-//     if (err) {
-//       res.send('error updating user Profile, couldnt find profile');
-//     } else {
-//       console.log(result);
-//       if (req.body.newName !== '') {
-//         result.username = req.body.newName
-//       } 
-//       if (req.body.maxWeeklyPlans !== '') {
-//         result.maxWeeklyPlans = req.body.maxWeeklyPlans
-//       }
-//       result.save(err => {
-//         if (err) {
-//           console.log('error saving updated user info');
-//           res.send('error saving updated user info');
-//         } else {
-//           console.log('success saving updated user info');
-//           res.send(result);
-//         }
-//       });
-//     }
-//   })
-// });
+app.post('/changeUsername', (req, res) => {
+  if (req.body.newName !== '') {
+    console.log(req.body.currentName);
+    helpers.getUserProfile(req.body.currentName, (err, currentNameResult) => {
+      if (!err) {
+        if (req.body.newName !== '') {
+          helpers.getUserProfile(req.body.newName, (err, newNameResult) => {
+            if (!err) {
+              if (newNameResult === null) {
+                currentNameResult.username = req.body.newName;
+                currentNameResult.save(err => {
+                  if (!err) {
+                    res.send('updated username')
+                  } else {
+                    console.log('error updating maxWeeklyPlans');
+                  }
+                });
+              } else {
+                res.send('desired username already exists');
+              }
+            } else {
+              res.send('error checking to see if desired username exist');
+            }
+          });
+        } 
+      } else {
+        res.send('error fetching current user');
+      }
+    });
+  } else {
+    res.send('no changes requested')
+  }
+});
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');

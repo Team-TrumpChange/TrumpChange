@@ -18,11 +18,8 @@ import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
 import List from 'material-ui/List/List';
 import CircularProgress from 'material-ui/CircularProgress';
-
 import Chart from './Chart.jsx'
 import UserProfile from './UserProfile.jsx'
-
-
 import About from './About.jsx';
 
 
@@ -35,6 +32,7 @@ class App extends React.Component {
       openSignUp: false,
       openStripe: false,
       openDialog: 'none',
+      openUpdate: false,
       signupUsername: '',
       signupPassword: '',
       signupConfirmPassword: '',
@@ -99,7 +97,14 @@ class App extends React.Component {
       signupPassword: '',
       signupConfirmPassword: '',
       signupEmail: '',
-      signupLimit: ''
+      signupLimit: '',
+    })
+  }
+
+  clearUpdateInput() {
+    this.setState({
+      updatedUsername: '',
+      updatedWeeklyLimit: '',
     })
   }
 
@@ -182,6 +187,51 @@ class App extends React.Component {
       .catch(err => {
         console.log(err)
       })
+  }
+
+  changeUserInfo(username, limit) {
+    if (username === '' && limit === '') {
+      console.log('Please enter a username or limit');
+    } else if (limit === '' && isNaN(Number(limit)) && Number(limit) > 100) {
+      console.log('Please enter a number under 100');
+    } else {
+      axios.post('/changeWeeklyLimit', {
+        currentName: this.state.userProfile.username,
+        maxWeeklyPlans: limit
+      })
+        .then(res => {
+          if (res.data === 'updated maxWeeklyPlans') {
+            let userProfile = Object.assign({}, this.state.userProfile);
+            userProfile.maxWeeklyPlans = limit;
+            this.setState({
+              userProfile
+            });
+          }
+          return axios.post('/changeUsername', {
+            currentName: this.state.userProfile.username,
+            newName: username,
+          })
+        })
+        .then(res => {
+          if (res.data === 'updated username') {
+            let userProfile = Object.assign({}, this.state.userProfile);
+            userProfile.username = username;
+            this.setState({
+              username: username,
+              userProfile
+            });
+          }
+          if (res.data === 'no changes requested' || res.data === 'updated username') {
+            this.clearUpdateInput();
+            this.handleClose('openUpdate');
+          } else {
+            console.log('something went wrong');
+          }
+        })
+        .catch(err => {
+          console.log('error changing user info:', err);
+        })
+    }
   }
 
   getUserProfile(username) {
@@ -416,6 +466,35 @@ class App extends React.Component {
         onClick={(e) => {e.preventDefault(); this.submitSignUp(this.state.signupUsername, this.state.signupPassword, this.state.signupConfirmPassword, this.state.signupEmail, this.state.signupLimit)}}
       />,
     ];
+    const update = [
+      <TextField
+        floatingLabelText='Username'
+        floatingLabelFixed={true}
+        type='text'
+        fullWidth={true}
+        onChange={(e) => { this.setState({ updatedUsername: e.target.value }) }}
+      />, <br />,
+      <TextField
+        floatingLabelText='Weekly Limit'
+        floatingLabelFixed={true}
+        type='text'
+        fullWidth={true}
+        onChange={(e) => { this.setState({ updatedWeeklyLimit: e.target.value }) }}
+      />,
+      <FlatButton
+        label='Cancel'
+        primary={true}
+        onClick={(e) => {
+          this.handleClose(), this.clearUserInput();
+        }}
+      />,
+      <FlatButton
+        label='Submit'
+        primary={true}
+        keyboardFocused={false}
+        onClick={(e) => { e.preventDefault(); this.changeUserInfo(this.state.updatedUsername, this.state.updatedWeeklyLimit) }}
+      />,
+    ];
     const stripe = [
       <StripeCheckout
         name="TrumpChange"
@@ -529,8 +608,21 @@ class App extends React.Component {
                             <CircularProgress size={80} thickness={5} color={blue400}/>
                           </div> 
                         :
-                          <UserProfile getUserProfile={this.getUserProfile} userProfile={this.state.userProfile} onToken={this.onToken}/>
+                          <UserProfile 
+                            getUserProfile={this.getUserProfile}
+                            userProfile={this.state.userProfile} 
+                            onToken={this.onToken}
+                            changeUserInfo={this.changeUserInfo.bind(this)}
+                            handleOpen={this.handleOpen.bind(this)}
+                          />
                 }
+                <Dialog
+                  title='Update username and/or email'
+                  actions={update}
+                  modal={false}
+                  open={this.state.openUpdate}
+                  onRequestClose={(e) => { this.handleClose('openUpdate'); this.clearUserInput() }}
+                />
               </Paper>
             </div>
           </div>

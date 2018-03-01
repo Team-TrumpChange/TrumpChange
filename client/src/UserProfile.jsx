@@ -16,7 +16,6 @@ class UserProfile extends React.Component {
     this.state = {
       updatedUsername: '',
       updatedWeeklyLimit: '',
-      openUpdate: false,
       openCancel: false,
       openCancelConfirmation: false,
       openUnconfirmed: false,
@@ -39,25 +38,6 @@ class UserProfile extends React.Component {
       }).catch(err => {
           console.log('error', err)
       })
-  }
-
-  clearUserInput() {
-    this.setState({
-      updatedUsername: null,
-      updatedWeeklyLimit: null
-    })
-  }
-
-  handleClose() {
-    this.setState({
-      openUpdate: false
-    })
-  }
-
-  openUpdate() {
-    this.setState({
-      openUpdate: true
-    })
   }
 
   openCancel() {
@@ -98,44 +78,6 @@ class UserProfile extends React.Component {
     }
   }
 
-  changeUserInfo(username, limit) {
-    if (username === '' && limit === '') {
-      console.log('Please enter a username or limit');
-    } else if (limit === '' && isNaN(Number(limit)) && Number(limit) > 100) {
-      console.log('Please enter a number under 100');
-    } else {
-      axios.post('/changeUserInfo', {
-        username: 'glova25',
-        newName: 'glov3',
-        maxWeeklyPlans: 4
-      })
-      .then(data => {
-        console.log('data from changeUserInfo:', data);
-      })
-      .catch(err => {
-        console.log('error changing user info:', err);
-      })
-    }
-  }
-
-  submitUpdate(username, limit) {
-    if (username === '' && limit === '') {
-      console.log('Please enter a username or limit');
-    } else if (limit === '' && isNaN(Number(limit)) && Number(limit) > 100) {
-      console.log('Please enter a number under 100');
-    } else {
-      axios.post('/updateUser', {
-        id: this.state.userProfile._id,
-        username: username,
-        limit: limit
-      })
-      .then(res =>
-        console.log('yeahhhhhhh', res.data)
-      )
-    }
-    this.handleClose()
-  }
-
   cancelSubscription() {
     axios.post('/cancelSubscription', {
       username: this.props.userProfile.username
@@ -169,36 +111,6 @@ class UserProfile extends React.Component {
       }
 
     }
-    const update = [
-      <TextField
-        floatingLabelText='Username'
-        floatingLabelFixed={true}
-        type='text'
-        fullWidth={true}
-        onChange={(e) => { this.setState({ updatedUsername: e.target.value }) }}
-      />, <br />,
-      <TextField
-        floatingLabelText='Weekly Limit'
-        floatingLabelFixed={true}
-        type='text'
-        fullWidth={true}
-        onChange={(e) => { this.setState({ updatedWeeklyLimit: e.target.value }) }}
-      />,
-      <FlatButton
-        label='Cancel'
-        primary={true}
-        onClick={(e) => {
-          this.handleClose('openLogin'), this.clearUserInput();
-        }}
-      />,
-      <FlatButton
-        label='Submit'
-        primary={true}
-        keyboardFocused={false}
-        onClick={(e) => { e.preventDefault(); this.changeUserInfo(this.state.updatedUsername, this.state.updatedWeeklyLimit) }}
-      />,
-    ];
-
     const cancel = [
       <FlatButton
         label='Go Back'
@@ -261,13 +173,6 @@ class UserProfile extends React.Component {
           value="Submit">{this.props.userProfile.subscriberID ? 'Update' : 'Enter'} Payment Method 
           </button>
           </StripeCheckout> 
-          <Dialog
-            title='Update username and/or email'
-            actions={update}
-            modal={false}
-            open={this.state.openUpdate}
-            onRequestClose={(e) => { this.handleClose(); this.clearUserInput() }}
-          />
           <Dialog 
             title="Confirm Subscription Cancelation"
             actions={this.state.cancelClicked ? spinny : cancel}
@@ -294,7 +199,7 @@ class UserProfile extends React.Component {
               labelColor={white}
               backgroundColor={blueA400}
               label='Update My Profile'
-              onClick={this.openUpdate.bind(this)}
+              onClick={() => this.props.handleOpen('openUpdate')}
             />
             <RaisedButton 
               style={{margin: 7.925}}
