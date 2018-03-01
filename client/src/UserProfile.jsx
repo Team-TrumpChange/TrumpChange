@@ -13,47 +13,6 @@ class UserProfile extends React.Component {
     this.state = {
       updatedUsername: '',
       updatedWeeklyLimit: '',
-      openUpdate: false
-    }
-  }
-
-  clearUserInput() {
-    this.setState({
-      updatedUsername: null,
-      updatedWeeklyLimit: null
-    })
-  }
-
-  handleClose() {
-    this.setState({
-      openUpdate: false
-    })
-  }
-
-  openUpdate() {
-    this.setState({
-      openUpdate: true
-    })
-  }
-
-  changeUserInfo(username, limit) {
-    if (username === '' && limit === '') {
-      console.log('Please enter a username or limit');
-    } else if (limit === '' && isNaN(Number(limit)) && Number(limit) > 100) {
-      console.log('Please enter a number under 100');
-    } else {
-      axios.post('/changeUserInfo', {
-        currentName: this.props.userProfile.username,
-        newName: username,
-        maxWeeklyPlans: limit
-      })
-      .then(data => {
-        console.log('data from changeUserInfo:', data);
-        this.handleClose();
-      })
-      .catch(err => {
-        console.log('error changing user info:', err);
-      })
     }
   }
 
@@ -65,35 +24,7 @@ class UserProfile extends React.Component {
         gridTemplateRows: 'repeat(5, 1fr)'
       }
     }
-    const update = [
-      <TextField
-        floatingLabelText='Username'
-        floatingLabelFixed={true}
-        type='text'
-        fullWidth={true}
-        onChange={(e) => { this.setState({ updatedUsername: e.target.value }) }}
-      />, <br />,
-      <TextField
-        floatingLabelText='Weekly Limit'
-        floatingLabelFixed={true}
-        type='text'
-        fullWidth={true}
-        onChange={(e) => { this.setState({ updatedWeeklyLimit: e.target.value }) }}
-      />,
-      <FlatButton
-        label='Cancel'
-        primary={true}
-        onClick={(e) => {
-          this.handleClose('openLogin'), this.clearUserInput();
-        }}
-      />,
-      <FlatButton
-        label='Submit'
-        primary={true}
-        keyboardFocused={false}
-        onClick={(e) => { e.preventDefault(); this.changeUserInfo(this.state.updatedUsername, this.state.updatedWeeklyLimit) }}
-      />,
-    ];
+
     return (
         <div style={styles.main}>
           Hey {this.props.userProfile.username}!          
@@ -114,14 +45,7 @@ class UserProfile extends React.Component {
             value="Submit"> {this.props.userProfile.subscriberID ? 'Update' : 'Enter'} Payment Method
           </button>
           </StripeCheckout> 
-          <Dialog
-            title='Update username and/or email'
-            actions={update}
-            modal={false}
-            open={this.state.openUpdate}
-            onRequestClose={(e) => { this.handleClose(); this.clearUserInput() }}
-          />
-          <button onClick={this.openUpdate.bind(this)}>Update My Profile</button>
+          <button onClick={() => this.props.handleOpen('openUpdate')}>Update My Profile</button>
       </div>
     )
   }
