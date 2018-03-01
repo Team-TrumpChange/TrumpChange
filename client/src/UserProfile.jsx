@@ -8,6 +8,7 @@ import Dialog from 'material-ui/Dialog';
 import $ from 'jquery';
 import axios from 'axios';
 import StripeCheckout from 'react-stripe-checkout';
+import CircularProgress from 'material-ui/CircularProgress';
 
 class UserProfile extends React.Component {
   constructor(props) {
@@ -18,7 +19,8 @@ class UserProfile extends React.Component {
       openUpdate: false,
       openCancel: false,
       openCancelConfirmation: false,
-      openUnconfirmed: false
+      openUnconfirmed: false,
+      cancelClicked: false
     }
   }
 
@@ -57,7 +59,8 @@ class UserProfile extends React.Component {
     this.handleCloseCancel();
     if (boolean) {
       this.setState({
-        openCancelConfirmation: true
+        openCancelConfirmation: true,
+        canceled: true
       }); 
     } else {
       this.setState({
@@ -190,7 +193,10 @@ class UserProfile extends React.Component {
        label='Cancel Subscription'
        primary={true}
        keyboardFocused={false}
-       onClick={(e) => {e.preventDefault(); this.cancelSubscription()}}
+       onClick={(e) => {e.preventDefault(); this.cancelSubscription(); 
+         this.setState({
+           cancelClicked: true
+         })}}
       />
     ];
 
@@ -210,6 +216,12 @@ class UserProfile extends React.Component {
         keyboardFocused={false}
         onClick={(e) => {e.preventDefault(); this.handleCloseConfirmed()}}
       />
+    ];
+
+    const spinny = [
+      <div>
+        <CircularProgress size={80} thickness={5} color={blue400}/>
+      </div>
     ];
 
     return (
@@ -241,7 +253,7 @@ class UserProfile extends React.Component {
           />
           <Dialog 
             title="Confirm Subscription Cancelation"
-            actions={cancel}
+            actions={this.state.cancelClicked ? spinny : cancel}
             modal={false}
             open={this.state.openCancel}
           />
