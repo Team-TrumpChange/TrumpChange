@@ -485,7 +485,7 @@ class App extends React.Component {
         label='Cancel'
         primary={true}
         onClick={(e) => {
-          this.handleClose(), this.clearUserInput();
+          this.handleClose('openUpdate'), this.clearUserInput();
         }}
       />,
       <FlatButton
