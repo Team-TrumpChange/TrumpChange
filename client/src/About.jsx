@@ -13,9 +13,10 @@ class About extends React.Component {
   render() {
     const style = {
       paperLarge: {
+        display: 'grid',
         borderRadius: '0%',
-        height: '362px',
-        width: '555px',
+        height: '358px',
+        // width: '555px',
         // display: 'flex',
         marginTop: 10,
         marginBottom: 10,
@@ -45,11 +46,16 @@ class About extends React.Component {
         marginBottom: 15,
         fontSize: 16,
         textAlign: 'center'
+      }, 
+      flex: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
       }
     }
 
     return (
-      <div>
+      <div >
         <Paper zDepth={2} style={style.paperLarge}>
           <div style={style.heading}> 
               Contribute to Change
