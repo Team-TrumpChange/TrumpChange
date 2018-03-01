@@ -29,9 +29,11 @@ class UserProfile extends React.Component {
       axios.post('/updateCustomer', {
           customerId : this.props.userProfile.customerID,
           card : this.props.userProfile.cardID,
-          token : token.id
+          token : token.id,
+          newCard : token.card.id
       }).then(res => {
           console.log('success', res.data)
+          this.props.getUserProfile(this.props.userProfile.username)
       }).catch(err => {
           console.log('error', err)
       })
@@ -244,7 +246,7 @@ class UserProfile extends React.Component {
           >
           <button
           type="submit"
-          value="Submit">Enter or Update Payment Method
+          value="Submit">{this.props.userProfile.subscriberID ? 'Update' : 'Enter'} Payment Method 
           </button>
           </StripeCheckout> 
           <Dialog

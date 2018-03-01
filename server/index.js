@@ -281,6 +281,7 @@ app.post('/updateCustomer', function(req, res) {
               res.send('error creating card')
             } else {
               console.log('success adding card', card)
+              helpers.updateCard(req.body.customerId, req.body.newCard)
               res.send('success')
             }
           }
@@ -288,8 +289,9 @@ app.post('/updateCustomer', function(req, res) {
       }
     }
   );
-
-
+//db.find(customerid).update(customerid: 'poop')
+//make db call to delete old card
+//make db call to update new card
 
 
 
