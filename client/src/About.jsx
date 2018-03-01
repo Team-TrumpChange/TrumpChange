@@ -15,7 +15,7 @@ class About extends React.Component {
       paperLarge: {
         borderRadius: '0%',
         height: '362px',
-        width: '410px',
+        width: '555px',
         // display: 'flex',
         marginTop: 10,
         marginBottom: 10,
