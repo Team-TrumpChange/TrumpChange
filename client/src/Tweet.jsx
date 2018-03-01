@@ -16,6 +16,7 @@ class Tweet extends React.Component {
   render() {
     const style = {
       tweet: {
+        font : 'Helvetica Neue',
         fontSize: 11,
         margin: 5,
       },
@@ -30,10 +31,10 @@ class Tweet extends React.Component {
         display: 'flex',
       },
       list: {
-        marginTop: 10,
-        marginBottom: 10,
-        marginRight: 10,
-        marginLeft: 10,
+        //marginTop: 10,
+        //marginBottom: 10,
+        //marginRight: 10,
+        //marginLeft: 10,
         padding: 0,
       },
       iconRetweet: {

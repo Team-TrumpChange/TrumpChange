@@ -40,6 +40,20 @@ function updateRetweetAndFavoriteCount() {
   });
 }
 
+function updateCard(customerId, customerCard) {
+  db.User.findOne({customerID : customerId}, (err, res) => {
+    if (!err) {
+      res.cardID = customerCard
+      res.save(err => {
+        if (!err) {
+          console.log('this shit worked!!')
+        }
+      })
+    }
+  })
+}
+
+
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   db.User.findOne({username: username}, function(err, result) {
     if (result === null) {
@@ -57,7 +71,7 @@ function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMo
       });
       newUser.save(() => {
         console.log('user saved in saveUserIntoDataBase');
-        callback();
+        callback('User saved in saveUserIntoDataBase');
       });
     } else if (err) {
       callback('Error on looking up user in database');
@@ -96,13 +110,14 @@ function hashPassword(userObj) {
   userObj.password = hash;
 }
 
-function addSubscriberIDAndCustomerID(subid, custid, username, callback) {
+function addSubscriberIDAndCustomerID(subid, custid, username, cardID, callback) {
   console.log('id:', subid);
   console.log('username:', username);
   db.User.findOne({username: username})
     .then(function(doc) {
       doc.subscriberID = subid;
-      doc.customerID = custid
+      doc.customerID = custid;
+      doc.cardID = cardID;
       console.log('doc.subscriberID:', doc.subscriberID)
       console.log('doc.customerID:', doc.customerID);
       doc.save(function(err) {
@@ -269,3 +284,4 @@ exports.getTotalUsers = getTotalUsers;
 exports.getTotalNumTweets = getTotalNumTweets;
 exports.getUserProfile = getUserProfile;
 exports.getBillingCycleMoment = getBillingCycleMoment;
+exports.updateCard = updateCard

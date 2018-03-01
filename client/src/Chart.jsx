@@ -13,6 +13,7 @@ import t from './index.jsx'
 
 import Paper from 'material-ui/Paper';
 
+
 class Chart extends Component {
   constructor(props) {
     super(props)
@@ -46,7 +47,7 @@ class Chart extends Component {
     const totalNumTweets = this.props.totalNumTweets
    
   	return (
-
+      
       <ResponsiveContainer>
         <RadialBarChart innerRadius='50%' outerRadius='100%' data={this.state.data} startAngle={180} endAngle={-179}>
           <RadialBar minAngle={0} label={{ fill: '#fff', position: 'insideStart'}} background clockWise={true} dataKey= 'number' />

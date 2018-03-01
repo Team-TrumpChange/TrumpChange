@@ -12,7 +12,7 @@ import TextField from 'material-ui/TextField';
 import Dialog from 'material-ui/Dialog';
 import spacing from 'material-ui/styles/spacing';
 import { fade } from 'material-ui/utils/colorManipulator';
-import { red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
+import { lightBlue500, red500, blue400, grey600, grey300, blueA100, blueA200, blueA400, fullWhite, fullBlack, darkBlack, white } from 'material-ui/styles/colors';
 import Tweet from './Tweet.jsx';
 import TweetList from './TweetList.jsx';
 import Subheader from 'material-ui/Subheader';
@@ -51,6 +51,7 @@ class App extends React.Component {
     setInterval(() => {
       this.getTrumpTweetsFromDb()
     }, 30000);
+    this.getUserProfile= this.getUserProfile.bind(this)
   }
 
   componentDidMount() {
@@ -78,11 +79,14 @@ class App extends React.Component {
     });
   }
 
-  handleClose(name) {
+  handleClose(name, callback) {
     this.setState({
       [name]: false,
       openDialog: 'none',
     });
+    if (callback) {
+      callback();
+    }
   }
 
   clearUserInput() {
@@ -130,17 +134,21 @@ class App extends React.Component {
         email: this.state.signupEmail,
         maxWeeklyPlans: this.state.signupLimit
       }).then(res => {
-        console.log(res)
+        console.log('res.data from /createAccount post:', res.data);
         if (res.data === 'Username already exists') {
           console.log('Username already exists');
         } else if (res.data === 'Email already exists') {
           console.log('A user with this email already exists')
         } else if ('User saved in saveUserIntoDataBase') {
-          this.handleClose('openSignUp');
-          this.setState({
-            username: res.data,
-            openStripe: true,
-          })
+          this.handleClose('openSignUp', () => {
+            this.setState({
+              username: res.data,
+              openStripe: true,
+            }, () => {
+              console.log('this.state.username:', this.state.username);
+              this.getUserProfile(this.state.username);
+            });
+          });
         }
       }).catch(err => {
         console.log('error:', err)
@@ -182,8 +190,6 @@ class App extends React.Component {
   }
 
   changeUserInfo(username, limit) {
-    console.log(username);
-    console.log(limit)
     if (username === '' && limit === '') {
       console.log('Please enter a username or limit');
     } else if (limit === '' && isNaN(Number(limit)) && Number(limit) > 100) {
@@ -207,8 +213,6 @@ class App extends React.Component {
           })
         })
         .then(res => {
-          console.log(res)
-          console.log(res.data)
           if (res.data === 'updated username') {
             let userProfile = Object.assign({}, this.state.userProfile);
             userProfile.username = username;
@@ -231,13 +235,12 @@ class App extends React.Component {
   }
 
   getUserProfile(username) {
-    var context = this;
     axios.post('/userProfile', {
       username: username  
     })
       .then(res => {
         console.log('res.data from getting User Profile:', res.data);
-        context.setState({
+        this.setState({
           userProfile: res.data
         }, () => {
           console.log('this.state.userProfile:', this.state.userProfile);
@@ -267,19 +270,22 @@ class App extends React.Component {
   onToken(token) { // creates a new token when user clicks on pay with card, sends it to server
     console.log('onToken', token)
     console.log(this.state.loggedInUsername)
-    axios.post('/customerToken', {
-      username: this.state.username,
-      id: token.id,
-      email: token.email
-    }).then(res => {
-      console.log(res)
-      this.setState({
-        openStripe: false
-      });
-      this.getUserProfile(this.state.loggedInUsername)
-    }).catch(err => {
-      console.log(err)
-    })
+    this.setState({
+      openStripe: false
+    }, (err) => {
+      if (!err) {
+        axios.post('/customerToken', {
+          username: this.state.username,
+          id: token.id,
+          email: token.email,
+          cardID: token.card.id
+        }).then(res => {
+          console.log(res)
+        }).catch(err => {
+          console.log(err)
+        })
+      }
+    });
   }
 
   logout() {console.log('running')
@@ -521,7 +527,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{ margin: 7.925 }}
                     labelColor={white}
-                    backgroundColor={blue400}
+                    backgroundColor={lightBlue500}
                     label='Sign Up'
                     onClick={this.handleOpen.bind(this, "openSignUp")}
                   /> :
@@ -538,7 +544,7 @@ class App extends React.Component {
                   <RaisedButton
                     style={{margin: 7.925}}
                     labelColor={white}
-                    backgroundColor={blue400}
+                    backgroundColor={lightBlue500}
                     label='Log In'
                     onClick={this.handleOpen.bind(this, "openLogin")}
                   /> :
@@ -603,6 +609,7 @@ class App extends React.Component {
                           </div> 
                         :
                           <UserProfile 
+                            getUserProfile={this.getUserProfile}
                             userProfile={this.state.userProfile} 
                             onToken={this.onToken}
                             changeUserInfo={this.changeUserInfo.bind(this)}
