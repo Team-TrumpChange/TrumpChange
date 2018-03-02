@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const db = require('../database/index.js');
 const moment = require('moment');
+const nodemailer = require('nodemailer');
 
 dotenv.config();
 
@@ -267,6 +268,32 @@ function getBillingCycleMoment(callback) {
 }
 
 
+function sendEmail(username, email, limit) {
+  nodemailer.createTestAccount((err, account) => {
+        var transporter = nodemailer.createTransport({
+          service: 'Gmail',
+          auth: {
+              user: 'trumpchange2@gmail.com',
+              pass: '8~a8UH"Ju"m`8vY\\'
+          }
+        });
+        let mailOptions = {
+            from: '"TrumpChange" <trumpchange2@gmail.com>', // sender address
+            to: email, // list of receivers
+            subject: 'Welcome ' + username +  ' ✔', // Subject line
+            text: 'Hello' + username + '! Your Max Weekly Donation Limit is' + limit, // plain text body
+            html: `<b>Hello ${username}! Your Max Weekly Donation Limit is ${limit}</b>` // html body
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message sent: %s', info.messageId);
+        });
+      });
+}
+
+
 exports.updateRetweetAndFavoriteCount = updateRetweetAndFavoriteCount;  
 exports.addUniqueTweet = addUniqueTweet;
 exports.getTweets = getTweets;
@@ -285,3 +312,4 @@ exports.getTotalNumTweets = getTotalNumTweets;
 exports.getUserProfile = getUserProfile;
 exports.getBillingCycleMoment = getBillingCycleMoment;
 exports.updateCard = updateCard
+exports.sendEmail = sendEmail

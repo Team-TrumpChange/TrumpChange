@@ -22,7 +22,6 @@ import Chart from './Chart.jsx'
 import UserProfile from './UserProfile.jsx'
 import About from './About.jsx';
 
-
 class App extends React.Component {
   constructor(props) {
   	super(props)
@@ -360,6 +359,13 @@ class App extends React.Component {
         height: 90,
 
       },
+      logo: {
+        height: 28,
+        width:28
+      },
+      // flexLogo: {
+      //   float: 'right'
+      // },
       paperHeader: {
         flex: .75, 
         zIndex: 1,
@@ -569,6 +575,14 @@ class App extends React.Component {
                   modal={false}
                   open={this.state.openStripe}
                 />
+              </div>
+              <div style={style.flexLogo}>
+              <a href="https://twitter.com/thetrumpchange" target="_blank">
+              <img
+                  style={style.logo}
+                  src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
+                />
+                </a>
               </div>
               <div style={style.flexImage}>
                 <img
