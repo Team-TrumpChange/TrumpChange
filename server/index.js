@@ -169,6 +169,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
   
   helpers.saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, function (message) {
     if (message === 'User saved in saveUserIntoDataBase') {
+      helpers.sendEmail(username, email, maxWeeklyPlans)
       req.session.regenerate(function(err) {
         if (!err) {
           req.session.username = username;
@@ -292,11 +293,6 @@ app.post('/updateCustomer', function(req, res) {
 //db.find(customerid).update(customerid: 'poop')
 //make db call to delete old card
 //make db call to update new card
-
-
-
-
-
 })
 
 
@@ -455,6 +451,8 @@ app.post('/changeUsername', (req, res) => {
     res.send('no changes requested')
   }
 });
+
+
 
 app.listen(process.env.PORT || 3000, function () {
   console.log('listening on port 3000!');
