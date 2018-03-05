@@ -132,6 +132,18 @@ class App extends React.Component {
 
   submitSignUp(username, password, passwordConfirm, email, limit) {
     if (username === '') {
+      this.setState({
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false,
+      })
       this.handleErrorState('blankUsernameError');
     } else if (password === '') {
       this.setState({
