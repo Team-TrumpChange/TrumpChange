@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Paper from 'material-ui/Paper';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+
 
 class About extends React.Component {
   constructor(props) {
@@ -13,16 +15,19 @@ class About extends React.Component {
   render() {
     const style = {
       paperLarge: {
-        display: 'grid',
+        // display: 'grid',
         borderRadius: '0%',
-        height: '358px',
+        // height: '358px',
         // width: '555px',
         // display: 'flex',
         marginTop: 10,
         marginBottom: 10,
         marginLeft: 10,
         marginRight: 10,
-        padding: 10
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1
       },
       heading: {
         fontSize: 24,
@@ -51,6 +56,9 @@ class About extends React.Component {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
+      },
+      card: {
+        // height: 
       }
     }
 
@@ -74,9 +82,14 @@ class About extends React.Component {
           </div>
         </Paper>
         <Paper zDepth={2} style={style.paperLarge}>
-          <div style={style.heading}>
-            Charity Info Here
-          </div>
+          <Card>
+            <CardMedia
+              // overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
+            >
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRpSd8BdYBZLenru101fTlwa1jW-i38QLzlH1SwcOnlkRWRVuP" alt="" />
+            </CardMedia>
+            <CardTitle title="Our current charity" />
+          </Card>
         </Paper>
       </div>
     )
