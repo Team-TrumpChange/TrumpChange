@@ -204,14 +204,14 @@ class UserProfile extends React.Component {
                   <RaisedButton
                     style={{marginBottom: 7.925, display: 'grid'}}
                     labelColor={white}
-                    backgroundColor={blueA400}
+                    backgroundColor={blue400}
                     label={this.props.userProfile.subscriberID ? 'Update Payment Method' : 'Enter Payment Method'}  
                   />
                 </StripeCheckout> 
                 <RaisedButton
                   style={{marginBottom: 7.925}}
                   labelColor={white}
-                  backgroundColor={blueA400}
+                  backgroundColor={blue400}
                   label='Update My Profile'
                   onClick={() => this.props.handleOpen('openUpdate')}
                 />
