@@ -120,6 +120,9 @@ class UserProfile extends React.Component {
       },
       cardHeader: {
         fontsize: 24
+      },
+      email: {
+        margin: 15
       }
     }
     const cancel = [
@@ -242,6 +245,9 @@ class UserProfile extends React.Component {
             open={this.state.openUnconfirmed}
             onRequestClose={(e) => {this.handleCloseConfirmed()}}
           />
+          <div style={styles.email}>
+            email us: trumpchange2 at gmail.com
+          </div>
         </div>
     )
   }

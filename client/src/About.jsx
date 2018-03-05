@@ -75,6 +75,9 @@ class About extends React.Component {
           <div style={style.info}> 
             Subscriptions are billed weekly
           </div>
+          <div style={style.info}>
+            Email us at: trumpchange2 at gmail.com
+          </div>
         </Paper>
         <Paper zDepth={2} style={style.paperLarge}>
           <Card>
