@@ -1,3 +1,13 @@
+
+
+
+## Team
+
+  - __Product Owner__: JP Angelle
+  - __Scrum Master__: Amy Glover
+  - __Development Team Members__: Manik Sewak
+
+
 # custom_starter
 This is a custom boilerplate for react and node with express
 
@@ -55,8 +65,3 @@ the signup modal
 
 In the return
 Dialogs refers to the modals that would popup if you clicked on their respective buttons.
-
-
-
-
-
