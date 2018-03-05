@@ -115,6 +115,21 @@ class App extends React.Component {
       signupConfirmPassword: '',
       signupEmail: '',
       signupLimit: '',
+      blankUsernameLoginError: false,
+      blankUsernamePasswordError: false,
+      userNotExistsError: false,
+      badPasswordError: false,
+      blankUsernameError: false,
+      blankPasswordError: false,
+      blankConfirmPasswordError: false,
+      passwordMatchError: false,
+      blankEmailError: false,
+      blankLimitError: false,
+      numberLimitError: false,
+      hundredLimitError: false,
+      wholeNumberLimitError: false,
+      usernameExistsError: false,
+      emailExistsError: false
     })
   }
 
@@ -727,7 +742,7 @@ class App extends React.Component {
         null,
       this.state.emailExistsError ?
         <Alert
-          description="A user with this email address already exists"
+          description="This email address already exists"
           type="error"
           showIcon
           style={{ textAlign: 'left' }}
@@ -898,6 +913,7 @@ class App extends React.Component {
                   actions={stripe}
                   modal={false}
                   open={this.state.openStripe}
+                  onRequestClose = {() => {this.setState({openStripe: false})}}
                 />
                 <Dialog title='FAQ'
                 actions={faq}
@@ -908,19 +924,11 @@ class App extends React.Component {
                 }
                 />
               </div>
-                
-
-                
-
-                  
-          
               <div style={style.flexImage}>
                 <img
                   style={style.image}
                   src='https://i.imgur.com/Kp92VKH.png'
                 />
-           
-
                  <div onClick={() => {this.setState({openFAQ:true})}}>
                  <img
                   style={style.faqlogo}
@@ -933,13 +941,7 @@ class App extends React.Component {
                   src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
                 />
                 </a>
-                
-           
               </div>
-
-
-
-
             </Paper>
             <div style={style.mainBody}>
               <Paper 
