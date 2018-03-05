@@ -907,6 +907,7 @@ class App extends React.Component {
                   actions={stripe}
                   modal={false}
                   open={this.state.openStripe}
+                  onRequestClose = {() => {this.setState({openStripe: false})}}
                 />
                 <Dialog title='FAQ'
                 actions={faq}
@@ -917,19 +918,11 @@ class App extends React.Component {
                 }
                 />
               </div>
-                
-
-                
-
-                  
-          
               <div style={style.flexImage}>
                 <img
                   style={style.image}
                   src='https://i.imgur.com/Kp92VKH.png'
                 />
-           
-
                  <div onClick={() => {this.setState({openFAQ:true})}}>
                  <img
                   style={style.faqlogo}
@@ -942,13 +935,7 @@ class App extends React.Component {
                   src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
                 />
                 </a>
-                
-           
               </div>
-
-
-
-
             </Paper>
             <div style={style.mainBody}>
               <Paper 
