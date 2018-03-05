@@ -27,30 +27,44 @@ class About extends React.Component {
         padding: 10,
         display: 'flex',
         flexDirection: 'column',
-        flexGrow: 1
+        flexGrow: 1,
+        height: '35vh'
       },
       heading: {
-        fontSize: 24,
-        fontWeight: 50,
-        marginTop: 60,
-        marginBottom: 20,
-        textAlign: 'center'
+        textAlign: 'center',
+        height: '5vh',
+        flexGrow: 1
+        // display: 'grid'
       },
       subheading: {
-        marginBottom: 30,
-        fontSize: 18,
+        marginTop: 26,
+        fontSize: 16,
         textAlign: 'center',
-        fontStyle: 'italic'
+        fontStyle: 'italic',
+        height: '5vh',
+        flexGrow: 1,
+        display: 'grid'
+      },
+      donate: {
+        fontSize: 16,
+        fontStyle: 'italic',
+        marginBottom: 10,
+        display: 'grid'
       },
       info: {
         fontSize: 14,
         textAlign: 'center',
-        marginBottom: 10
+        height: '5vh',
+        flexGrow: 1,
+        disply: 'grid',
+        marginBottom: 15
       },
       infoHeading: {
-        marginBottom: 15,
+        marginBottom: 10,
         fontSize: 16,
-        textAlign: 'center'
+        textAlign: 'center',
+        height: '5vh',
+        flexGrow: 1
       }, 
       card: {
         // height: 
@@ -61,21 +75,16 @@ class About extends React.Component {
       <div >
         <Paper zDepth={2} style={style.paperLarge}>
           <div style={style.heading}> 
-              Contribute to Change
+            <img src="https://tbncdn.freelogodesign.org/87a2da9f-f329-4945-83b1-d64d01005948.png?1520271610438"/>
           </div>
           <div style={style.subheading}>
-            donate a dollar to charity every time Trump tweets
-          </div>
-          <div style={style.infoHeading}>
-            How it works:
+            
           </div>
           <div style={style.info}>
-            Option to set a weekly max donation limit  
-          </div>
-          <div style={style.info}> 
-            Subscriptions are billed weekly
-          </div>
-          <div style={style.info}>
+            <div style={style.donate}>donate a dollar to charity every time Trump tweets</div>
+            How it works: <br></br>
+            Option to set a weekly max donation limit  <br></br>
+            Subscriptions are billed weekly <br></br>
             Email us at: trumpchange2 at gmail.com
           </div>
         </Paper>
