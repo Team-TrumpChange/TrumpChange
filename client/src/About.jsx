@@ -33,8 +33,9 @@ class About extends React.Component {
       heading: {
         textAlign: 'center',
         height: '5vh',
-        flexGrow: 1
-        // display: 'grid'
+        // flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column'
       },
       subheading: {
         marginTop: 26,
@@ -49,22 +50,26 @@ class About extends React.Component {
         fontSize: 16,
         fontStyle: 'italic',
         marginBottom: 10,
-        display: 'grid'
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1
       },
       info: {
         fontSize: 14,
         textAlign: 'center',
         height: '5vh',
-        flexGrow: 1,
-        disply: 'grid',
-        marginBottom: 15
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1
       },
       infoHeading: {
         marginBottom: 10,
         fontSize: 16,
         textAlign: 'center',
         height: '5vh',
-        flexGrow: 1
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column'
       }, 
       card: {
         // height: 
@@ -77,9 +82,7 @@ class About extends React.Component {
           <div style={style.heading}> 
             <img src="https://tbncdn.freelogodesign.org/87a2da9f-f329-4945-83b1-d64d01005948.png?1520271610438"/>
           </div>
-          <div style={style.subheading}>
-            
-          </div>
+          <div style={style.subheading}></div>
           <div style={style.info}>
             <div style={style.donate}>donate a dollar to charity every time Trump tweets</div>
             How it works: <br></br>
