@@ -31,6 +31,7 @@ class App extends React.Component {
       openLogin: false,
       openSignUp: false,
       openStripe: false,
+      openFAQ: false,
       openDialog: 'none',
       openUpdate: false,
       signupUsername: '',
@@ -552,8 +553,12 @@ class App extends React.Component {
 
       },
       logo: {
-        height: 28,
-        width:28
+        height: 22,
+        width:22
+      },
+      faqlogo: {
+        height: 20,
+        width:20
       },
       // flexLogo: {
       //   float: 'right'
@@ -843,6 +848,14 @@ class App extends React.Component {
       </StripeCheckout>
     ];
 
+    const faq = [
+      <FlatButton
+        label='close'
+        primary={true}
+        onClick={() => {this.setState({openFAQ:false})}}
+      />
+    ];
+
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className='App'style={style.app}>
@@ -895,21 +908,47 @@ class App extends React.Component {
                   modal={false}
                   open={this.state.openStripe}
                 />
-              </div>
-              <div style={style.flexLogo}>
-              <a href="https://twitter.com/thetrumpchange" target="_blank">
-              <img
-                  style={style.logo}
-                  src= 'https://pngimg.com/uploads/twitter/twitter_PNG29.png'
+                <Dialog title='FAQ'
+                actions={faq}
+                modal={false}
+                open={this.state.openFAQ}
+                onRequestClose = {
+                  () => {this.setState({openFAQ:false})}
+                }
                 />
-                </a>
               </div>
+                
+
+                
+
+                  
+          
               <div style={style.flexImage}>
                 <img
                   style={style.image}
                   src='https://i.imgur.com/Kp92VKH.png'
                 />
+           
+
+                 <div onClick={() => {this.setState({openFAQ:true})}}>
+                 <img
+                  style={style.faqlogo}
+                  src= 'https://cdn2.iconfinder.com/data/icons/basic-ict-line-icons/100/17-512.png'
+                /> 
+                </div>
+                <a href="https://twitter.com/thetrumpchange" target="_blank">
+              <img
+                  style={style.logo}
+                  src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
+                />
+                </a>
+                
+           
               </div>
+
+
+
+
             </Paper>
             <div style={style.mainBody}>
               <Paper 
