@@ -183,7 +183,9 @@ class UserProfile extends React.Component {
                 alt="" 
               />
             </CardMedia>
-            <CardTitle title={'Total Donated: $' + this.props.userProfile.totalMoneyDonated} />
+            <CardTitle title={this.props.userProfile.totalMoneyDonated ? 'Total Donated: $' + this.props.userProfile.totalMoneyDonated
+              : 'Total Donated: $0'
+              } />
             <CardText style={styles.cardText}>
              Email: {this.props.userProfile.email} 
              <br></br>
