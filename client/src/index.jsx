@@ -637,6 +637,12 @@ class App extends React.Component {
         keyboardFocused={false}
         onClick={(e) => { e.preventDefault(); this.submitLogin(this.state.loginUsername, this.state.loginPassword)}}
       />,
+      <FlatButton
+        label='Forgot Password?'
+        primary={true}
+        keyboardFocused={false}
+        onClick={() => {console.log('forgot')}}
+      />,
     ];
     const signUp = [
       this.state.blankUsernameError ? 
