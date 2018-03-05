@@ -203,7 +203,7 @@ class App extends React.Component {
             let userProfile = Object.assign({}, this.state.userProfile);
             userProfile.maxWeeklyPlans = limit;
             this.setState({
-              userProfile
+              userProfile: userProfile
             });
           }
           return axios.post('/changeUsername', {
@@ -217,7 +217,7 @@ class App extends React.Component {
             userProfile.username = username;
             this.setState({
               username: username,
-              userProfile
+              userProfile: userProfile
             });
           }
           if (res.data === 'no changes requested' || res.data === 'updated username') {
