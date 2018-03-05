@@ -21,6 +21,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import Chart from './Chart.jsx'
 import UserProfile from './UserProfile.jsx'
 import About from './About.jsx';
+import { Alert } from 'antd';
 
 class App extends React.Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class App extends React.Component {
       openLogin: false,
       openSignUp: false,
       openStripe: false,
+      openFAQ: false,
       openDialog: 'none',
       openUpdate: false,
       signupUsername: '',
@@ -44,7 +46,23 @@ class App extends React.Component {
       userDonated: null,
       totalDonated: 0,
       totalUsers: 0,
-      totalNumTweets: 0
+      totalNumTweets: 0,
+      blankUsernameLoginError: false,
+      blankUsernamePasswordError: false,
+      userNotExistsError: false,
+      badPasswordError: false,
+      blankUsernameError: false,
+      blankPasswordError: false,
+      blankConfirmPasswordError: false,      
+      passwordMatchError: false,
+      blankEmailError: false,
+      blankLimitError: false,
+      numberLimitError: false,
+      hundredLimitError: false,
+      wholeNumberLimitError: false,
+      usernameExistsError: false,
+      emailExistsError: false,
+      accountCreationSuccess: false
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
@@ -97,6 +115,21 @@ class App extends React.Component {
       signupConfirmPassword: '',
       signupEmail: '',
       signupLimit: '',
+      blankUsernameLoginError: false,
+      blankUsernamePasswordError: false,
+      userNotExistsError: false,
+      badPasswordError: false,
+      blankUsernameError: false,
+      blankPasswordError: false,
+      blankConfirmPasswordError: false,
+      passwordMatchError: false,
+      blankEmailError: false,
+      blankLimitError: false,
+      numberLimitError: false,
+      hundredLimitError: false,
+      wholeNumberLimitError: false,
+      usernameExistsError: false,
+      emailExistsError: false
     })
   }
 
@@ -107,25 +140,139 @@ class App extends React.Component {
     })
   }
 
+  handleErrorState(error) {
+    this.setState({
+      [error]: true
+    })
+  }
+
   submitSignUp(username, password, passwordConfirm, email, limit) {
     if (username === '') {
-      console.log('Please fill in username');
+      this.setState({
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false,
+      })
+      this.handleErrorState('blankUsernameError');
     } else if (password === '') {
-      console.log('Please fill in password');
+      this.setState({
+        blankUsernameError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('blankPasswordError');
     } else if (passwordConfirm === '') {
-      console.log('Please confirm password');
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('blankConfirmPasswordError');      
     } else if (password !== passwordConfirm) {
-      console.log('Passwords do not match');
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('passwordMatchError');      
     } else if (email === '') {
-      console.log('Please fill in email');
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('blankEmailError');      
     } else if (limit === '') {
-      console.log('Please enter a limit')
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('blankLimitError');      
     } else if (isNaN(Number(limit))) {
-      console.log('Please enter in only a number');
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        hundredLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('numberLimitError');      
     } else if (Number(limit) > 99) {
-      console.log('Please enter a number less 100')
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        wholeNumberLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('hundredLimitError');      
     } else if (Number(limit) % 1 !== 0) {
-      console.log('Please enter in a whole number');
+      this.setState({
+        blankUsernameError: false,
+        blankPasswordError: false,
+        blankConfirmPasswordError: false,
+        passwordMatchError: false,
+        blankEmailError: false,
+        blankLimitError: false,
+        numberLimitError: false,
+        hundredLimitError: false,
+        usernameExistsError: false,
+        emailExistsError: false
+      })
+      this.handleErrorState('wholeNumberLimitError');      
     } else {
       axios.post('/createAccount', {
         username: this.state.signupUsername,
@@ -135,10 +282,35 @@ class App extends React.Component {
       }).then(res => {
         console.log('res.data from /createAccount post:', res.data);
         if (res.data === 'Username already exists') {
-          console.log('Username already exists');
+          this.setState({
+            blankUsernameError: false,
+            blankPasswordError: false,
+            blankConfirmPasswordError: false,
+            passwordMatchError: false,
+            blankEmailError: false,
+            blankLimitError: false,
+            numberLimitError: false,
+            hundredLimitError: false,
+            wholeNumberLimitError: false,
+            emailExistsError: false
+          })
+          this.handleErrorState('usernameExistsError')
         } else if (res.data === 'Email already exists') {
-          console.log('A user with this email already exists')
+          this.setState({
+            blankUsernameError: false,
+            blankPasswordError: false,
+            blankConfirmPasswordError: false,
+            passwordMatchError: false,
+            blankEmailError: false,
+            blankLimitError: false,
+            numberLimitError: false,
+            hundredLimitError: false,
+            wholeNumberLimitError: false,
+            usernameExistsError: false,
+          })
+          this.handleErrorState('emailExistsError')
         } else if ('User saved in saveUserIntoDataBase') {
+          this.handleErrorState('accountCreationSuccess')
           this.handleClose('openSignUp', () => {
             this.setState({
               username: res.data,
@@ -157,35 +329,56 @@ class App extends React.Component {
 
   submitLogin(username, password) {
     // make a post req to server with username and password
-    console.log(username, password)
-    axios.post('/login', {
-      username: username,
-      password: password
-    })
-      .then(res => {
-        console.log('loggin',res);
-        if (res.status === 202) {
-          this.setState({
-            username: res.data,
-
-            loggedInUsername: res.data
-          })
-          this.handleClose('openLogin');
-          this.clearUserInput();
-          this.getUserProfile(this.state.username);
-        } if (res.status === 200) {
-            if (res.data === 'user not found') {
-              console.log('user does not exist');
-              //this.userNotFound();
-            } else if (res.data === 'password does not match') {
-              console.log('password does not match');
-              //this.passwordNotMatched();
-            }
-        }
+    if (username === '') {
+      this.setState({
+        blankUsernamePasswordError: false,
+        userNotExistsError: false,
+        badPasswordError: false,
+      });
+      this.handleErrorState('blankUsernameLoginError');
+    } else if (password === '') {
+      this.setState({
+        blankUsernameLoginError: false,
+        userNotExistsError: false,
+        badPasswordError: false,
+      });
+      this.handleErrorState('blankUsernamePasswordError');
+    } else {
+      axios.post('/login', {
+        username: username,
+        password: password
       })
-      .catch(err => {
-        console.log(err)
-      })
+        .then(res => {
+          if (res.status === 202) {
+            this.setState({
+              username: res.data,
+              loggedInUsername: res.data
+            })
+            this.handleClose('openLogin');
+            this.clearUserInput();
+            this.getUserProfile(this.state.username);
+          } if (res.status === 200) {
+              if (res.data === 'user not found') {
+                this.setState({
+                  blankUsernameLoginError: false,
+                  blankUsernamePasswordError: false,
+                  badPasswordError: false,
+                });
+                this.handleErrorState('userNotExistsError');
+              } else if (res.data === 'password does not match') {
+                this.setState({
+                  blankUsernameLoginError: false,
+                  blankUsernamePasswordError: false,
+                  userNotExistsError: false,
+                });
+                this.handleErrorState('badPasswordError');
+              }
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        });
+    }
   }
 
   changeUserInfo(username, limit) {
@@ -360,8 +553,12 @@ class App extends React.Component {
 
       },
       logo: {
-        height: 28,
-        width:28
+        height: 22,
+        width:22
+      },
+      faqlogo: {
+        height: 20,
+        width:20
       },
       // flexLogo: {
       //   float: 'right'
@@ -396,6 +593,38 @@ class App extends React.Component {
       }
     }
     const logIn = [
+      this.state.blankUsernameLoginError ?
+        <Alert
+          description="Please enter a username"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.blankUsernamePasswordError ?
+        <Alert
+          description="Please enter a password"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.userNotExistsError ?
+        <Alert
+          description="This user does not exists"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.badPasswordError ?
+        <Alert
+          description="This password is incorrect"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
       <TextField
         floatingLabelText='Username'
         floatingLabelFixed={true}
@@ -423,8 +652,110 @@ class App extends React.Component {
         keyboardFocused={false}
         onClick={(e) => { e.preventDefault(); this.submitLogin(this.state.loginUsername, this.state.loginPassword)}}
       />,
+      <FlatButton
+        label='Forgot Password?'
+        primary={true}
+        keyboardFocused={false}
+        onClick={() => {console.log('forgot')}}
+      />,
     ];
     const signUp = [
+      this.state.blankUsernameError ? 
+        <Alert
+          description="Please enter a username"
+          type="error"
+          showIcon
+          style={{textAlign: 'left'}}
+        /> :
+        null,
+      this.state.blankPasswordError ?
+        <Alert
+          description="Please enter a password"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.blankConfirmPasswordError ?
+        <Alert
+          description="Please confirm your password"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.passwordMatchError ?
+        <Alert
+          description="Passwords do not match"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.blankEmailError ?
+        <Alert
+          description="Please enter an email"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.blankLimitError ?
+        <Alert
+          description="Please enter a weekly limit"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.numberLimitError ?
+        <Alert
+          description="Please be sure your limit is a number"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.hundredLimitError ?
+        <Alert
+          description="Please be sure your limit is less than 100"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.wholeNumberLimitError ?
+        <Alert
+          description="Please be sure your limit is a whole number"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.usernameExistsError ?
+        <Alert
+          description="This username already exists"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.emailExistsError ?
+        <Alert
+          description="This email address already exists"
+          type="error"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
+      this.state.accountCreationSuccess ?
+        <Alert
+          description="Success creating account"
+          type="success"
+          showIcon
+          style={{ textAlign: 'left' }}
+        /> :
+        null,
       <TextField
         floatingLabelText='New Username'
         floatingLabelFixed={true}
@@ -523,6 +854,14 @@ class App extends React.Component {
       </StripeCheckout>
     ];
 
+    const faq = [
+      <FlatButton
+        label='close'
+        primary={true}
+        onClick={() => {this.setState({openFAQ:false})}}
+      />
+    ];
+
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div className='App'style={style.app}>
@@ -574,21 +913,34 @@ class App extends React.Component {
                   actions={stripe}
                   modal={false}
                   open={this.state.openStripe}
+                  onRequestClose = {() => {this.setState({openStripe: false})}}
                 />
-              </div>
-              <div style={style.flexLogo}>
-              <a href="https://twitter.com/thetrumpchange" target="_blank">
-              <img
-                  style={style.logo}
-                  src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
+                <Dialog title='FAQ'
+                actions={faq}
+                modal={false}
+                open={this.state.openFAQ}
+                onRequestClose = {
+                  () => {this.setState({openFAQ:false})}
+                }
                 />
-                </a>
               </div>
               <div style={style.flexImage}>
                 <img
                   style={style.image}
                   src='https://i.imgur.com/Kp92VKH.png'
                 />
+                 <div onClick={() => {this.setState({openFAQ:true})}}>
+                 <img
+                  style={style.faqlogo}
+                  src= 'https://cdn2.iconfinder.com/data/icons/basic-ict-line-icons/100/17-512.png'
+                /> 
+                </div>
+                <a href="https://twitter.com/thetrumpchange" target="_blank">
+              <img
+                  style={style.logo}
+                  src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
+                />
+                </a>
               </div>
             </Paper>
             <div style={style.mainBody}>

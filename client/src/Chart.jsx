@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ResponsiveContainer, RadialBarChart, RadialBar, Legend} from 'recharts';
 
-import { redA200, redA500, blueA200, blue300, greenA100, grey300, blueA100, fullWhite, fullBlack, darkBlack, white, redA100 } from 'material-ui/styles/colors';
+import { redA200, redA500, blueA200, blue300, greenA100, grey300, lightBlue500, blueA100, fullWhite, fullBlack, darkBlack, white, redA100 } from 'material-ui/styles/colors';
 import t from './index.jsx'
 
 
@@ -26,7 +26,7 @@ class Chart extends Component {
    this.setState({
      data : [
      { name: 'Number of Donations', uv: 26.69, number: this.props.totalDonated, fill: redA100 },
-     { name: 'TrumpTweets', uv: 31.47, number: this.props.totalNumTweets, fill: blueA100},
+     { name: 'TrumpTweets', uv: 31.47, number: this.props.totalNumTweets, fill: lightBlue500},
      { name: 'People Contributing to Change', uv: 15.69, number: this.props.totalUsers, fill: greenA100 }
      ]
    })
