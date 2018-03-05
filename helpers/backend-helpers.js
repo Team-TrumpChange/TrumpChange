@@ -58,22 +58,30 @@ function updateCard(customerId, customerCard) {
 function saveUserIntoDataBase(username, password, email, maxWeeklyPlans, totalMoneyDonated, callback) {
   db.User.findOne({username: username}, function(err, result) {
     if (result === null) {
-      const newUser = new db.User({ 
-        username: username, 
-        password: password, 
-        customerID: null, 
-        subscriberID: null, 
-        email: email, 
-        maxWeeklyPlans: maxWeeklyPlans, 
-        totalMoneyDonated: totalMoneyDonated, 
-        newUser: true, 
-        canceled: false, 
-        dateJoined: moment.now()
-      });
-      newUser.save(() => {
-        console.log('user saved in saveUserIntoDataBase');
-        callback('User saved in saveUserIntoDataBase');
-      });
+      db.User.findOne({email: email}, (err, result) => {
+        if (result === null) {
+          const newUser = new db.User({ 
+            username: username, 
+            password: password, 
+            customerID: null, 
+            subscriberID: null, 
+            email: email, 
+            maxWeeklyPlans: maxWeeklyPlans, 
+            totalMoneyDonated: totalMoneyDonated, 
+            newUser: true, 
+            canceled: false, 
+            dateJoined: moment.now()
+          });
+          newUser.save(() => {
+            console.log('user saved in saveUserIntoDataBase');
+            callback('User saved in saveUserIntoDataBase');
+          });
+        } else if (err) {
+          callback('Error on looking up email in database');          
+        } else {
+          callback('Email already exists');
+        }
+      })
     } else if (err) {
       callback('Error on looking up user in database');
     } else {
