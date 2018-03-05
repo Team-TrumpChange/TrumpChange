@@ -154,7 +154,7 @@ function getTrumpTweets(callback) {
   });
 }
 
-function updateSubscriptions(callback) {
+function updateSubscriptions(callback) { // this just returns all users from DB and calls a callback function on all of them
   db.User.find({})
     .then(function(results) {
       console.log('results:', results);
