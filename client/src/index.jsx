@@ -975,7 +975,7 @@ class App extends React.Component {
                           />
                 }
                 <Dialog
-                  title='Update username and/or email'
+                  title='Update username and/or max weekly donations'
                   actions={update}
                   modal={false}
                   open={this.state.openUpdate}
