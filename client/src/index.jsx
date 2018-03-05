@@ -114,6 +114,21 @@ class App extends React.Component {
       signupConfirmPassword: '',
       signupEmail: '',
       signupLimit: '',
+      blankUsernameLoginError: false,
+      blankUsernamePasswordError: false,
+      userNotExistsError: false,
+      badPasswordError: false,
+      blankUsernameError: false,
+      blankPasswordError: false,
+      blankConfirmPasswordError: false,
+      passwordMatchError: false,
+      blankEmailError: false,
+      blankLimitError: false,
+      numberLimitError: false,
+      hundredLimitError: false,
+      wholeNumberLimitError: false,
+      usernameExistsError: false,
+      emailExistsError: false
     })
   }
 
@@ -716,7 +731,7 @@ class App extends React.Component {
         null,
       this.state.emailExistsError ?
         <Alert
-          description="A user with this email address already exists"
+          description="This email address already exists"
           type="error"
           showIcon
           style={{ textAlign: 'left' }}
