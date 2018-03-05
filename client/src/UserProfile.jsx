@@ -104,7 +104,6 @@ class UserProfile extends React.Component {
         flexGrow: 1,
         height: '75vh',
       },
-   
       button: {
         display: 'grid',
         heigth: '30%'
