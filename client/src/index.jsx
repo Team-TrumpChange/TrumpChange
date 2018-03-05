@@ -873,7 +873,7 @@ class App extends React.Component {
               <a href="https://twitter.com/thetrumpchange" target="_blank">
               <img
                   style={style.logo}
-                  src= 'http://pngimg.com/uploads/twitter/twitter_PNG29.png'
+                  src= 'https://pngimg.com/uploads/twitter/twitter_PNG29.png'
                 />
                 </a>
               </div>
