@@ -52,11 +52,6 @@ class About extends React.Component {
         fontSize: 16,
         textAlign: 'center'
       }, 
-      flex: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-      },
       card: {
         // height: 
       }

@@ -11,6 +11,7 @@ import StripeCheckout from 'react-stripe-checkout';
 import CircularProgress from 'material-ui/CircularProgress';
 import Paper from 'material-ui/Paper';
 import Divider from 'material-ui/Divider';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
 
 class UserProfile extends React.Component {
@@ -98,46 +99,27 @@ class UserProfile extends React.Component {
   render() {
     const styles = {
       main: {
-        display: 'grid',
-        height: '60px',
-        gridTemplateRows: 'repeat(5, 1fr)',
-        alignItems: 'center',
-        fontWeight: 80
-        // fontSize: 20
-        // margin: 7.925
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        height: '75vh',
       },
-      // flexButton: {
-      //   flex: 1,
-      //   flexDirection: 'row-reverse',
-      //   display:'flex',
-      //   justifyContent: 'flex-start',
-      //   paddingRight: 15.85
-      // },
+   
       button: {
         display: 'grid',
         heigth: '30%'
       },
-      paper: {
-        textAlign: 'center',
-        margin: 0,
-        padding: 8
+      card: {
+        flex: 'auto'
       },
-      info: {
-        height: '40px',
-        textAlign: 'center',
-        padding: 10
+      image: {
+        heigth: '20px'
       },
-      all: {
-        marginLeft: 10,
-        marginRight: 10
+      cardText:  {
+        fontSize: 20,
       },
-      heading: {
-        // padding: 40,
-        display: 'grid',
-        height: '60px',
-        gridTemplateRows: 'repeat(5, 1fr)',
-        alignItems: 'center',
-        fontSize: 30
+      cardHeader: {
+        fontsize: 24
       }
     }
     const cancel = [
@@ -184,17 +166,62 @@ class UserProfile extends React.Component {
 
     return (
         <div style={styles.main}>
-        <Paper style={styles.paper}>
-          <div style={styles.heading}>
-            Hey {this.props.userProfile.username}!
-          </div>
-        </Paper>
-        <Paper>
-          <div style={styles.info}>Email: {this.props.userProfile.email}</div>
-        </Paper>  
-        <Paper>
-          <div style={styles.info}>Weekly Limit: {this.props.userProfile.maxWeeklyPlans}</div>
-          </Paper>
+          <Card>
+            <CardHeader
+              style={styles.cardHeader}
+              title="My Profile"
+            />
+            <CardMedia
+              overlay={<CardTitle title={this.props.userProfile.username} />}
+            > 
+              <img 
+                style={styles.image} 
+                src="https://help.twitter.com/content/dam/help-twitter/big-bird-card.jpeg" 
+                alt="" 
+              />
+            </CardMedia>
+            <CardTitle title={'Total Donated: $' + this.props.userProfile.totalMoneyDonated} />
+            <CardText style={styles.cardText}>
+             Email: {this.props.userProfile.email} 
+             <br></br>
+             Weekly Donation Limit: {this.props.userProfile.maxWeeklyPlans}
+            </CardText>
+            <CardActions>
+              <div style={styles.button}>
+                <StripeCheckout
+                  name="TrumpChange"
+                  description="Enter Your Card Info Below"
+                  panelLabel="Submit"
+                  allowRememberMe={false}
+                  token= {this.props.userProfile.subscriberID ? this.onTokenUpdateCard : this.props.onToken} 
+                  email={this.props.userProfile.email}
+                  currency="USD"
+                  stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
+                >
+                  <RaisedButton
+                    style={{marginBottom: 7.925, display: 'grid'}}
+                    labelColor={white}
+                    backgroundColor={blueA400}
+                    label={this.props.userProfile.subscriberID ? 'Update Payment Method' : 'Enter Payment Method'}  
+                  />
+                </StripeCheckout> 
+                <RaisedButton
+                  style={{marginBottom: 7.925}}
+                  labelColor={white}
+                  backgroundColor={blueA400}
+                  label='Update My Profile'
+                  onClick={() => this.props.handleOpen('openUpdate')}
+                />
+                <RaisedButton 
+                  style={{marginBottom: 7.925}}
+                  labelColor={white}
+                  backgroundColor={red500}
+                  label='Cancel Subscription'
+                  onClick={this.openCancel.bind(this)}
+                />
+              </div>
+            </CardActions>
+          </Card>
           <Dialog 
             title="Confirm Subscription Cancelation"
             actions={this.state.cancelClicked ? spinny : cancel}
@@ -215,41 +242,6 @@ class UserProfile extends React.Component {
             open={this.state.openUnconfirmed}
             onRequestClose={(e) => {this.handleCloseConfirmed()}}
           />
-          <Paper>
-            <div style={styles.button}>
-              <StripeCheckout
-                name="TrumpChange"
-                description="Enter Your Card Info Below"
-                panelLabel="Submit"
-                allowRememberMe={false}
-                token= {this.props.userProfile.subscriberID ? this.onTokenUpdateCard : this.props.onToken} 
-                email={this.props.userProfile.email}
-                currency="USD"
-                stripeKey="pk_test_t7nLVLP2iJEh2FegQRUPKt5p" 
-              >
-                <RaisedButton
-                  style={{marginBottom: 7.925, display: 'grid'}}
-                  labelColor={white}
-                  backgroundColor={blueA400}
-                  label={this.props.userProfile.subscriberID ? 'Update Payment Method' : 'Enter Payment Method'}  
-                />
-              </StripeCheckout> 
-              <RaisedButton
-                style={{marginBottom: 7.925}}
-                labelColor={white}
-                backgroundColor={blueA400}
-                label='Update My Profile'
-                onClick={() => this.props.handleOpen('openUpdate')}
-              />
-              <RaisedButton 
-                style={{marginBottom: 7.925}}
-                labelColor={white}
-                backgroundColor={red500}
-                label='Cancel Subscription'
-                onClick={this.openCancel.bind(this)}
-              />
-            </div>
-          </Paper>
         </div>
     )
   }
