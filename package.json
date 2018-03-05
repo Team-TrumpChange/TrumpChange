@@ -44,8 +44,6 @@
     "react-stripe-checkout": "^2.6.3",
     "recharts": "^1.0.0-beta.10",
     "request": "^2.83.0",
-    "semantic-ui": "^2.3.0",
-    "semantic-ui-react": "^0.78.3",
     "session-memory-store": "^0.2.2",
     "stripe": "^5.4.0",
     "twitter": "^1.7.1",
