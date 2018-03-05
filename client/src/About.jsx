@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Paper from 'material-ui/Paper';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+
 
 class About extends React.Component {
   constructor(props) {
@@ -13,44 +15,59 @@ class About extends React.Component {
   render() {
     const style = {
       paperLarge: {
-        display: 'grid',
+        // display: 'grid',
         borderRadius: '0%',
-        height: '358px',
+        // height: '358px',
         // width: '555px',
         // display: 'flex',
         marginTop: 10,
         marginBottom: 10,
         marginLeft: 10,
         marginRight: 10,
-        padding: 10
+        padding: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        height: '35vh'
       },
       heading: {
-        fontSize: 24,
-        fontWeight: 50,
-        marginTop: 60,
-        marginBottom: 20,
-        textAlign: 'center'
+        textAlign: 'center',
+        height: '5vh',
+        flexGrow: 1
+        // display: 'grid'
       },
       subheading: {
-        marginBottom: 30,
-        fontSize: 18,
+        marginTop: 26,
+        fontSize: 16,
         textAlign: 'center',
-        fontStyle: 'italic'
+        fontStyle: 'italic',
+        height: '5vh',
+        flexGrow: 1,
+        display: 'grid'
+      },
+      donate: {
+        fontSize: 16,
+        fontStyle: 'italic',
+        marginBottom: 10,
+        display: 'grid'
       },
       info: {
         fontSize: 14,
         textAlign: 'center',
-        marginBottom: 10
+        height: '5vh',
+        flexGrow: 1,
+        disply: 'grid',
+        marginBottom: 15
       },
       infoHeading: {
-        marginBottom: 15,
+        marginBottom: 10,
         fontSize: 16,
-        textAlign: 'center'
+        textAlign: 'center',
+        height: '5vh',
+        flexGrow: 1
       }, 
-      flex: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
+      card: {
+        // height: 
       }
     }
 
@@ -58,25 +75,28 @@ class About extends React.Component {
       <div >
         <Paper zDepth={2} style={style.paperLarge}>
           <div style={style.heading}> 
-              Contribute to Change
+            <img src="https://tbncdn.freelogodesign.org/87a2da9f-f329-4945-83b1-d64d01005948.png?1520271610438"/>
           </div>
           <div style={style.subheading}>
-            donate a dollar to charity every time Trump tweets
-          </div>
-          <div style={style.infoHeading}>
-            How it works:
+            
           </div>
           <div style={style.info}>
-            Option to set a weekly max donation limit  
-          </div>
-          <div style={style.info}> 
-            Subscriptions are billed weekly
+            <div style={style.donate}>donate a dollar to charity every time Trump tweets</div>
+            How it works: <br></br>
+            Option to set a weekly max donation limit  <br></br>
+            Subscriptions are billed weekly <br></br>
+            Email us at: trumpchange2 at gmail.com
           </div>
         </Paper>
         <Paper zDepth={2} style={style.paperLarge}>
-          <div style={style.heading}>
-            Charity Info Here
-          </div>
+          <Card>
+            <CardMedia
+              // overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
+            >
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRpSd8BdYBZLenru101fTlwa1jW-i38QLzlH1SwcOnlkRWRVuP" alt="" />
+            </CardMedia>
+            <CardTitle title="Our current charity" />
+          </Card>
         </Paper>
       </div>
     )
