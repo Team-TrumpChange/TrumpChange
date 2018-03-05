@@ -23,6 +23,7 @@ import UserProfile from './UserProfile.jsx'
 import About from './About.jsx';
 import { Alert } from 'antd';
 
+
 class App extends React.Component {
   constructor(props) {
   	super(props)
@@ -32,6 +33,7 @@ class App extends React.Component {
       openSignUp: false,
       openStripe: false,
       openFAQ: false,
+      openForgotPassword: false,
       openDialog: 'none',
       openUpdate: false,
       signupUsername: '',
@@ -42,6 +44,7 @@ class App extends React.Component {
       loginUsername: '',
       loginPassword: '',
       username: '',
+      forgottenPasswrod: '',
       userProfile: null,
       userDonated: null,
       totalDonated: 0,
@@ -62,11 +65,13 @@ class App extends React.Component {
       wholeNumberLimitError: false,
       usernameExistsError: false,
       emailExistsError: false,
-      accountCreationSuccess: false
+      accountCreationSuccess: false,
+      
     }
     this.onToken = this.onToken.bind(this)
     setInterval(() => {
       this.getTrumpTweetsFromDb()
+      this.getStats()
     }, 30000);
     this.getUserProfile= this.getUserProfile.bind(this)
   }
@@ -146,6 +151,9 @@ class App extends React.Component {
     })
   }
 
+  //this is a lot of code, but pretty simple
+  //sends the signup info entered to the server
+  //if everything checks out, they are logged in
   submitSignUp(username, password, passwordConfirm, email, limit) {
     if (username === '') {
       this.setState({
@@ -380,7 +388,8 @@ class App extends React.Component {
         });
     }
   }
-
+  
+  //If user is logged in they can change their personal info
   changeUserInfo(username, limit) {
     if (username === '' && limit === '') {
       console.log('Please enter a username or limit');
@@ -426,6 +435,7 @@ class App extends React.Component {
     }
   }
 
+  //gets users data from db to display in thirs column
   getUserProfile(username) {
     axios.post('/userProfile', {
       username: username  
@@ -506,7 +516,7 @@ class App extends React.Component {
   }
 
 
-
+//mostly design stuff below
   render () {
     const muiTheme = getMuiTheme({
       palette: {
@@ -592,6 +602,7 @@ class App extends React.Component {
         diplay: 'flex'
       }
     }
+    //this is the fields and butons for login
     const logIn = [
       this.state.blankUsernameLoginError ?
         <Alert
@@ -656,9 +667,14 @@ class App extends React.Component {
         label='Forgot Password?'
         primary={true}
         keyboardFocused={false}
-        onClick={() => {console.log('forgot')}}
-      />,
+        onClick={() => {this.setState({openForgotPassword:true})}}
+      />
+     
+      
     ];
+
+    
+//fields and buttons for signup
     const signUp = [
       this.state.blankUsernameError ? 
         <Alert
@@ -803,6 +819,8 @@ class App extends React.Component {
         onClick={(e) => {e.preventDefault(); this.submitSignUp(this.state.signupUsername, this.state.signupPassword, this.state.signupConfirmPassword, this.state.signupEmail, this.state.signupLimit)}}
       />,
     ];
+
+    //if user is logged in, these are the fields and buttons for updating their info
     const update = [
       <TextField
         floatingLabelText='Username'
@@ -832,6 +850,8 @@ class App extends React.Component {
         onClick={(e) => { e.preventDefault(); this.changeUserInfo(this.state.updatedUsername, this.state.updatedWeeklyLimit) }}
       />,
     ];
+
+    //the layout for the stripe form, seen once a user signsup
     const stripe = [
       <StripeCheckout
         name="TrumpChange"
@@ -854,12 +874,30 @@ class App extends React.Component {
       </StripeCheckout>
     ];
 
+    //opens if user clicks ? button at the top
     const faq = [
       <FlatButton
         label='close'
         primary={true}
         onClick={() => {this.setState({openFAQ:false})}}
       />
+    ];
+
+    //fields and buttons for when user clicks forgot password in the login modal.
+    const forgotPassword = [
+      <TextField
+        floatingLabelText='Email'
+        floatingLabelFixed={true}
+        fullWidth={true}
+        onChange={(e) => {this.setState({forgottenPassword: e.target.value})}}
+      />,
+      <FlatButton
+        label='Send'
+        primary={true}
+        onClick = {(e) => {
+          this.setState({openForgotPassword:false})
+        }}
+      />,
     ];
 
     return (
@@ -921,6 +959,14 @@ class App extends React.Component {
                 open={this.state.openFAQ}
                 onRequestClose = {
                   () => {this.setState({openFAQ:false})}
+                }
+                />
+                <Dialog title='Enter Your Email to Change Your Password'
+                actions={forgotPassword}
+                modal={false}
+                open={this.state.openForgotPassword}
+                onRequestClose = {
+                  () => {this.setState({openForgotPassword:false})}
                 }
                 />
               </div>
