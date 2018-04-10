@@ -30,6 +30,7 @@ class About extends React.Component {
         flexGrow: 1,
         height: '35vh',
         alignItems: 'center',
+        overflow: 'scroll'
       },
       heading: {
         textAlign: 'center',
@@ -80,17 +81,13 @@ class About extends React.Component {
     return (
       <div >
         <Paper zDepth={2} style={style.paperLarge}>
-          <div style={style.heading}> 
-            <img src="https://tbncdn.freelogodesign.org/87a2da9f-f329-4945-83b1-d64d01005948.png?1520271610438"/>
-          </div>
-          <div style={style.subheading}></div>
-          <div style={style.info}>
-            <div style={style.donate}>Donate a dollar to charity every time the president tweets</div>
-            How it works: <br></br>
+          <img src="https://tbncdn.freelogodesign.org/87a2da9f-f329-4945-83b1-d64d01005948.png?1520271610438" alt="" style={{ maxWidth: '40%' }} />
+          <p style={{ textAlign: 'center', fontSize: 18 }}>
+            Donate a dollar to charity every time the president tweets <br></br>
             Option to set a weekly max donation limit  <br></br>
             Subscriptions are billed weekly <br></br>
-            Email us at: trumpchange2 at gmail.com
-          </div>
+          </p>
+         
         </Paper>
         <Paper zDepth={2} style={style.paperLarge}>
           <p style={{ textAlign: 'center', fontSize: 24 }}>
