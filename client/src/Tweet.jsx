@@ -71,7 +71,7 @@ class Tweet extends React.Component {
           </div>
           <div style={style.tweet} className="content">{tweet.tweet}</div>
            <cite style={style.iconCite}> <i style={style.iconRetweet} className="material-icons">
-            repeat 
+            retweet 
             </i>
             {tweet.retweets}
             </cite>

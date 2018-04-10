@@ -28,7 +28,8 @@ class About extends React.Component {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        height: '35vh'
+        height: '35vh',
+        alignItems: 'center',
       },
       heading: {
         textAlign: 'center',
@@ -84,7 +85,7 @@ class About extends React.Component {
           </div>
           <div style={style.subheading}></div>
           <div style={style.info}>
-            <div style={style.donate}>donate a dollar to charity every time Trump tweets</div>
+            <div style={style.donate}>Donate a dollar to charity every time the president tweets</div>
             How it works: <br></br>
             Option to set a weekly max donation limit  <br></br>
             Subscriptions are billed weekly <br></br>
@@ -92,14 +93,10 @@ class About extends React.Component {
           </div>
         </Paper>
         <Paper zDepth={2} style={style.paperLarge}>
-          <Card>
-            <CardMedia
-              // overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
-            >
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRpSd8BdYBZLenru101fTlwa1jW-i38QLzlH1SwcOnlkRWRVuP" alt="" />
-            </CardMedia>
-            <CardTitle title="Our current charity" />
-          </Card>
+          <p style={{ textAlign: 'center', fontSize: 24 }}>
+            Current Charity:
+          </p>
+          <img src="https://i.imgur.com/4zBRXOO.jpg" alt="" style={{ maxWidth: '40%' }} />
         </Paper>
       </div>
     )
