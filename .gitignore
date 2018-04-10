@@ -1,4 +1,8 @@
 node_modules
 .env
-client/dist/bundle.js
 config.js
+package-lock.json
+package.json
+client/dist/bundle.js
+Credentials.md
+StretchGoals.md
