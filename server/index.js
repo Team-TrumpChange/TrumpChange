@@ -27,18 +27,18 @@ app.use(session({
 }));
 
 
-setInterval(() => {
+setInterval(() => { // updates the tweets we already have
   helpers.updateRetweetAndFavoriteCount();
 }, 30000);
 
-setInterval(() => {
+setInterval(() => { // checks for new tweets and add them to the DB
   helpers.getTweets(tweets => {   
     helpers.addUniqueTweet(tweets);
   })
 }, 60000);
 
 //do we need this?
-function sessionCleanup() {
+function sessionCleanup() { 
   sessionStore.all(function (err, sessions) {
     for (var i = 0; i < sessions.length; i++) {
       sessionStore.get(sessions[i], function () { });
@@ -68,9 +68,9 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
           userProfile.subscriberID,
           {quantity: updateNum} , function(err, user) {
             if (err) {
-              console.log('error updating user', err);
+              console.log('error updating user in updateSubs, server/index.js', err);
             } else {
-              console.log('user updated, user.quantity:', user.quantity);
+              console.log('user updated, user.quantity in updateSubs:', user.quantity);
               helpers.updateUserAmountDonated(updateNum, userProfile, function(err) {
                 if (!err) {
                   if (index === users.length) { // base case
@@ -78,10 +78,9 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
                   }
                   helpers.updateTotalDonated(updateNum, function(err) { // update totalDonated
                     if (!err) {
-                      console.log('about to call next subroutine');
                       subroutine(users[index], index + 1);      
                     } else {
-                      console.log('error updating total donating, about to call next subroutine to move onto updating next user sub');
+                      console.log('error updating total donating, about to call next subroutine to move onto updating next user sub in updateSubs');
                       subroutine(users[index], index + 1); // even if updateTotalDonated goes wrong, still go onto updating next user sub
                     }
                   })
@@ -93,14 +92,13 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
             }
         });
       } else if (userProfile.subscriberID) {
-        console.log('in the else if server/index line 96');
         userProfile.newUser = false;
         userProfile.save(err => {
           if (err) {
             console.log('error resaving user after changing newUser to false in updateSubs:', err);
             subroutine(users[index], index + 1);
           } else {
-            console.log('userProfile.newUser:', userProfile.newUser);
+            console.log('userProfile.newUser in updateSubs for new user, should be changed to false:', userProfile.newUser);
             if (index === users.length) {
               return;
             }
@@ -122,7 +120,6 @@ var updateSubs = function(count) { // this function updates Subscriptions but al
 //counts tweets every week
 setInterval(() => { // also calls update subscriptions in line 136
   const now = moment.tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
-  console.log('now in setInterval:', now)
   helpers.getBillingCycleMoment((err, result) => {
     if (err) {
       console.log('error getting getBillingCycleMoment in counting weekly tweets');
@@ -130,7 +127,6 @@ setInterval(() => { // also calls update subscriptions in line 136
       let billCycleMoment = result.value;
       console.log('billCycleMoment:', billCycleMoment);
       if (now === billCycleMoment) {
-        console.log('billCycleMoment in setInterval(server):', billCycleMoment); // move this down
         console.log('BILLING!!');
         const sevenDaysAgo = moment(now, "ddd MMM DD HH:mm ZZ YYYY").subtract(7, 'd').tz("Europe/London").format("ddd MMM DD HH:mm ZZ YYYY");
         console.log('seven days ago from this very moment', sevenDaysAgo);
@@ -176,7 +172,7 @@ app.post('/createAccount', function(req, res) { // receives new account info fro
           console.log('req.session.username:', req.session.username);
           res.send(req.session.username);
         } else {
-          console.log('error creating session');
+          console.log('error creating session in app.post/createAccount');
           res.status(400).send('error loggin user in after saving to DB');
         }
       });
@@ -204,7 +200,7 @@ app.post('/login', function(req, res) { // receives login information from front
                 console.log(req.session);
                 res.status(202).send(req.session.username);
               } else {
-                console.log('error creating session');
+                console.log('error creating session in /login');
               }
             })
           } else {
@@ -217,14 +213,14 @@ app.post('/login', function(req, res) { // receives login information from front
   });
 });
 
-app.get('/getTrumpTweets/db', (req, res) => {
+app.get('/getTrumpTweets/db', (req, res) => { // gets all tweets from the DB and sends them to client
   helpers.getTrumpTweets(function(results) {
     res.json(results)
   })
 });
 
 
-app.get('/stats', (req, res) => { // handles get request from front end for the total donated
+app.get('/stats', (req, res) => { // handles get request from front end for the total donated, total users, and total num tweets
   let stats = {};
   helpers.getTotalDonated(function(err, result) {
     if (err) {
@@ -253,7 +249,7 @@ app.get('/stats', (req, res) => { // handles get request from front end for the 
   })
 });
 
-app.post('/userProfile', (req, res) => {
+app.post('/userProfile', (req, res) => { // gets user information (all columns from user collection) for loogged in user
   helpers.getUserProfile(req.body.username, function(err, result) {
     if (err) {
       res.status(400).send('error getting user stats');
@@ -263,8 +259,8 @@ app.post('/userProfile', (req, res) => {
   })
 });
 
-app.post('/updateCustomer', function(req, res) {
-  stripe.customers.deleteCard(
+app.post('/updateCustomer', function(req, res) { // updates customer credit card in stripe
+  stripe.customers.deleteCard( 
     req.body.customerId,
     req.body.card,
     function(err, confirmation) {
@@ -290,13 +286,10 @@ app.post('/updateCustomer', function(req, res) {
       }
     }
   );
-//db.find(customerid).update(customerid: 'poop')
-//make db call to delete old card
-//make db call to update new card
 })
 
 
-app.post('/customerToken', function(req, res) { // this will receive customer token
+app.post('/customerToken', function(req, res) { // this will receive customer token from stripe checkout on front end
  // here need to use helper functions(from stripe) to create a new customer and create new subscription
  const tokenId = req.body.id;
  const email = req.body.email;
@@ -311,18 +304,14 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
        email: email
    }, function(err, customer) { // returns a customer object if successful
       if (err) {
-          console.log('error in create function')
+          console.log('error in createCustomer stripe function server/index.js line 307');
           res.send('error in create function');
       } else {
-          console.log('customer.id:', customer.id);
-          console.log('customer.email:', customer.email);
-          console.log(customer)
-        // console.log(customer)
         helpers.getBillingCycleMoment((err, result) => {
           if (err) {
             res.status(400).send('error creating new billing cycle anchor, subscription not created');
           } else {
-            var billingCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X'));
+            var billingCycleMoment = Number(moment(result.value, "ddd MMM DD HH:mm ZZ YYYY").tz("Europe/London").add(5, 'm').format('X')); // gets the date 5 minutes after next billing cycle date
             console.log('billCycleMoment + 5 min (before creating subscription):', billingCycleMoment);
             console.log('typeof billCycleMoment,', typeof billingCycleMoment);
              stripe.subscriptions.create({ // creates a new subscription
@@ -333,16 +322,16 @@ app.post('/customerToken', function(req, res) { // this will receive customer to
                     quantity: 0
                   }
                  ],
-                 billing_cycle_anchor: billingCycleMoment
+                 billing_cycle_anchor: billingCycleMoment // sets the billing anchor to after the next billing date (so they wont get charged the first partial week they join)
              }, function(err, subscription) { // returns a subscription object
                  if (err) {
                    console.log('error creating subscription:', err);
                    res.send('error')
                  } else {
                    console.log('saved subscription:', subscription);
-                   // here save the subscription to the db - use customer id and email so it can be found in db and added to user file
+                   // here save the subscriptionID and customerID to the db 
                    helpers.addSubscriberIDAndCustomerID(subscription.id, customer.id, req.body.username, req.body.cardID, function() {
-                     console.log('subsciprtionIDSaved');
+                     console.log('subsciprtionIDSaved in app.post/customerToken');
                      res.send('success saving subscription');
                    });
                  }
@@ -373,7 +362,7 @@ app.post('/logout', function(req, res) {
   });
 }); 
 
-app.post('/cancelSubscription', (req, res) => {
+app.post('/cancelSubscription', (req, res) => { // cancels subsription in stripe. customer info still in DB, but the canceled column turns to true
   helpers.getUserProfile(req.body.username, (err, result) => {
     if (err) {
       res.send('error canceling subscription, couldnt find user');
@@ -397,7 +386,7 @@ app.post('/cancelSubscription', (req, res) => {
   });
 });
 
-app.post('/changeWeeklyLimit', (req, res) => {
+app.post('/changeWeeklyLimit', (req, res) => { // if a customer wants to change their max weekly donation
   if (req.body.maxWeeklyPlans !== '') {
     helpers.getUserProfile(req.body.currentName, (err, currentNameResult) => {
       if (!err) {
@@ -410,15 +399,15 @@ app.post('/changeWeeklyLimit', (req, res) => {
           }
         });
       } else {
-        res.send('error fetching current user');
+        res.send('error fetching current user in app.post/changeWeeklyLimit');
       }
     });
   } else {
-    res.send('no changes requested')
+    res.send('no changes requested in app.post/changeWeeklyLimit')
   }
 });
 
-app.post('/changeUsername', (req, res) => {
+app.post('/changeUsername', (req, res) => { // if a customer wants to change their username
   if (req.body.newName !== '') {
     console.log(req.body.currentName);
     helpers.getUserProfile(req.body.currentName, (err, currentNameResult) => {
@@ -432,7 +421,7 @@ app.post('/changeUsername', (req, res) => {
                   if (!err) {
                     res.send('updated username')
                   } else {
-                    console.log('error updating maxWeeklyPlans');
+                    console.log('error updating username');
                   }
                 });
               } else {

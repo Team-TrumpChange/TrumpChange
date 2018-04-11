@@ -171,6 +171,7 @@ function getTrumpTweets(callback) {
   });
 }
 
+
 // gets all the users from the database
 function updateSubscriptions(callback) {
   db.User.find({})
